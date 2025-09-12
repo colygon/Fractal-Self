@@ -8,6 +8,7 @@ import imageData from './imageData'
 import gen from './llm'
 import modes from './modes'
 import { db } from './db'
+import { canTakePhoto, getPlanLimits } from './billing'
 
 const get = useStore.getState
 const set = useStore.setState
@@ -104,9 +105,21 @@ export const init = async () => {
   set({didInit: true})
 }
 
-export const snapPhoto = async (b64, signal) => {
+export const snapPhoto = async (b64, signal, user = null, monthlyCentsUsed = 0) => {
   const id = crypto.randomUUID()
   const {activeMode, customPrompt, photos, model, randomStyleIndex, recentlyUsedModes, cameraMode} = get()
+  
+  // Check billing limits (if user is provided)
+  if (user) {
+    // For now, we'll get subscription from user metadata or assume free plan
+    // In production, you'd fetch this from your backend/Clerk
+    const subscription = user.publicMetadata?.subscription || null
+    
+    if (!canTakePhoto(subscription, monthlyCentsUsed)) {
+      const limits = getPlanLimits(subscription)
+      throw new Error(`Monthly limit reached (${limits.monthlyCents} cents per month). Upgrade to Pro for unlimited cents!`)
+    }
+  }
   
   console.log('Starting photo generation', { 
     id, 
@@ -147,7 +160,7 @@ export const snapPhoto = async (b64, signal) => {
     })
   }
   
-  const newPhotos = [{id, mode: modeToUse, isBusy: true}, ...photos]
+  const newPhotos = [{id, mode: modeToUse, isBusy: true, timestamp: Date.now()}, ...photos]
   set(state => {
     state.photos = newPhotos
   })

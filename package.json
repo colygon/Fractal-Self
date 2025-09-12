@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.46.2",
+    "@clerk/elements": "^0.23.62",
     "@google/genai": "latest",
     "auto-zustand-selectors-hook": "latest",
     "clsx": "latest",

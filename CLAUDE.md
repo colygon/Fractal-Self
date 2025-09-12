@@ -27,16 +27,28 @@ Before running the app, you need a Google Gemini API key:
    GEMINI_API_KEY=your_api_key_here
    ```
 
-### Authentication (Clerk)
-The app uses Clerk for user authentication:
+### Authentication & Billing (Clerk)
+The app uses Clerk for user authentication and billing:
 1. Set up a Clerk application at [clerk.com](https://clerk.com)
-2. Add your publishable key to `.env.local`:
+2. Enable Clerk Elements billing in your Clerk dashboard
+3. Set up Stripe integration in Clerk for payment processing
+4. Add your keys to `.env.local`:
    ```
    VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
+   CLERK_SECRET_KEY=your_clerk_secret_key_here
+   VITE_STRIPE_PRO_MONTHLY_PRICE_ID=your_stripe_price_id
+   VITE_STRIPE_PREMIUM_YEARLY_PRICE_ID=your_stripe_price_id
    ```
-3. The auth flow allows all users (signed-in and signed-out) to use the camera app
-4. A "Sign In" button appears in the top-right for guest users
-5. A user profile button appears for authenticated users
+5. The auth flow allows all users (signed-in and signed-out) to use the camera app
+6. A "Sign In" button appears in the top-right for guest users
+7. A user profile button appears for authenticated users
+8. Usage tracking and upgrade prompts appear for signed-in users
+
+#### Billing Tiers:
+- **Free**: 10 photos per month, basic styles, watermarked exports
+- **Starter ($3.99/month)**: 100 photos per month, all styles, standard quality, watermarked exports
+- **Premium ($39.99/month)**: 1,000 photos per month, all styles, high quality, no watermarks, GIF creation
+- **Gold ($399.99/month)**: 10,000 photos per month, all features, ultra quality, custom prompts, API access
 
 ## Architecture
 

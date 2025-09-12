@@ -18,28 +18,28 @@ export default {
   sf: {
     name: 'SF',
     emoji: '🏠',
-    prompt: 'Place the person or people in Alamo Square with the iconic "Painted Ladies" Victorian houses in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish gold sequin bomber jackets that catch the light beautifully, paired with modern San Francisco casual attire underneath. The sequins should shimmer and reflect the afternoon light. The lighting should be that of a clear afternoon, casting soft shadows and creating beautiful reflections on the gold sequins. Apply all changes consistently to everyone.',
+    prompt: 'Place the person or people in Alamo Square with the iconic "Painted Ladies" Victorian houses in the background. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, just in a new setting. Dress them in stylish gold sequin bomber jackets that catch the light beautifully, paired with modern San Francisco casual attire underneath. The sequins should shimmer and reflect the afternoon light. The lighting should be that of a clear afternoon, casting soft shadows and creating beautiful reflections on the gold sequins. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone.',
     category: 'location',
     postcardText: 'THE PAINTED LADIES'
   },
   orlando: {
     name: 'Orlando',
     emoji: '🏰',
-    prompt: 'Place the person or people in front of the iconic Cinderella Castle at Disney World in Orlando. It is crucial to preserve their exact facial features, expressions, and distinctive characteristics. Add classic Mickey Mouse ears on each person\'s head. Dress them in fun Disney park clothing. Ensure realistic lighting and shadows that match a sunny Florida day during the magical golden hour, with the full castle visible in the background. If there are multiple people, apply all changes consistently to everyone, maintaining character consistency.',
+    prompt: 'Place the person or people in front of the iconic Cinderella Castle at Disney World in Orlando. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and distinctive characteristics - they must look exactly like themselves. Add classic Mickey Mouse ears on each person\'s head. Dress them in fun Disney park clothing. Ensure realistic lighting and shadows that match a sunny Florida day during the magical golden hour, with the full castle visible in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, apply all changes consistently to everyone, maintaining character consistency.',
     category: 'location',
     postcardText: 'Greetings from the Most Magical Place on Earth!'
   },
   fiji: {
     name: 'Fiji',
     emoji: '🏝️',
-    prompt: 'Completely replace the original background with a pristine Fiji beach scene, featuring turquoise water, white sand, and lush palm trees. Place the person or people on this beach. It is crucial to preserve their exact facial features, expressions, and character. Add stylish sunglasses to each person with realistic reflections of the ocean and palm trees. Dress them in tropical beachwear. The lighting should be that of a bright, midday tropical sun, creating sharp, defined shadows and brilliant reflections on the turquoise water. Apply all changes consistently to everyone in the photo.',
+    prompt: 'Completely replace the original background with a pristine Fiji beach scene, featuring turquoise water, white sand, and lush palm trees. Place the person or people on this beach. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Add stylish sunglasses to each person with realistic reflections of the ocean and palm trees. Dress them in tropical beachwear. The lighting should be that of a bright, midday tropical sun, creating sharp, defined shadows and brilliant reflections on the turquoise water. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone in the photo.',
     category: 'location',
     postcardText: 'Wish you were here! 🌴'
   },
   golden_gate: {
     name: 'Golden Gate',
     emoji: '🌉',
-    prompt: 'Place the person or people on the front deck of a boat in San Francisco Bay, with the massive Golden Gate Bridge towering magnificently behind them. The iconic International Orange bridge should dominate the background, fully visible in all its glory, stretching from tower to tower against the sky. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual SF style like hoodies or light jackets, perfect for being on the water. They should be standing confidently on the boat deck with the wind in their hair. Around them in the bay, show white sailboats gliding gracefully through the water and large container ships and tankers moving through the shipping lanes. The perspective should emphasize the bridge\'s massive scale rising above them from their position on the water. The lighting should be clear and bright, showcasing both the architectural magnificence of the bridge and their exciting maritime adventure. Apply all changes consistently to everyone.',
+    prompt: 'Place the person or people on the front deck of a boat in San Francisco Bay, with the massive Golden Gate Bridge towering magnificently behind them. The iconic International Orange bridge should dominate the background, fully visible in all its glory, stretching from tower to tower against the sky. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in casual SF style like hoodies or light jackets, perfect for being on the water. They should be standing confidently on the boat deck with the wind in their hair. Around them in the bay, show white sailboats gliding gracefully through the water and large container ships and tankers moving through the shipping lanes. The perspective should emphasize the bridge\'s massive scale rising above them from their position on the water. The lighting should be clear and bright, showcasing both the architectural magnificence of the bridge and their exciting maritime adventure. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone.',
     category: 'location',
     postcardText: 'Greetings from the Golden Gate!'
   },
@@ -47,7 +47,7 @@ export default {
   nyc: {
     name: 'New York',
     emoji: '🗽',
-    prompt: 'Place the person or people on the bustling streets of Times Square at night. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish urban streetwear. Surround them with bright neon billboards and glowing advertisements, creating vibrant reflections on their clothing and skin. Ensure the dramatic, colorful lighting and shadows are realistic for the environment. If there are multiple people, ensure they all fit naturally into the scene with character consistency.',
+    prompt: 'Place the person or people on the bustling streets of Times Square at night. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in stylish urban streetwear. Surround them with bright neon billboards and glowing advertisements, creating vibrant reflections on their clothing and skin. Ensure the dramatic, colorful lighting and shadows are realistic for the environment. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, ensure they all fit naturally into the scene with character consistency.',
     category: 'location',
     postcardText: 'Hello from New York City!'
   },
@@ -55,7 +55,7 @@ export default {
   blackrock: {
     name: 'Black Rock',
     emoji: '🔥',
-    prompt: 'Place the person or people at Burning Man in the Black Rock City desert. It is crucial to preserve their exact facial features, expressions, and character. Dress them in creative festival attire, including goggles and bandanas. Create realistic, harsh shadows from the desert sun and reflections from colorful art installations. The lighting should be atmospheric, as if filtered through dust. Apply styling consistently to all individuals, maintaining character consistency.',
+    prompt: 'Place the person or people at Burning Man in the Black Rock City desert. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in creative festival attire, including goggles and bandanas. Create realistic, harsh shadows from the desert sun and reflections from colorful art installations. The lighting should be atmospheric, as if filtered through dust. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply styling consistently to all individuals, maintaining character consistency.',
     category: 'location',
     postcardText: 'Welcome Home!'
   },
@@ -63,7 +63,7 @@ export default {
   paris: {
     name: 'Paris',
     emoji: '🗼',
-    prompt: 'Place the person or people in front of the illuminated Eiffel Tower in Paris at golden hour. It is crucial to maintain their exact facial features, expressions, and character. Dress them in chic Parisian fashion. Create realistic shadows and warm light reflections on their clothing and skin that match the romantic evening atmosphere. Apply all styling and character consistency if there are multiple people.',
+    prompt: 'Place the person or people in front of the illuminated Eiffel Tower in Paris at golden hour. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in chic Parisian fashion. Create realistic shadows and warm light reflections on their clothing and skin that match the romantic evening atmosphere. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all styling and character consistency if there are multiple people.',
     category: 'location',
     postcardText: 'From Paris with love ❤️'
   },
@@ -71,7 +71,7 @@ export default {
   tokyo: {
     name: 'Tokyo',
     emoji: '🏯',
-    prompt: 'Place the person or people in a vibrant Tokyo street scene with colorful neon signs. It is crucial to preserve their exact facial features, expressions, and character. Dress them in modern Japanese street fashion. Create realistic shadows and colorful reflections from the neon lights on their clothing and skin. Ensure the dynamic lighting and styling are applied consistently to everyone in the photo with character consistency.',
+    prompt: 'Place the person or people in a vibrant Tokyo street scene with colorful neon signs. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in modern Japanese street fashion. Create realistic shadows and colorful reflections from the neon lights on their clothing and skin. Ensure all figures are portrayed in a flattering, natural, and realistic way. Ensure the dynamic lighting and styling are applied consistently to everyone in the photo with character consistency.',
     category: 'location',
     postcardText: 'こんにちは from Tokyo!'
   },
@@ -86,7 +86,7 @@ export default {
   suzhou: {
     name: 'Suzhou',
     emoji: '🏞️',
-    prompt: 'Place the person or people in one of the classical gardens of Suzhou (pronounced "Soo-joe"), China, famous for its elegant pagodas, rock formations, and serene ponds. Suzhou is a historic city in Jiangsu Province known for its UNESCO World Heritage classical Chinese gardens. It is crucial to preserve their exact facial features, expressions, and character. Dress them in beautiful, traditional Chinese attire (like Hanfu), as if they are there for a photoshoot. The lighting should be soft and picturesque, highlighting the beauty of the garden. Apply all changes consistently to everyone, maintaining character consistency.',
+    prompt: 'Place the person or people in one of the classical gardens of Suzhou (pronounced "Soo-joe"), China, famous for its elegant pagodas, rock formations, and serene ponds. Suzhou is a historic city in Jiangsu Province known for its UNESCO World Heritage classical Chinese gardens. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in beautiful, traditional Chinese attire (like Hanfu), as if they are there for a photoshoot. The lighting should be soft and picturesque, highlighting the beauty of the garden. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency.',
     category: 'location',
     postcardText: 'Timeless beauty from Suzhou'
   },
@@ -321,7 +321,7 @@ export default {
     name: 'Comic Book',
     emoji: '💥',
     prompt:
-      'Transform the photo into a comic book panel. Apply bold outlines and halftone dots to the entire scene. It is crucial to preserve the exact facial features and expressions of any people in the photo, rendering them in a comic book style. If there are multiple people, ensure they are all drawn in a consistent artistic style, maintaining character consistency.',
+      'Transform the photo into a comic book panel. Apply bold outlines and halftone dots to the entire scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of any people in the photo, rendering them in a comic book style while keeping them looking exactly like themselves. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, ensure they are all drawn in a consistent artistic style, maintaining character consistency.',
     category: 'artistic',
     postcardText: 'Meanwhile...'
   },
@@ -329,7 +329,7 @@ export default {
   renaissance: {
     name: 'Renaissance',
     emoji: '🎨',
-    prompt: 'Transform the photo into a Renaissance painting. It is crucial to preserve the exact facial features, expressions, and character of the person or people, rendering them in the artistic style of a master like Leonardo da Vinci or Raphael. If there are multiple people, ensure they all share a consistent painterly style and character consistency.',
+    prompt: 'Transform the photo into a Renaissance painting. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves, just rendered in the artistic style of a master like Leonardo da Vinci or Raphael. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, ensure they all share a consistent painterly style and character consistency.',
     category: 'artistic',
     postcardText: 'From the artist\'s studio'
   },
@@ -338,7 +338,7 @@ export default {
     name: 'Cartoon',
     emoji: '😃',
     prompt:
-      'Transform the photo into a cute, simple cartoon. It is crucial to preserve the key facial features, expressions, and character of the person or people, but render them with minimal lines and solid colors. If there are multiple people, draw them all in the same consistent cartoon style with character consistency.',
+      'Transform the photo into a cute, simple cartoon. It is absolutely crucial to preserve the key facial features, expressions, body proportions, and character of the person or people - they must still look exactly like themselves, just rendered with minimal lines and solid colors. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, draw them all in the same consistent cartoon style with character consistency.',
     category: 'artistic',
     postcardText: 'That\'s all folks!'
   },
@@ -347,7 +347,7 @@ export default {
     name: '80s',
     emoji: '✨',
     prompt:
-      'Transform the photo into a 1980s yearbook photo. While you can change the hairstyle and clothing to be period-appropriate, you must preserve the exact facial features, expressions, and character of the person or people. Apply a soft-focus, slightly grainy filter and lighting typical of 80s studio portraiture consistently to the entire image and all individuals for character consistency.',
+      'Transform the photo into a 1980s yearbook photo. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. You can change the hairstyle and clothing to be period-appropriate, but do not alter their physical appearance in any way. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply a soft-focus, slightly grainy filter and lighting typical of 80s studio portraiture consistently to the entire image and all individuals for character consistency.',
     category: 'artistic',
     postcardText: 'Totally Awesome!'
   },
@@ -366,7 +366,7 @@ export default {
     name: 'Anime',
     emoji: '🍣',
     prompt:
-      'Transform the person or people in the photo into photorealistic anime characters. While you can use exaggerated features typical of the style, you must preserve their core facial likeness, expressions, and character. If there are multiple people, ensure they all look like characters from the same anime, maintaining a consistent art style and character consistency.',
+      'Transform the person or people in the photo into photorealistic anime characters. It is absolutely crucial to preserve their core facial likeness, expressions, body proportions, and character - they must still look exactly like themselves. While you can use some stylized features typical of anime, do not exaggerate their features in ways that change their fundamental appearance. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, ensure they all look like characters from the same anime, maintaining a consistent art style and character consistency.',
     category: 'artistic',
     postcardText: 'From the world of Anime!'
   },
@@ -374,7 +374,7 @@ export default {
   disney: {
     name: 'Disney',
     emoji: '🪄',
-    prompt: 'Transform any people in the photo into Disney/Pixar animated characters with large expressive eyes and smooth stylized features. It is crucial to preserve their unique facial features, expressions, and character, translating them faithfully into the animation style. If there are multiple people, ensure they all look like characters from the same movie with perfect character consistency. Replace the entire background with a magical scene from a Disney movie, like a fairy tale castle or enchanted forest. Add magical sparkles and glowing effects to enhance the scene.',
+    prompt: 'Transform any people in the photo into Disney/Pixar animated characters with unnaturally large expressive eyes and smooth stylized features. It is absolutely crucial to preserve their unique facial features, expressions, body proportions, and character - they must look exactly like themselves, just translated faithfully into the Disney animation style. Ensure all figures are portrayed in a flattering, natural, and realistic way within the Disney style. If there are multiple people, ensure they all look like characters from the same movie with perfect character consistency. Replace the entire background with a magical scene from a Disney movie, like a fairy tale castle or enchanted forest. Add magical sparkles and glowing effects to enhance the scene.',
     category: 'artistic',
     postcardText: 'Where dreams come true!'
   },
@@ -400,7 +400,7 @@ export default {
   beard: {
     name: 'Big Beard',
     emoji: '🧔🏻',
-    prompt: 'Add a huge, realistic beard to the person in the photo. If there are multiple people, add a magnificent beard to each of them. It is crucial to preserve their other facial features, expressions, and character exactly as they are.',
+    prompt: 'Add a huge, realistic beard to the person in the photo. If there are multiple people, add a magnificent beard to each of them. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, just with the addition of a beard. Ensure all figures are portrayed in a flattering, natural, and realistic way.',
     category: 'character',
     postcardText: 'Fear the Beard!'
   },
@@ -408,7 +408,7 @@ export default {
   bananas: {
     name: 'Bananas',
     emoji: '🍌',
-    prompt: 'Change only the clothing of the person or people in the photo to vibrant Hawaiian shirts covered with large, bright yellow banana patterns. The shirts should have a tropical, relaxed fit. It is crucial to preserve their exact facial features, expressions, and distinctive characteristics. The background should remain completely unchanged. If there are multiple people, dress them all in matching banana shirts. The banana pattern should be bold and eye-catching.',
+    prompt: 'Change only the clothing of the person or people in the photo to vibrant Hawaiian shirts covered with large, bright yellow banana patterns. The shirts should have a tropical, relaxed fit. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and distinctive characteristics - they must look exactly like themselves. The background should remain completely unchanged. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, dress them all in matching banana shirts. The banana pattern should be bold and eye-catching.',
     category: 'clothing',
     postcardText: 'Gone Bananas!'
   },
@@ -424,13 +424,13 @@ export default {
   professional: {
     name: 'Professional',
     emoji: '💼',
-    prompt: 'Transform the scene into a clean, modern professional setting. Replace the background with a minimalist, upscale office environment - think sleek glass walls, contemporary furniture, and soft natural lighting from large windows. The space should look pristine, organized, and sophisticated. Change the person\'s clothing to stylish business casual attire. For males: well-fitted chinos or dress pants with a crisp button-down shirt (no tie), optional blazer, and leather loafers or oxford shoes. For females: tailored pants or skirt with a professional blouse, cardigan or blazer, and low heels or professional flats. The clothing should look fresh, modern, and effortlessly professional - not too formal but polished and put-together. Preserve their exact facial features and natural expression while ensuring the lighting creates a bright, professional atmosphere.'
+    prompt: 'Transform the scene into a clean, modern professional setting. Replace the background with a minimalist, upscale office environment - think sleek glass walls, contemporary furniture, and soft natural lighting from large windows. The space should look pristine, organized, and sophisticated. Change the person or people\'s clothing to stylish business casual attire. For males: well-fitted chinos or dress pants with a crisp button-down shirt (no tie), optional blazer, and leather loafers or oxford shoes. For females: tailored pants or skirt with a professional blouse, cardigan or blazer, and low heels or professional flats. The clothing should look fresh, modern, and effortlessly professional - not too formal but polished and put-together. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Ensure all figures are portrayed in a flattering, natural, and realistic way while ensuring the lighting creates a bright, professional atmosphere. Apply all changes consistently to everyone, maintaining character consistency.'
   },
 
   avatar: {
     name: 'Avatar',
     emoji: '🧿',
-    prompt: 'Transform the person or people in the photo into Na\'vi from the movie Avatar. Give them blue skin, large amber eyes, facial markings, and pointed ears, but it is crucial to keep their key facial features, expressions, and character so they are still recognizable. If there are multiple people, transform them all consistently for character consistency. Place them in the lush, bioluminescent forest of Pandora.',
+    prompt: 'Transform the person or people in the photo into Na\'vi from the movie Avatar. Give them blue skin, large amber eyes, subtle facial markings, and pointed ears, but it is absolutely crucial to preserve their exact facial structure, expressions, body proportions, and character - they must still look exactly like themselves, just as Na\'vi. Do not change their fundamental facial features or body shape. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, transform them all consistently for character consistency. Place them in the lush, bioluminescent forest of Pandora.',
     category: 'character',
     postcardText: 'Greetings from Pandora!'
   },
@@ -438,7 +438,7 @@ export default {
   corn: {
     name: 'Corn Field',
     emoji: '🌽',
-    prompt: 'Place the person or people in a vast, golden cornfield at harvest time. It is crucial to preserve their exact facial features, expressions, and character. The lighting should be like an afternoon sun filtering through the tall corn stalks, creating realistic shadows and warm reflections on their skin and clothing. Ensure everyone in the photo fits naturally into the scene with character consistency.',
+    prompt: 'Place the person or people in a vast, golden cornfield at harvest time. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. The lighting should be like an afternoon sun filtering through the tall corn stalks, creating realistic shadows and warm reflections on their skin and clothing. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency.',
     category: 'location',
     postcardText: 'Greetings from the Corn Field!'
   },
@@ -446,7 +446,7 @@ export default {
   alien: {
     name: 'Alien Encounter',
     emoji: '🛸',
-    prompt: 'Place the person or people in a realistic nighttime field with a large, detailed metallic UFO hovering in the background. It is crucial to preserve their exact facial features and expressions, perhaps showing awe or surprise, maintaining their character. The UFO should cast an eerie, atmospheric glow (soft blue and white) over the landscape, creating realistic shadows on the people and the ground. Ensure the lighting effect is applied consistently to everyone for character consistency.',
+    prompt: 'Place the person or people in a realistic nighttime field with a large, detailed metallic UFO hovering in the background. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, perhaps showing awe or surprise. The UFO should cast an eerie, atmospheric glow (soft blue and white) over the landscape, creating realistic shadows on the people and the ground. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency.',
     category: 'entertainment',
     postcardText: 'We are not alone...'
   },
@@ -454,7 +454,7 @@ export default {
   apple: {
     name: 'Apple Orchard',
     emoji: '🍎',
-    prompt: 'Place the person or people in a beautiful apple orchard during an autumn harvest. It is crucial to preserve their exact facial features, expressions, and character. Give each person a fresh, shiny red apple to hold. The scene should be filled with golden sunlight filtering through the apple trees, creating a warm and consistent lighting effect on everyone for character consistency.',
+    prompt: 'Place the person or people in a beautiful apple orchard during an autumn harvest. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Give each person a fresh, shiny red apple to hold. The scene should be filled with golden sunlight filtering through the apple trees, creating warm and consistent lighting. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency.',
     category: 'food',
     postcardText: 'An apple a day...'
   },
@@ -462,7 +462,7 @@ export default {
   pizza: {
     name: 'Pizza Chef',
     emoji: '🍕',
-    prompt: 'Transform the person or people into Italian pizza chefs. Dress them in chef\'s hats and aprons and place them in a rustic pizzeria kitchen with brick ovens. It is crucial to preserve their exact facial features, expressions, and character. Have them hold or work on a steaming hot pizza. If there are multiple people, make them look like a cohesive team of chefs with perfect character consistency.',
+    prompt: 'Transform the person or people into Italian pizza chefs. Dress them in chef\'s hats and aprons and place them in a rustic pizzeria kitchen with brick ovens. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Have them hold or work on a steaming hot pizza. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, making them look like a cohesive team of chefs with perfect character consistency.',
     category: 'food',
     postcardText: 'That\'s amore!'
   },
@@ -478,7 +478,7 @@ export default {
   taco: {
     name: 'Taco Stand',
     emoji: '🌮',
-    prompt: 'Give each person in the photo a photorealistic and delicious-looking street taco to hold. The background must remain completely unchanged. It is crucial to preserve their exact facial features, expressions, and poses. Ensure the lighting on the tacos matches the original photo\'s lighting perfectly. If there are multiple people, ensure each is holding a taco and the effect is applied consistently.',
+    prompt: 'Give each person in the photo a photorealistic and delicious-looking street taco to hold. The background must remain completely unchanged. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Ensure the lighting on the tacos matches the original photo\'s lighting perfectly. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, ensuring each person is holding a taco.',
     category: 'food',
     postcardText: 'Taco Tuesday!'
   },
@@ -486,7 +486,7 @@ export default {
   donut: {
     name: 'Donut',
     emoji: '🍩',
-    prompt: 'Add a photorealistic glazed donut to each person\'s hand in the photo. The donuts should look delicious and realistic. It is crucial to preserve the exact facial features, expressions, and poses of the people, and keep the background completely unchanged. Ensure the lighting on the donuts matches the original photo. If there are multiple people, ensure each is holding a donut and the effect is applied consistently.',
+    prompt: 'Add a photorealistic glazed donut to each person\'s hand in the photo. The donuts should look delicious and realistic. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Keep the background completely unchanged. Ensure the lighting on the donuts matches the original photo. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, ensuring each person is holding a donut.',
     category: 'food',
     postcardText: 'Donut mind if I do!'
   },
@@ -606,7 +606,7 @@ export default {
   soccer: {
     name: 'Soccer Field',
     emoji: '⚽',
-    prompt: 'Transform the photo into a highly realistic action shot from a professional soccer match. Place the person or people on a pristine soccer pitch under dramatic stadium floodlights, dressed in matching, authentic-looking team uniforms. It is crucial to preserve their exact facial features and capture intense expressions of concentration and athleticism, maintaining their character. The action should be dynamic, as if captured with a telephoto lens, with a shallow depth of field that blurs the cheering crowd in the background. The scene should feel like a real championship match with perfect character consistency.',
+    prompt: 'Transform the photo into a highly realistic action shot from a professional soccer match. Place the person or people on a pristine soccer pitch under dramatic stadium floodlights, dressed in matching, authentic-looking team uniforms. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves with intense expressions of concentration and athleticism. The action should be dynamic, as if captured with a telephoto lens, with a shallow depth of field that blurs the cheering crowd in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. The scene should feel like a real championship match. Apply all changes consistently to everyone, maintaining perfect character consistency.',
     category: 'sports',
     postcardText: 'CHAMPIONS'
   },
@@ -614,7 +614,7 @@ export default {
   basketball: {
     name: 'Basketball Court',
     emoji: '🏀',
-    prompt: 'Place the person or people on an indoor basketball court, dressed in matching team uniforms. It is crucial to preserve their exact facial features, expressions, and character. Depict them mid-action, playing the game. The scene should feel like a professional game with polished floors and stadium lighting. Ensure character consistency for all players.',
+    prompt: 'Place the person or people on an indoor basketball court, dressed in matching team uniforms. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Depict them mid-action, playing the game. The scene should feel like a professional game with polished floors and stadium lighting. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all players.',
     category: 'sports',
     postcardText: 'ALL-STAR'
   },
@@ -622,7 +622,7 @@ export default {
   tennis: {
     name: 'Tennis Match',
     emoji: '🎾',
-    prompt: 'Place the person or people on a clay tennis court, dressed in classic matching tennis attire. It is crucial to preserve their exact facial features, expressions, and character. Depict them mid-swing or playing a match. The lighting should be that of a bright, clear day during a professional tournament, casting sharp shadows on the clay court. Ensure character consistency for all players.',
+    prompt: 'Place the person or people on a clay tennis court, dressed in classic matching tennis attire. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Depict them mid-swing or playing a match. The lighting should be that of a bright, clear day during a professional tournament, casting sharp shadows on the clay court. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all players.',
     category: 'sports',
     postcardText: 'GAME, SET, MATCH'
   },
@@ -678,7 +678,7 @@ export default {
   skiing: {
     name: 'Ski Slopes',
     emoji: '⛷️',
-    prompt: 'Place the person or people skiing down a pristine, snow-covered mountain, dressed in matching ski gear. It is crucial to preserve their exact facial features, expressions, and character. The lighting should be bright and crisp, reflecting off the snow on a clear day, creating realistic alpine shadows. The scene should be thrilling, with powder snow flying and alpine peaks in the background. Ensure character consistency for all skiers.',
+    prompt: 'Place the person or people skiing down a pristine, snow-covered mountain, dressed in matching ski gear. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. The lighting should be bright and crisp, reflecting off the snow on a clear day, creating realistic alpine shadows. The scene should be thrilling, with powder snow flying and alpine peaks in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all skiers.',
     category: 'sports',
     postcardText: 'PEAK PERFORMER'
   },
@@ -694,7 +694,7 @@ export default {
   surfing: {
     name: 'Perfect Wave',
     emoji: '🏄',
-    prompt: 'Transform the photo into a photorealistic action shot of the person or people surfing a massive, powerful wave at Ocean Beach, San Francisco. Dress them in matching wetsuits. It is crucial to preserve their exact facial features, expressions, and character, capturing the exhilarating and intense moment. The scene should have a sense of dynamic motion, with sea spray and the foggy San Francisco coastline in the background. Ensure character consistency for all surfers.',
+    prompt: 'Transform the photo into a photorealistic action shot of the person or people surfing a massive, powerful wave at Ocean Beach, San Francisco. Dress them in matching wetsuits. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, capturing the exhilarating and intense moment. The scene should have a sense of dynamic motion, with sea spray and the foggy San Francisco coastline in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all surfers.',
     category: 'sports',
     postcardText: 'HANG TEN'
   },
@@ -710,7 +710,7 @@ export default {
   boxing: {
     name: 'Boxing Ring',
     emoji: '🥊',
-    prompt: 'Place the person or people in a boxing ring, wearing matching boxing gloves and gear in a fighting stance. It is crucial to preserve their exact facial features, expressions, and character. The lighting should be dramatic, with a single bright light source from above the ring, casting strong shadows. The scene should have the intense atmosphere of a championship bout. Ensure character consistency for both boxers.',
+    prompt: 'Place the person or people in a boxing ring, wearing matching boxing gloves and gear in a fighting stance. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. The lighting should be dramatic, with a single bright light source from above the ring, casting strong shadows. The scene should have the intense atmosphere of a championship bout. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all boxers.',
     category: 'sports',
     postcardText: 'KNOCKOUT'
   },
@@ -726,7 +726,7 @@ export default {
   dancer: {
     name: 'Dancing Queen',
     emoji: '💃',
-    prompt: 'Transform the person or people into elegant dancers, wearing stunning, matching flowing red dresses. It is crucial to preserve their exact facial features, expressions of joy and grace, and character. Capture them mid-dance move in an elegant ballroom with warm, consistent lighting. Ensure character consistency for all dancers.',
+    prompt: 'Transform the person or people into elegant dancers, wearing stunning, matching flowing red dresses. It is absolutely crucial to preserve their exact facial features, expressions of joy and grace, body proportions, and character - they must look exactly like themselves. Capture them mid-dance move in an elegant ballroom with warm, consistent lighting. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all dancers.',
     category: 'entertainment',
     postcardText: 'Dancing the night away!'
   },
@@ -742,7 +742,7 @@ export default {
   detective: {
     name: 'Detective',
     emoji: '🕵️',
-    prompt: 'Transform the person or people into a team of classic film noir detectives. Dress them in matching trench coats and fedoras. It is crucial to preserve their exact facial features and give them mysterious, investigative expressions, maintaining their character. Place them on a foggy city street at night with atmospheric, consistent lighting for perfect character consistency.',
+    prompt: 'Transform the person or people into a team of classic film noir detectives. Dress them in matching trench coats and fedoras. It is absolutely crucial to preserve their exact facial features, mysterious investigative expressions, body proportions, and character - they must look exactly like themselves. Place them on a foggy city street at night with atmospheric, consistent lighting. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining perfect character consistency.',
     category: 'entertainment',
     postcardText: 'The plot thickens...'
   },
@@ -750,7 +750,7 @@ export default {
   pirate: {
     name: 'Pirate Captain',
     emoji: '🏴‍☠️',
-    prompt: 'Transform the person or people into a swashbuckling pirate crew on the deck of a photorealistic ship. Dress them in coordinated, historically-inspired pirate attire (e.g., tricorn hats, eye patches). It is crucial to preserve their exact facial features, adventurous expressions, and character. The scene should have a dramatic sunset over a realistic ocean, with perfect character consistency for the whole crew. The final image should look like a cinematic still from a high-budget movie.',
+    prompt: 'Transform the person or people into a swashbuckling pirate crew on the deck of a photorealistic ship. Dress them in coordinated, historically-inspired pirate attire (e.g., tricorn hats, eye patches). It is absolutely crucial to preserve their exact facial features, adventurous expressions, body proportions, and character - they must look exactly like themselves. The scene should have a dramatic sunset over a realistic ocean. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining perfect character consistency for the whole crew. The final image should look like a cinematic still from a high-budget movie.',
     category: 'entertainment',
     postcardText: 'Ahoy, matey!'
   },
@@ -758,7 +758,7 @@ export default {
   wizard: {
     name: 'Wizard',
     emoji: '🧙',
-    prompt: 'Transform the person or people into a coven of powerful wizards. Dress them in matching flowing robes and pointed hats, holding magical staffs. It is crucial to preserve their exact facial features, wise expressions, and character. Place them in a mystical setting with magical lighting effects applied consistently to all for perfect character consistency.',
+    prompt: 'Transform the person or people into a coven of powerful wizards. Dress them in matching flowing robes and pointed hats, holding magical staffs. It is absolutely crucial to preserve their exact facial features, wise expressions, body proportions, and character - they must look exactly like themselves. Place them in a mystical setting with magical lighting effects. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining perfect character consistency.',
     category: 'entertainment',
     postcardText: 'It\'s a kind of magic!'
   },
@@ -766,7 +766,7 @@ export default {
   ninja: {
     name: 'Ninja',
     emoji: '🥷',
-    prompt: 'Transform the person or people into a clan of stealthy ninjas in a photorealistic setting. Dress them in traditional, textured dark ninja outfits with masks. It is crucial to preserve their visible facial features (especially eyes), focused expressions, and character. Place them in a moonlit Japanese garden with dramatic, realistic shadows for perfect character consistency. The final image should look like a scene from a martial arts film.',
+    prompt: 'Transform the person or people into a clan of stealthy ninjas in a photorealistic setting. Dress them in traditional, textured dark ninja outfits with masks. It is absolutely crucial to preserve their visible facial features (especially eyes), focused expressions, body proportions, and character - they must look exactly like themselves. Place them in a moonlit Japanese garden with dramatic, realistic shadows. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining perfect character consistency. The final image should look like a scene from a martial arts film.',
     category: 'entertainment',
     postcardText: 'From the shadows...'
   },
@@ -790,7 +790,7 @@ export default {
   superhero: {
     name: 'Superhero',
     emoji: '🦸',
-    prompt: 'Transform the person or people into a photorealistic superhero team. Dress them in sleek, coordinated superhero costumes with capes made of realistic, textured materials. It is crucial to preserve their exact facial features, confident, heroic expressions, and character. Place them on a city rooftop at sunset with dramatic, cinematic lighting for perfect character consistency. The final image should look like a still from a modern superhero movie.',
+    prompt: 'Transform the person or people into a photorealistic superhero team. Dress them in sleek, coordinated superhero costumes with capes made of realistic, textured materials. It is absolutely crucial to preserve their exact facial features, confident heroic expressions, body proportions, and character - they must look exactly like themselves. Place them on a city rooftop at sunset with dramatic, cinematic lighting. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining perfect character consistency. The final image should look like a still from a modern superhero movie.',
     category: 'entertainment',
     postcardText: 'To the rescue!'
   },
@@ -827,7 +827,7 @@ export default {
   hasselblad: {
     name: 'Hasselblad',
     emoji: '💧',
-    prompt: "Create a hyper-realistic, ultra close-up beauty editorial portrait of the person's face. It is crucial to preserve their exact facial features and character. Their skin should be dewy, sun-warmed, and glistening with water droplets, capturing every pore and droplet in hyperreal clarity. Strands of wet, tousled hair should cling to their forehead. Their eyes must catch sharp sunlight, creating tiny metallic flares. Their eyelashes should be damp and dense, casting soft shadows over their cheek. The background is a blurred blue seascape with hints of the ocean horizon. The overall color palette should feature golden, bronzed skin against an azure sea and sky. This shot must have a shallow depth of field, with a tight crop on their left eye and cheek, slight lens bloom from the sun, and micro-droplets frozen mid-glint. The final image should have the quality of a photo shot on a Hasselblad with an 85mm lens at f/1.4 on a beach at midday. If there are multiple people, apply this detailed style consistently to all of them.",
+    prompt: "Create a hyper-realistic, ultra close-up beauty editorial portrait of the person's face. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Their skin should be dewy, sun-warmed, and glistening with water droplets, capturing every pore and droplet in hyperreal clarity. Strands of wet, tousled hair should cling to their forehead. Their eyes must catch sharp sunlight, creating tiny metallic flares. Their eyelashes should be damp and dense, casting soft shadows over their cheek. The background is a blurred blue seascape with hints of the ocean horizon. The overall color palette should feature their natural skin tone enhanced with sun-kissed warmth against an azure sea and sky. Ensure all figures are portrayed in a flattering, natural, and realistic way. This shot must have a shallow depth of field, with a tight crop on their left eye and cheek, slight lens bloom from the sun, and micro-droplets frozen mid-glint. The final image should have the quality of a photo shot on a Hasselblad with an 85mm lens at f/1.4 on a beach at midday. If there are multiple people, apply this detailed style consistently to all of them.",
     category: 'artistic',
     postcardText: 'Sun-kissed'
   },
@@ -841,7 +841,7 @@ export default {
   roboto: {
     name: 'Roboto',
     emoji: '🤖',
-    prompt: "Transform the person or people into highly detailed mecha-cyborgs in a dynamic, powerful pose. Their faces must be transformed into a seamless fusion of human and machine, blending their unique facial features and character with visible cybernetic enhancements like glowing circuits, seams, or metallic plates. While their core likeness should be recognizable, their face must clearly be part of the cyborg. The body should be made of intricate, interlocking mechanical parts. The style should be a fusion of cyberpunk and TRON aesthetics, with neon lighting in teal, magenta, and yellow casting dramatic highlights and shadows. The background is a dark, futuristic, minimalist setting. The final image must be a masterpiece of cinematic, professional photography: high contrast, hyperdetailed, high resolution, and with precise, professional lighting. Ensure perfect character consistency for all individuals.",
+    prompt: "Transform the person or people into highly detailed mecha-cyborgs in a dynamic, powerful pose. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Add subtle cybernetic enhancements like small glowing circuits or metallic accents, but do not change their fundamental facial structure or appearance. The body can have mechanical armor or suits, but their core human form should remain unchanged. Ensure all figures are portrayed in a flattering, natural, and realistic way. The style should be a fusion of cyberpunk and TRON aesthetics, with neon lighting in teal, magenta, and yellow casting dramatic highlights and shadows. The background is a dark, futuristic, minimalist setting. The final image must be a masterpiece of cinematic, professional photography: high contrast, hyperdetailed, high resolution, and with precise, professional lighting. Ensure perfect character consistency for all individuals.",
     category: 'character',
     postcardText: 'The future is now'
   },
@@ -864,7 +864,7 @@ export default {
   berlin: {
     name: 'BERLIN',
     emoji: '🔊',
-    prompt: 'Create a highly realistic, gritty photograph of the person or people inside the legendary Berghain nightclub in Berlin. It is crucial to preserve their exact facial features, expressions, and character. Dress them in authentic all-black underground techno attire - black leather harnesses, black mesh tops, dark denim, heavy boots, industrial accessories. The setting must be the actual concrete brutalist interior of Berghain with its impossibly high ceilings, raw concrete walls, and stark industrial architecture. The atmosphere should be intensely dark and claustrophobic with heavy shadows, minimal red safety lighting, and thick fog creating an almost impenetrable haze. Other clubbers should be barely visible silhouettes in the darkness, dancing to pounding techno beats. The lighting should be extremely minimal and realistic - just dim red emergency lights, occasional camera flashes, and the faintest glow from DJ equipment, creating deep black shadows and harsh contrasts. The final image must look like a real photograph taken inside this legendary venue. Apply all changes consistently to everyone, maintaining character consistency.',
+    prompt: 'Create a highly realistic, gritty photograph of the person or people inside the legendary Berghain nightclub in Berlin. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves with proper head-to-body proportions. Dress them in authentic all-black underground techno attire - black leather harnesses, black mesh tops, dark denim, heavy boots, industrial accessories. The setting must be the actual concrete brutalist interior of Berghain with its impossibly high ceilings, raw concrete walls, and stark industrial architecture. The atmosphere should be intensely dark and claustrophobic with heavy shadows, minimal red safety lighting, and thick fog creating an almost impenetrable haze. Other clubbers should be barely visible silhouettes in the darkness, dancing to pounding techno beats. The lighting should be extremely minimal and realistic - just dim red emergency lights, occasional camera flashes, and the faintest glow from DJ equipment, creating deep black shadows and harsh contrasts. Ensure all figures are portrayed in a flattering, natural, and realistic way. The final image must look like a real photograph taken inside this legendary venue. Apply all changes consistently to everyone, maintaining character consistency.',
     category: 'location',
     postcardText: 'Lost in the underground'
   },

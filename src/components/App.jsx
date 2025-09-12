@@ -9,7 +9,12 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
+  useUser,
+  useClerk,
 } from '@clerk/clerk-react'
+import Billing from './Billing.jsx'
+import UsageTracker from './UsageTracker.jsx'
+import { canTakePhoto, getRemainingCents, pricingPlans } from '../lib/billing'
 import {
   snapPhoto,
   setMode,
@@ -62,6 +67,7 @@ export default function App() {
   const [isCountingDown, setIsCountingDown] = useState(false)
   const [replayImageIndex, setReplayImageIndex] = useState(0)
   const [showFlash, setShowFlash] = useState(false)
+  const [showBilling, setShowBilling] = useState(false)
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
   const [desktopMirror, setDesktopMirror] = useState(true)
@@ -69,6 +75,8 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
+  const { user } = useUser()
+  const { openUserProfile } = useClerk()
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth > 768)
@@ -193,7 +201,21 @@ export default function App() {
       }
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
-      await snapPhoto(dataURL, signal)
+      
+      // Check billing limits before taking photo
+      const now = new Date()
+      const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+      
+      const monthlyCentsUsed = photos.filter(photo => {
+        // Handle photos without timestamps (legacy photos) - consider them as not from this month
+        if (!photo.timestamp) return false
+        const photoDate = new Date(photo.timestamp)
+        const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
+        return photoMonth === thisMonth
+      }).length
+      
+      // This will be checked against subscription in snapPhoto
+      await snapPhoto(dataURL, signal, user, monthlyCentsUsed)
     } catch (e) {
       if (e.name !== 'AbortError') {
         console.error('Failed to take photo', e)
@@ -362,43 +384,87 @@ export default function App() {
       })}
     >
       <header style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 9999 }}>
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button style={{
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '12px',
-              padding: '10px 16px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'inherit',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-              minWidth: '80px'
-            }}>
-              Sign In
-            </button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton 
-            appearance={{
-              elements: {
-                avatarBox: {
-                  width: '56px',
-                  height: '56px'
-                }
-              }
-            }}
-          />
-        </SignedIn>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button style={{
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                minWidth: '80px'
+              }}>
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          
+          <SignedIn>
+            {(() => {
+              // Calculate remaining photos for the custom button
+              const now = new Date()
+              const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+              
+              const monthlyCentsUsed = photos.filter(photo => {
+                if (!photo.timestamp) return false
+                const photoDate = new Date(photo.timestamp)
+                const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
+                return photoMonth === thisMonth
+              }).length
+
+              const subscription = user?.publicMetadata?.subscription
+              const remaining = getRemainingCents(subscription, monthlyCentsUsed)
+
+              return (
+                <button
+                  onClick={() => openUserProfile()}
+                  style={{
+                    background: remaining === 0 
+                      ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
+                      : 'rgba(0, 0, 0, 0.75)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '50%',
+                    width: '50px',
+                    height: '50px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+                  }}
+                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+                  onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                >
+                  {remaining === 0 ? (
+                    <span>⚡</span>
+                  ) : (
+                    <span>{remaining === '∞' ? '∞💎' : remaining + '💎'}</span>
+                  )}
+                </button>
+              )
+            })()}
+          </SignedIn>
+        </div>
       </header>
       {liveMode && (
         <>
@@ -613,12 +679,17 @@ export default function App() {
         setShowCustomPrompt={setShowCustomPrompt}
         customPrompt={customPrompt}
       />
+
       
       {lastError && (
         <ErrorToast 
           error={lastError} 
           onClose={clearLastError} 
         />
+      )}
+
+      {showBilling && (
+        <Billing onClose={() => setShowBilling(false)} />
       )}
     </main>
   )
