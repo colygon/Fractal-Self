@@ -1159,7 +1159,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 
 .focusedPhoto .results {
   position: fixed;
-  bottom: 80px; /* Leave space for actions bar + some padding */
+  bottom: 0 !important; /* Move to very bottom */
   left: 0;
   width: 100%;
   z-index: 121;
@@ -1173,6 +1173,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   transform: none !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+  padding-bottom: max(15px, env(safe-area-inset-bottom)) !important;
 }
 
 .focusedPhoto .results ul {
@@ -1183,14 +1184,13 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 /* New iOS Focused Photo Actions */
 .focusedPhotoActions {
   position: fixed;
-  bottom: 140px;
+  bottom: clamp(120px, 15dvh, 150px); /* Position above gallery */
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 25px;
-  padding-bottom: max(25px, env(safe-area-inset-bottom));
   z-index: 125;
   background: transparent;
   border: none;
@@ -1795,11 +1795,17 @@ main:not(:has(.focusedPhoto)) .photoSelector {
     padding-bottom: max(25px, env(safe-area-inset-bottom)) !important;
   }
 
-  /* And move the gallery above the action buttons */
+  /* Keep gallery at bottom in landscape */
   .focusedPhoto .results {
-    bottom: 80px !important; /* Position it above the action bar */
+    bottom: 0 !important; /* At very bottom */
     height: clamp(63px, 17.5dvh, 77px) !important;
     padding-top: 10px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+  
+  /* Move action buttons above gallery in landscape */
+  .focusedPhotoActions {
+    bottom: clamp(63px, 17.5dvh, 77px) !important; /* Above gallery */
   }
 }
 
@@ -2058,10 +2064,9 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 
   /* Mobile-optimized focused photo actions */
   .focusedPhotoActions {
-    bottom: 0 !important;
+    bottom: clamp(120px, 15dvh, 150px) !important; /* Above gallery on mobile */
     gap: 0 !important;
     padding: 20px 25px !important;
-    padding-bottom: max(25px, env(safe-area-inset-bottom)) !important;
     z-index: 125 !important;
   }
 
