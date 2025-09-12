@@ -7,8 +7,9 @@ import {createRoot} from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
 import App from './src/components/App.jsx'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-console.log('Clerk publishable key loaded:', !!PUBLISHABLE_KEY)
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_bWF4aW11bS1idWNrLTQzLmNsZXJrLmFjY291bnRzLmRldiQ'
+console.log('Clerk publishable key:', PUBLISHABLE_KEY)
+console.log('Environment vars:', import.meta.env)
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key")
 }
