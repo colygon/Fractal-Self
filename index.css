@@ -329,7 +329,7 @@ main {
   color: white;
   text-shadow: 0 0 20px black;
   z-index: 10;
-  animation: countdown-pop 1s ease-out forwards;
+  animation: countdown-pop 1s ease-out;
   pointer-events: none;
 }
 @keyframes countdown-pop {
@@ -337,7 +337,11 @@ main {
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
   }
-  50% {
+  10% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  90% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
@@ -1846,7 +1850,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 15px 10px;
+  padding: 10px 15px 10px;
 }
 .iphoneCameraShutter {
   display: flex;
@@ -2299,6 +2303,13 @@ input, textarea, [contenteditable] {
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
+}
+
+/* Desktop: Put shutter above camera modes - needs to be after mobile CSS */
+@media (min-width: 769px) {
+  .iphoneCameraModesAndShutterWrapper {
+    flex-direction: column-reverse !important;
+  }
 }
 
 

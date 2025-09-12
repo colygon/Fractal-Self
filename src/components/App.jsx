@@ -523,7 +523,7 @@ export default function App() {
         />
         <div className={c('flash', {active: showFlash})} />
 
-        {countdown && <div className="countdown">{countdown}</div>}
+        {countdown && <div key={countdown} className="countdown">{countdown}</div>}
 
         {!hideControls && !focusedId && <Results
           photos={photos}
