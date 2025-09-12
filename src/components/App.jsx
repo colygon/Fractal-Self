@@ -69,7 +69,10 @@ export default function App() {
   const [showFlash, setShowFlash] = useState(false)
   const [showBilling, setShowBilling] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
-  const { customer } = useCustomer()
+  const { customer, openCheckout } = useCustomer()
+  
+  // Debug logging
+  console.log('useCustomer hook data:', { customer, openCheckout: !!openCheckout })
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
   const [desktopMirror, setDesktopMirror] = useState(true)
@@ -207,10 +210,23 @@ export default function App() {
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
       
-      // Check if user has sufficient credits (simplified version)
+      // Check if user has sufficient credits or free photos remaining
       const creditsRemaining = customer?.usage?.credits || 0
-      if (creditsRemaining < 5) {
-        console.warn('Insufficient credits for photo generation')
+      const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+      const freePhotosLimit = 10
+      
+      // If user has credits, use them
+      if (creditsRemaining >= 5) {
+        // User has credits, proceed normally
+      } 
+      // If no credits but still have free photos available
+      else if (freePhotosUsed < freePhotosLimit) {
+        // User can use free photos, will increment counter after successful generation
+        console.log(`Using free photo ${freePhotosUsed + 1} of ${freePhotosLimit}`)
+      } 
+      // No credits and no free photos left
+      else {
+        console.warn('No credits or free photos remaining')
         setShowPricing(true) // Show pricing page to upgrade
         return
       }
@@ -219,6 +235,13 @@ export default function App() {
       try {
         await snapPhoto(dataURL, signal, user)
         console.log('✅ Photo generated successfully')
+        
+        // Increment free photo counter if user is using free photos
+        if (creditsRemaining < 5 && freePhotosUsed < freePhotosLimit) {
+          const newFreePhotosUsed = freePhotosUsed + 1
+          localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
+          console.log(`Free photos used: ${newFreePhotosUsed}/${freePhotosLimit}`)
+        }
       } catch (error) {
         console.error('Photo generation failed', error)
         throw error
@@ -404,35 +427,58 @@ export default function App() {
                 setShowPricing(true)
               }
             }}
-            style={{
-              background: (customer?.usage?.credits || 0) === 0 
-                ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
-                : 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '50%',
-              width: '50px',
-              height: '50px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: '10px',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-            }}
+            style={(() => {
+              const credits = customer?.usage?.credits || 0
+              const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+              const freePhotosLimit = 10
+              const freePhotosRemaining = Math.max(0, freePhotosLimit - freePhotosUsed)
+              const needsUpgrade = credits === 0 && freePhotosRemaining === 0
+              const isRectangular = needsUpgrade || freePhotosRemaining > 0
+              
+              return {
+                background: needsUpgrade
+                  ? 'linear-gradient(135deg, #8B5CF6, #EC4899)'
+                  : freePhotosRemaining > 0
+                  ? 'linear-gradient(135deg, #10B981, #059669)'
+                  : 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: isRectangular ? '8px' : '50%',
+                width: isRectangular ? 'auto' : '50px',
+                height: isRectangular ? 'auto' : '50px',
+                padding: isRectangular ? '8px 16px' : '0',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: '10px',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+              }
+            })()}
             onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
             onMouseLeave={e => e.target.style.transform = 'scale(1)'}
           >
-            {(customer?.usage?.credits || 0) === 0 ? (
-              <span>⚡</span>
-            ) : (
-              <span>{(customer?.usage?.credits || 0) + '💎'}</span>
-            )}
+            {(() => {
+              const credits = customer?.usage?.credits || 0
+              const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+              const freePhotosLimit = 10
+              const freePhotosRemaining = Math.max(0, freePhotosLimit - freePhotosUsed)
+              
+              if (credits > 0) {
+                return <span>{credits + '💎'}</span>
+              } else if (freePhotosRemaining > 0) {
+                return <span style={{ fontSize: '10px', fontWeight: '600' }}>
+                  {freePhotosRemaining} FREE
+                </span>
+              } else {
+                return <span style={{ fontSize: '11px', fontWeight: '600' }}>Upgrade</span>
+              }
+            })()}
           </button>
 
           <SignedOut>
@@ -583,6 +629,7 @@ export default function App() {
             onClose={() => setFocusedId(null)}
             isFavorite={favorites.includes(focusedId)}
             onMakeGif={makeGif}
+            isDesktop={isDesktop}
             onPrevious={() => {
               const finishedPhotos = photos.filter(p => !p.isBusy)
               const currentIndex = finishedPhotos.findIndex(p => p.id === focusedId)
@@ -828,17 +875,38 @@ export default function App() {
                   $3.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
                 </div>
                 <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>80 photos included</p>
-                <button style={{
-                  width: '100%',
-                  padding: '12px 24px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (openCheckout) {
+                        await openCheckout({
+                          product_id: 'starter',
+                          success_url: window.location.origin + '?checkout=success',
+                          cancel_url: window.location.origin + '?checkout=canceled'
+                        })
+                      } else {
+                        alert('Checkout system not available. Please try again.')
+                      }
+                    } catch (error) {
+                      console.error('Checkout error:', error)
+                      alert('Error starting checkout. Please try again.')
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
                   Get Starter
                 </button>
               </div>
@@ -873,17 +941,38 @@ export default function App() {
                   $19.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
                 </div>
                 <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>400 photos included</p>
-                <button style={{
-                  width: '100%',
-                  padding: '12px 24px',
-                  background: '#8B5CF6',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (openCheckout) {
+                        await openCheckout({
+                          product_id: 'premium',
+                          success_url: window.location.origin + '?checkout=success',
+                          cancel_url: window.location.origin + '?checkout=canceled'
+                        })
+                      } else {
+                        alert('Checkout system not available. Please try again.')
+                      }
+                    } catch (error) {
+                      console.error('Checkout error:', error)
+                      alert('Error starting checkout. Please try again.')
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: '#8B5CF6',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.opacity = '0.9'}
+                  onMouseLeave={e => e.target.style.opacity = '1'}
+                >
                   Get Premium
                 </button>
               </div>
@@ -902,17 +991,38 @@ export default function App() {
                   $49.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
                 </div>
                 <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>1,000 photos included</p>
-                <button style={{
-                  width: '100%',
-                  padding: '12px 24px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (openCheckout) {
+                        await openCheckout({
+                          product_id: 'gold',
+                          success_url: window.location.origin + '?checkout=success',
+                          cancel_url: window.location.origin + '?checkout=canceled'
+                        })
+                      } else {
+                        alert('Checkout system not available. Please try again.')
+                      }
+                    } catch (error) {
+                      console.error('Checkout error:', error)
+                      alert('Error starting checkout. Please try again.')
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
                   Get Gold
                 </button>
               </div>
@@ -931,17 +1041,38 @@ export default function App() {
                   $499.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
                 </div>
                 <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>10,000 photos included</p>
-                <button style={{
-                  width: '100%',
-                  padding: '12px 24px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (openCheckout) {
+                        await openCheckout({
+                          product_id: 'diamond',
+                          success_url: window.location.origin + '?checkout=success',
+                          cancel_url: window.location.origin + '?checkout=canceled'
+                        })
+                      } else {
+                        alert('Checkout system not available. Please try again.')
+                      }
+                    } catch (error) {
+                      console.error('Checkout error:', error)
+                      alert('Error starting checkout. Please try again.')
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
                   Get Diamond
                 </button>
               </div>
@@ -1046,7 +1177,7 @@ function Results({photos, favorites, selectedPhotos, focusedId, setFocusedId, bu
   )
 }
 
-function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevious, onNext}) {
+function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevious, onNext, isDesktop}) {
   const [touchStart, setTouchStart] = useState(null)
   
   const handleTouchStart = (e) => {
@@ -1133,7 +1264,11 @@ function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevio
           <span className="icon">ios_share</span>
         </button>
         <div className="focusedPhotoActions-center">
-          <button className="button" onClick={e => { e.stopPropagation(); downloadPhoto(photo.id); }}>
+          <button 
+            className="button" 
+            onClick={e => { e.stopPropagation(); downloadPhoto(photo.id); }}
+            style={{ display: isDesktop ? 'block' : 'none' }}
+          >
             <span className="icon">download</span>
           </button>
           <button className={c('button', {active: isFavorite})} onClick={e => {e.stopPropagation(); toggleFavorite(photo.id)}}>
