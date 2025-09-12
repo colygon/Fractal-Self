@@ -77,6 +77,9 @@ export default function App() {
   const pipVideoRef = useRef(null)
   const { user } = useUser()
   const { openUserProfile } = useClerk()
+  
+  // Debug logging
+  console.log('User state:', { user: !!user, userId: user?.id })
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth > 768)
@@ -414,6 +417,7 @@ export default function App() {
           
           <SignedIn>
             {(() => {
+              console.log('Inside SignedIn component')
               // Calculate remaining photos for the custom button
               const now = new Date()
               const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
