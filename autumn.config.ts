@@ -96,3 +96,22 @@ export const diamond = product({
     }),
   ],
 });
+
+// Custom Photo Booth plan - 25,000 photos ($699.99/month) + $0.05 per additional photo
+export const custom_booth = product({
+  id: "custom_booth",
+  name: "Custom Photo Booth",
+  items: [
+    featureItem({
+      feature_id: credits.id,
+      included_usage: 125000, // 25000 photos × 5 credits = 125000 credits
+      interval: "month",
+      overage_rate: 5, // 5 cents per photo after plan limit
+    }),
+    priceItem({
+      price_amount: 69999, // $699.99
+      price_currency: "usd",
+      price_recurring_interval: "month", 
+    }),
+  ],
+});

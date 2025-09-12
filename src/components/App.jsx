@@ -1076,6 +1076,101 @@ export default function App() {
                   Get Diamond
                 </button>
               </div>
+
+              {/* Custom Photo Booth Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '24px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#FF6B35', marginBottom: '8px' }}>
+                  Custom Photo Booth
+                </h3>
+                <p style={{ marginBottom: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  Professional event solution
+                </p>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  $699.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>25,000 photos included</p>
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (openCheckout) {
+                        await openCheckout({
+                          product_id: 'custom_booth',
+                          success_url: window.location.origin + '?checkout=success',
+                          cancel_url: window.location.origin + '?checkout=canceled'
+                        })
+                      } else {
+                        alert('Checkout system not available. Please try again.')
+                      }
+                    } catch (error) {
+                      console.error('Checkout error:', error)
+                      alert('Error starting checkout. Please try again.')
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
+                  Get Custom Booth
+                </button>
+              </div>
+
+              {/* Enterprise Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '24px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#00D4AA', marginBottom: '8px' }}>
+                  Enterprise
+                </h3>
+                <p style={{ marginBottom: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                  Unlimited scale for large organizations
+                </p>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  Contact Us
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>Custom pricing & unlimited photos</p>
+                <button 
+                  onClick={() => {
+                    window.location.href = 'mailto:enterprise@fractalself.com?subject=Enterprise Plan Inquiry'
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                >
+                  Contact Sales
+                </button>
+              </div>
             </div>
           </div>
         </div>
