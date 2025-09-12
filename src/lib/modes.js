@@ -875,5 +875,13 @@ export default {
     prompt: 'Create a breathtakingly realistic photograph of the person or people at Zhangjiajie National Forest Park in China, standing on the famous glass bridge or viewing platform with the iconic towering sandstone pillar mountains in the background. It is crucial to preserve their exact facial features, expressions of awe, and character. Dress them in comfortable hiking attire suitable for exploring the park - lightweight outdoor clothing, hiking boots, and backpacks. The scene must capture the otherworldly landscape of thousands of vertical sandstone pillars rising dramatically from the misty valleys below, covered in lush green vegetation. The atmosphere should be mystical with natural fog and mist weaving between the towering rock formations, creating a dreamlike quality. The lighting should be soft and diffused, as if during early morning or late afternoon, with golden sunlight filtering through the mist and casting ethereal glows on the rock faces and vegetation. Include other tourists in the background for scale, showing the massive scale of these geological wonders. The final image must look like a professional travel photograph taken at this UNESCO World Heritage site. Apply all changes consistently to everyone, maintaining perfect character consistency.',
     category: 'location',
     postcardText: 'Floating mountains of Avatar!'
+  },
+
+  wanted: {
+    name: 'WANTED',
+    emoji: '🤠',
+    prompt: 'Transform the photo into a vintage Wild West WANTED poster. Create an aged, weathered parchment background with torn and burned edges, coffee stains, and authentic aging effects. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves rendered in a classic wanted poster mugshot style. Convert the image to sepia/black and white tones with high contrast typical of old western photography. Add authentic vintage typography with "WANTED" in large, bold Western-style lettering at the top, "DEAD OR ALIVE" underneath the photo, and "$5,000 REWARD" at the bottom. Include period-appropriate crime descriptions like "CATTLE RUSTLING", "BANK ROBBERY", or "TRAIN HEIST" in smaller text. The poster should have realistic thumb tacks or nails in the corners as if posted on a saloon wall. Add authentic dust, scratches, and wear marks to make it look like it\'s been hanging in the desert sun for years. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the gritty wanted poster aesthetic. Apply all styling consistently to everyone, maintaining character consistency.',
+    category: 'entertainment',
+    postcardText: 'WANTED: Dead or Alive!'
   }
 }
