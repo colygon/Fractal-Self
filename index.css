@@ -1448,10 +1448,10 @@ main:not(:has(.focusedPhoto)) .photoSelector {
     bottom: 0px !important;
   }
   
-  /* In focus mode, keep controls well above gallery */
+  /* In focus mode, keep controls well above gallery but lower z-index */
   main:has(.focusedPhoto) .iphoneCameraControls {
     bottom: calc(clamp(150px, 20dvh, 250px) + 120px) !important;
-    z-index: 126 !important;
+    z-index: 100 !important; /* Below gallery in focus mode */
   }
 
   .iphoneModeBtn {
