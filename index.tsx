@@ -7,7 +7,7 @@ import {createRoot} from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
 import App from './src/components/App.jsx'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_bWF4aW11bS1idWNrLTQzLmNsZXJrLmFjY291bnRzLmRldiQ'
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuYmFuYW5hLmNhbSQ'
 console.log('Clerk publishable key:', PUBLISHABLE_KEY)
 
 if (!PUBLISHABLE_KEY) {
