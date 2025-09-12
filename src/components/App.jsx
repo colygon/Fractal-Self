@@ -215,7 +215,7 @@ export default function App() {
         const photoDate = new Date(photo.timestamp)
         const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
         return photoMonth === thisMonth
-      }).length
+      }).length * 5 // 5 cents per photo
       
       // This will be checked against subscription in snapPhoto
       await snapPhoto(dataURL, signal, user, monthlyCentsUsed)
@@ -427,7 +427,7 @@ export default function App() {
                 const photoDate = new Date(photo.timestamp)
                 const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
                 return photoMonth === thisMonth
-              }).length
+              }).length * 5 // 5 cents per photo
 
               const subscription = user?.publicMetadata?.subscription
               const remaining = getRemainingCents(subscription, monthlyCentsUsed)

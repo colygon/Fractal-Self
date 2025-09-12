@@ -11,7 +11,7 @@ export const pricingPlans = [
     price: 0,
     interval: null,
     features: [
-      '50 cents per month',
+      '10 photos per month (50 cents)',
       'Basic AI styles',
       'Standard quality',
       'Watermarked exports'
@@ -31,7 +31,7 @@ export const pricingPlans = [
     price: 3.99,
     interval: 'month',
     features: [
-      '400 cents per month',
+      '80 photos per month (400 cents)',
       'All AI styles & locations',
       'Standard quality',
       'Watermarked exports'
@@ -51,7 +51,7 @@ export const pricingPlans = [
     price: 39.99,
     interval: 'month',
     features: [
-      '4,000 cents per month',
+      '800 photos per month (4,000 cents)',
       'All AI styles & locations',
       'High quality exports',
       'No watermarks',
@@ -73,7 +73,7 @@ export const pricingPlans = [
     price: 399.99,
     interval: 'month',
     features: [
-      '40,000 cents per month',
+      '8,000 photos per month (40,000 cents)',
       'All AI styles & locations',
       'Ultra-high quality exports',
       'No watermarks',

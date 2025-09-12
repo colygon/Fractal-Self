@@ -11,7 +11,7 @@ export default function UsageTracker({ onUpgradeClick }) {
   const { user } = useUser()
   const photos = useStore.use.photos()
   
-  // Count this month's cents used (1 cent per photo)
+  // Count this month's cents used (5 cents per photo)
   const now = new Date()
   const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
   
@@ -21,7 +21,7 @@ export default function UsageTracker({ onUpgradeClick }) {
     const photoDate = new Date(photo.timestamp)
     const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
     return photoMonth === thisMonth
-  }).length
+  }).length * 5 // 5 cents per photo
 
   // Get subscription from user metadata
   const subscription = user?.publicMetadata?.subscription
