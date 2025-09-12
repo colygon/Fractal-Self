@@ -1184,7 +1184,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 /* New iOS Focused Photo Actions */
 .focusedPhotoActions {
   position: fixed;
-  bottom: clamp(120px, 15dvh, 150px); /* Position above gallery */
+  bottom: clamp(150px, 15dvh, 180px); /* Position above gallery + 30px higher */
   left: 0;
   right: 0;
   display: flex;
@@ -1327,6 +1327,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
     pointer-events: auto !important;
     height: clamp(150px, 20dvh, 250px) !important;
     padding: 10px 20px !important;
+    z-index: 130 !important; /* Above everything in focus mode */
   }
   
   /* Desktop gallery visible state */
@@ -1344,7 +1345,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 
   .video .focusedPhoto .results {
     bottom: 0px !important;
-    z-index: 122 !important; /* Below camera controls */
+    z-index: 130 !important; /* Above everything in focus mode */
   }
 
   /* Desktop iPhone Camera Interface */
