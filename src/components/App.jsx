@@ -393,6 +393,48 @@ export default function App() {
       <header style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 9999 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
+          {/* Credits/Balance button - always visible */}
+          <button
+            onClick={() => {
+              // Show dashboard for existing customers, pricing for new/free users
+              const currentPlan = customer?.subscription?.product_id
+              if (currentPlan && currentPlan !== 'free') {
+                setShowBilling(true)
+              } else {
+                setShowPricing(true)
+              }
+            }}
+            style={{
+              background: (customer?.usage?.credits || 0) === 0 
+                ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
+                : 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '50%',
+              width: '50px',
+              height: '50px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: '10px',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+            }}
+            onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+            onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+          >
+            {(customer?.usage?.credits || 0) === 0 ? (
+              <span>⚡</span>
+            ) : (
+              <span>{(customer?.usage?.credits || 0) + '💎'}</span>
+            )}
+          </button>
+
           <SignedOut>
             <SignInButton mode="modal">
               <button style={{
@@ -693,6 +735,7 @@ export default function App() {
         />
       )}
 
+
       {showBilling && (
         <BillingDashboard 
           onBack={() => setShowBilling(false)} 
@@ -704,16 +747,207 @@ export default function App() {
       )}
       
       {showPricing && (
-        <PricingPage 
-          onBack={() => setShowPricing(false)}
-          onPlanSelect={(plan) => {
-            setShowPricing(false)
-            // Optionally show dashboard after plan selection
-            if (plan.id !== 'free') {
-              setTimeout(() => setShowBilling(true), 1000)
-            }
-          }}
-        />
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          overflowY: 'auto'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '20px'
+          }}>
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <button 
+                onClick={() => setShowPricing(false)}
+                style={{
+                  position: 'absolute',
+                  top: '20px',
+                  left: '20px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  color: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                ← Back
+              </button>
+              
+              <h1 style={{
+                fontSize: '48px',
+                fontWeight: 'bold',
+                color: 'white',
+                marginBottom: '16px',
+                textAlign: 'center'
+              }}>
+                Choose Your Plan
+              </h1>
+              <p style={{
+                fontSize: '20px',
+                color: 'rgba(255, 255, 255, 0.7)',
+                textAlign: 'center',
+                maxWidth: '600px',
+                margin: '0 auto'
+              }}>
+                Transform your photos with AI. All plans include overage billing at $0.05 per photo.
+              </p>
+            </div>
+
+            {/* Pricing Cards */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '20px',
+              maxWidth: '1400px',
+              margin: '0 auto'
+            }}>
+              {/* Starter Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '24px',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#10B981', marginBottom: '8px' }}>Starter</h3>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  $3.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>80 photos included</p>
+                <button style={{
+                  width: '100%',
+                  padding: '12px 24px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}>
+                  Get Starter
+                </button>
+              </div>
+
+              {/* Premium Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '2px solid #8B5CF6',
+                borderRadius: '16px',
+                padding: '24px',
+                textAlign: 'center',
+                color: 'white',
+                transform: 'scale(1.05)',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '-12px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: '#8B5CF6',
+                  color: 'white',
+                  padding: '4px 16px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                }}>
+                  POPULAR
+                </div>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#8B5CF6', marginBottom: '8px' }}>Premium</h3>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  $19.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>400 photos included</p>
+                <button style={{
+                  width: '100%',
+                  padding: '12px 24px',
+                  background: '#8B5CF6',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}>
+                  Get Premium
+                </button>
+              </div>
+
+              {/* Gold Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '24px',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#F59E0B', marginBottom: '8px' }}>Gold</h3>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  $49.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>1,000 photos included</p>
+                <button style={{
+                  width: '100%',
+                  padding: '12px 24px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}>
+                  Get Gold
+                </button>
+              </div>
+
+              {/* Diamond Plan */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '24px',
+                textAlign: 'center',
+                color: 'white'
+              }}>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#EC4899', marginBottom: '8px' }}>Diamond</h3>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  $499.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                </div>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>10,000 photos included</p>
+                <button style={{
+                  width: '100%',
+                  padding: '12px 24px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}>
+                  Get Diamond
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   )
