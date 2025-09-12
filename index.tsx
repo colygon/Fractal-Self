@@ -36,7 +36,7 @@ createRoot(document.getElementById('root')).render(
       }}
     >
       <AutumnProvider 
-        backendUrl={import.meta.env.PROD ? `${window.location.origin}/api` : "http://localhost:3001"}
+        backendUrl={import.meta.env.PROD ? `${window.location.origin}` : "http://localhost:3001"}
         getBearerToken={async () => {
           // Get Clerk session token to authenticate with Autumn backend
           if (window.Clerk?.session) {
