@@ -105,21 +105,11 @@ export const init = async () => {
   set({didInit: true})
 }
 
-export const snapPhoto = async (b64, signal, user = null, monthlyCentsUsed = 0) => {
+export const snapPhoto = async (b64, signal, user = null) => {
   const id = crypto.randomUUID()
   const {activeMode, customPrompt, photos, model, randomStyleIndex, recentlyUsedModes, cameraMode} = get()
   
-  // Check billing limits (if user is provided)
-  if (user) {
-    // For now, we'll get subscription from user metadata or assume free plan
-    // In production, you'd fetch this from your backend/Clerk
-    const subscription = user.publicMetadata?.subscription || null
-    
-    if (!canTakePhoto(subscription, monthlyCentsUsed)) {
-      const limits = getPlanLimits(subscription)
-      throw new Error(`Monthly limit reached (${limits.monthlyCents} cents per month). Upgrade to Pro for unlimited cents!`)
-    }
-  }
+  // Credits are now checked and deducted in App.jsx before calling this function
   
   console.log('Starting photo generation', { 
     id, 

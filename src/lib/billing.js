@@ -142,7 +142,7 @@ export function getUsageDisplay(subscription, monthlyCentsUsed) {
   return `${remaining} cents left`
 }
 
-// Get remaining cents count
+// Get remaining cents count (legacy function for backward compatibility)
 export function getRemainingCents(subscription, monthlyCentsUsed) {
   const limits = getPlanLimits(subscription)
   
@@ -151,4 +151,39 @@ export function getRemainingCents(subscription, monthlyCentsUsed) {
   }
   
   return Math.max(0, limits.monthlyCents - monthlyCentsUsed)
+}
+
+// Get current credits balance for a user
+export function getCreditsBalance(user) {
+  return user?.publicMetadata?.creditsBalance || 0
+}
+
+// Check if user can take a photo based on their credits balance
+export function canTakePhotoWithCredits(user) {
+  const creditsBalance = getCreditsBalance(user)
+  const photoCost = 5 // 5 cents per photo
+  
+  return creditsBalance >= photoCost
+}
+
+// Deduct credits when a photo is taken
+export function deductCredits(user, amount = 5) {
+  const currentBalance = getCreditsBalance(user)
+  const newBalance = Math.max(0, currentBalance - amount)
+  
+  return user.update({
+    publicMetadata: {
+      ...user.publicMetadata,
+      creditsBalance: newBalance
+    }
+  }).then(() => {
+    console.log(`💳 Deducted ${amount} credits. Remaining balance: ${newBalance}`)
+    return newBalance
+  })
+}
+
+// Get display text for remaining credits
+export function getCreditsDisplay(user) {
+  const balance = getCreditsBalance(user)
+  return balance
 }

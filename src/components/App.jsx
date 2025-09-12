@@ -12,9 +12,9 @@ import {
   useUser,
   useClerk,
 } from '@clerk/clerk-react'
-import Billing from './Billing.jsx'
-import UsageTracker from './UsageTracker.jsx'
-import { canTakePhoto, getRemainingCents, pricingPlans } from '../lib/billing'
+import PricingPage from './PricingPage.jsx'
+import BillingDashboard from './BillingDashboard.jsx'
+import { useCustomer } from "autumn-js/react"
 import {
   snapPhoto,
   setMode,
@@ -68,6 +68,8 @@ export default function App() {
   const [replayImageIndex, setReplayImageIndex] = useState(0)
   const [showFlash, setShowFlash] = useState(false)
   const [showBilling, setShowBilling] = useState(false)
+  const [showPricing, setShowPricing] = useState(false)
+  const { customer } = useCustomer()
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
   const [desktopMirror, setDesktopMirror] = useState(true)
@@ -205,20 +207,22 @@ export default function App() {
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
       
-      // Check billing limits before taking photo
-      const now = new Date()
-      const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+      // Check if user has sufficient credits (simplified version)
+      const creditsRemaining = customer?.usage?.credits || 0
+      if (creditsRemaining < 5) {
+        console.warn('Insufficient credits for photo generation')
+        setShowPricing(true) // Show pricing page to upgrade
+        return
+      }
       
-      const monthlyCentsUsed = photos.filter(photo => {
-        // Handle photos without timestamps (legacy photos) - consider them as not from this month
-        if (!photo.timestamp) return false
-        const photoDate = new Date(photo.timestamp)
-        const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
-        return photoMonth === thisMonth
-      }).length * 5 // 5 cents per photo
-      
-      // This will be checked against subscription in snapPhoto
-      await snapPhoto(dataURL, signal, user, monthlyCentsUsed)
+      // Take the photo (credit tracking will be handled by Autumn backend)
+      try {
+        await snapPhoto(dataURL, signal, user)
+        console.log('✅ Photo generated successfully')
+      } catch (error) {
+        console.error('Photo generation failed', error)
+        throw error
+      }
     } catch (e) {
       if (e.name !== 'AbortError') {
         console.error('Failed to take photo', e)
@@ -418,25 +422,22 @@ export default function App() {
           <SignedIn>
             {(() => {
               console.log('Inside SignedIn component')
-              // Calculate remaining photos for the custom button
-              const now = new Date()
-              const thisMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
-              
-              const monthlyCentsUsed = photos.filter(photo => {
-                if (!photo.timestamp) return false
-                const photoDate = new Date(photo.timestamp)
-                const photoMonth = photoDate.getFullYear() + '-' + String(photoDate.getMonth() + 1).padStart(2, '0')
-                return photoMonth === thisMonth
-              }).length * 5 // 5 cents per photo
-
-              const subscription = user?.publicMetadata?.subscription
-              const remaining = getRemainingCents(subscription, monthlyCentsUsed)
+              // Get user's current credits from Autumn customer data
+              const creditsRemaining = customer?.usage?.credits || 0
 
               return (
                 <button
-                  onClick={() => openUserProfile()}
+                  onClick={() => {
+                    // Show dashboard for existing customers, pricing for new/free users
+                    const currentPlan = customer?.subscription?.product_id
+                    if (currentPlan && currentPlan !== 'free') {
+                      setShowBilling(true)
+                    } else {
+                      setShowPricing(true)
+                    }
+                  }}
                   style={{
-                    background: remaining === 0 
+                    background: creditsRemaining === 0 
                       ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
                       : 'rgba(0, 0, 0, 0.75)',
                     backdropFilter: 'blur(20px)',
@@ -459,10 +460,10 @@ export default function App() {
                   onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
                   onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                 >
-                  {remaining === 0 ? (
+                  {creditsRemaining === 0 ? (
                     <span>⚡</span>
                   ) : (
-                    <span>{remaining === '∞' ? '∞💎' : remaining + '💎'}</span>
+                    <span>{creditsRemaining + '💎'}</span>
                   )}
                 </button>
               )
@@ -693,7 +694,26 @@ export default function App() {
       )}
 
       {showBilling && (
-        <Billing onClose={() => setShowBilling(false)} />
+        <BillingDashboard 
+          onBack={() => setShowBilling(false)} 
+          onUpgrade={() => {
+            setShowBilling(false)
+            setShowPricing(true)
+          }}
+        />
+      )}
+      
+      {showPricing && (
+        <PricingPage 
+          onBack={() => setShowPricing(false)}
+          onPlanSelect={(plan) => {
+            setShowPricing(false)
+            // Optionally show dashboard after plan selection
+            if (plan.id !== 'free') {
+              setTimeout(() => setShowBilling(true), 1000)
+            }
+          }}
+        />
       )}
     </main>
   )

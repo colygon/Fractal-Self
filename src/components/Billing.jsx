@@ -18,6 +18,12 @@ export default function Billing({ onClose }) {
     
     // Simulate updating user metadata (in production, this would be done server-side)
     if (user) {
+      // Get the current credits balance or start fresh
+      const currentBalance = user.publicMetadata?.creditsBalance || 0
+      
+      // Add the plan's monthly credits to their balance
+      const newBalance = currentBalance + plan.limits.monthlyCents
+      
       user.update({
         publicMetadata: {
           ...user.publicMetadata,
@@ -26,8 +32,11 @@ export default function Billing({ onClose }) {
             stripePriceId: plan.stripePriceId,
             planId: plan.id,
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-          }
+          },
+          creditsBalance: newBalance // Add the full plan credits immediately
         }
+      }).then(() => {
+        console.log(`✅ Upgraded to ${plan.name}! Added ${plan.limits.monthlyCents} credits. New balance: ${newBalance}`)
       }).catch(console.error)
     }
     
