@@ -14,6 +14,7 @@
     "@clerk/clerk-react": "^5.46.2",
     "@clerk/elements": "^0.23.62",
     "@google/genai": "latest",
+    "@tailwindcss/postcss": "^4.1.13",
     "@useautumn/react": "^0.0.13",
     "auto-zustand-selectors-hook": "latest",
     "autumn-js": "^0.1.34",
