@@ -1320,6 +1320,15 @@ main:not(:has(.focusedPhoto)) .photoSelector {
     padding: 0 !important;
   }
   
+  /* But show gallery in focus mode even when normally hidden */
+  main.galleryHidden:has(.focusedPhoto) .results {
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    height: clamp(150px, 20dvh, 250px) !important;
+    padding: 10px 20px !important;
+  }
+  
   /* Desktop gallery visible state */
   main:not(.galleryHidden) .results {
     display: flex !important;
@@ -1335,20 +1344,27 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 
   .video .focusedPhoto .results {
     bottom: 0px !important;
+    z-index: 122 !important; /* Below camera controls */
   }
 
   /* Desktop iPhone Camera Interface */
   .iphonePhotoPreview {
     position: fixed;
-    bottom: 220px;
+    bottom: calc(clamp(150px, 20dvh, 250px) + 70px); /* Gallery height + controls height */
     left: 20px;
-    z-index: 105;
+    z-index: 107; /* Above controls */
     transition: bottom 0.3s ease-in-out;
   }
   
   /* Move gallery button down when gallery is hidden (regardless of styles) */
   main.galleryHidden .iphonePhotoPreview {
     bottom: 80px;
+  }
+  
+  /* In focus mode, position above controls */
+  main:has(.focusedPhoto) .iphonePhotoPreview {
+    bottom: calc(clamp(150px, 20dvh, 250px) + 70px) !important;
+    z-index: 127 !important;
   }
   
   .iphoneCameraSwitch {
@@ -1404,11 +1420,11 @@ main:not(:has(.focusedPhoto)) .photoSelector {
     position: fixed;
     left: 0;
     right: 0;
-    z-index: 105;
+    z-index: 106; /* Above gallery */
     background: transparent;
     padding: 0;
     transition: bottom 0.3s ease-in-out;
-    bottom: 210px;
+    bottom: clamp(150px, 20dvh, 250px); /* Above gallery height */
   }
   main.galleryHidden .iphoneCameraControls {
     bottom: 0px;
@@ -1420,6 +1436,12 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   /* Move camera controls to bottom in live mode */
   main.liveMode .iphoneCameraControls {
     bottom: 0px !important;
+  }
+  
+  /* In focus mode, keep controls above gallery */
+  main:has(.focusedPhoto) .iphoneCameraControls {
+    bottom: clamp(150px, 20dvh, 250px) !important;
+    z-index: 126 !important; /* Above focus mode gallery */
   }
 
   .iphoneModeBtn {
