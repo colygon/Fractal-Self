@@ -53,7 +53,7 @@ const autumnMiddleware = autumnHandler({
   },
 });
 
-// Vercel serverless function handler
+// Vercel serverless function handler - catch all autumn routes
 export default function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
