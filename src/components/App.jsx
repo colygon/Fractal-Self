@@ -880,7 +880,7 @@ export default function App() {
                     try {
                       if (openCheckout) {
                         await openCheckout({
-                          product_id: 'starter',
+                          product_id: 'credits-50',
                           success_url: window.location.origin + '?checkout=success',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
@@ -946,7 +946,7 @@ export default function App() {
                     try {
                       if (openCheckout) {
                         await openCheckout({
-                          product_id: 'premium',
+                          product_id: 'credits-200',
                           success_url: window.location.origin + '?checkout=success',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
@@ -996,7 +996,7 @@ export default function App() {
                     try {
                       if (openCheckout) {
                         await openCheckout({
-                          product_id: 'gold',
+                          product_id: 'credits-500',
                           success_url: window.location.origin + '?checkout=success',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
@@ -1046,7 +1046,7 @@ export default function App() {
                     try {
                       if (openCheckout) {
                         await openCheckout({
-                          product_id: 'diamond',
+                          product_id: 'credits-1000',
                           success_url: window.location.origin + '?checkout=success',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
@@ -1100,7 +1100,7 @@ export default function App() {
                     try {
                       if (openCheckout) {
                         await openCheckout({
-                          product_id: 'custom_booth',
+                          product_id: 'credits-1000',
                           success_url: window.location.origin + '?checkout=success',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
