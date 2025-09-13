@@ -77,8 +77,8 @@ function useCustomer() {
       
       const checkout = await response.json()
       console.log('Checkout response:', checkout)
-      if (checkout.url) {
-        window.location.href = checkout.url
+      if (checkout.checkout_url) {
+        window.location.href = checkout.checkout_url
       } else {
         throw new Error('No checkout URL returned')
       }
