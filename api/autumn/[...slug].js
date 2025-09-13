@@ -133,7 +133,7 @@ export default async function handler(req, res) {
     }
     
     if (path.startsWith('checkout') && req.method === 'POST') {
-      // Handle checkout for credit packages
+      // Handle checkout for credit packages using real Stripe
       const body = req.body;
       const productId = body.product_id;
       
@@ -151,25 +151,55 @@ export default async function handler(req, res) {
         return;
       }
       
-      // Create mock checkout session (bypassing real Autumn API since our product IDs don't exist there)
-      // Use our local mock checkout page instead of real Stripe
-      const checkoutSessionId = 'cs_test_' + Math.random().toString(36).substr(2, 24);
-      const checkoutUrl = `/api/checkout?session_id=${checkoutSessionId}&product_id=${productId}&amount=${product.price}&credits=${product.credits}`;
-      
-      const checkout = {
-        checkout_url: checkoutUrl,
-        session_id: checkoutSessionId,
-        product_id: productId,
-        product_name: product.name,
-        amount: product.price,
-        credits: product.credits,
-        customer_id: customerId,
-        success_url: body.success_url,
-        cancel_url: body.cancel_url
-      };
-      
-      res.json(checkout);
-      return;
+      try {
+        // Import Stripe dynamically to avoid issues with ES modules
+        const { default: Stripe } = await import('stripe');
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        
+        // Create real Stripe checkout session
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [{
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: product.name,
+                description: `${product.credits} photo credits for Fractal Self`,
+              },
+              unit_amount: product.price,
+            },
+            quantity: 1,
+          }],
+          mode: 'payment',
+          success_url: body.success_url || `${req.headers.origin || 'https://fractal-self.vercel.app'}/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: body.cancel_url || `${req.headers.origin || 'https://fractal-self.vercel.app'}/cancel`,
+          metadata: {
+            product_id: productId,
+            credits: product.credits.toString(),
+            customer_id: customerId
+          },
+          client_reference_id: customerId
+        });
+        
+        const checkout = {
+          checkout_url: session.url,
+          session_id: session.id,
+          product_id: productId,
+          product_name: product.name,
+          amount: product.price,
+          credits: product.credits,
+          customer_id: customerId,
+          success_url: session.success_url,
+          cancel_url: session.cancel_url
+        };
+        
+        res.json(checkout);
+        return;
+      } catch (stripeError) {
+        console.error('Stripe checkout error:', stripeError);
+        res.status(500).json({ error: 'Failed to create checkout session', details: stripeError.message });
+        return;
+      }
     }
     
     if (path.startsWith('check') && req.method === 'POST') {
