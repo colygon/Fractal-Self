@@ -152,9 +152,9 @@ export default async function handler(req, res) {
       }
       
       // Create mock checkout session (bypassing real Autumn API since our product IDs don't exist there)
-      // For now, return a mock Stripe checkout URL
+      // Use our local mock checkout page instead of real Stripe
       const checkoutSessionId = 'cs_test_' + Math.random().toString(36).substr(2, 24);
-      const checkoutUrl = `https://checkout.stripe.com/pay/${checkoutSessionId}#fidkdWxOYHwnPyd1blpxYHZxWjA0VGhST0FrNGlXXS9TfU5pU2tTaGNqNGNobnJoMlRCN2tNYUtMZHRVZU5VYnUxQ19LdWNvSDFra3JCY1B8Z0d9Y3FDamllZm1vM3I3ZHFcNXZoM2tvYGJwYWRdXUh%2FcWJZUCcpJ2hsYXYnP34nZGxrYSc%2FJ3VuZmdpYWRmaGc%2BKiknPzZucWhmPTUnJiknKGNoZGZgYHVmaGpjYWdnKD8nMGZkZDU5YTkzMzkyNTU1NmQwODQxNTMwZjE2YmM0N2Y2MjM1MWFjYTVhYjFhNGI1MjMyNzZjNDJjNWY2JykvcCdgZHBgZnNxZicrJ2xnY2ZrZ2FnJ3Vkb2VtZWRgNGNmYGNhb2VtNGNmdFtWZGh1d2BhN21kZ2Z2NThiYV5gYmhkYSZyaiFgcWJhdU82S1k2d0h2NjJYTmxYSUROWTJrMm9VT0tTOCcrJ2pocGZ8eCUl`;
+      const checkoutUrl = `/api/checkout?session_id=${checkoutSessionId}&product_id=${productId}&amount=${product.price}&credits=${product.credits}`;
       
       const checkout = {
         checkout_url: checkoutUrl,
