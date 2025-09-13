@@ -120,8 +120,13 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
           <SignedOut>
             {/* Sign Up Button */}
-            <SignUpButton mode="modal" redirectUrl={window.location.origin}>
+            <SignUpButton 
+              mode="modal" 
+              redirectUrl={window.location.origin}
+              afterSignUpUrl={window.location.origin}
+            >
               <button
+                onClick={() => console.log('SignUp button clicked')}
                 style={{
                   width: '300px',
                   padding: '16px 32px',
@@ -159,8 +164,13 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
             </div>
 
             {/* Sign In Button */}
-            <SignInButton mode="modal" redirectUrl={window.location.origin}>
+            <SignInButton 
+              mode="modal" 
+              redirectUrl={window.location.origin}
+              afterSignInUrl={window.location.origin}
+            >
               <button
+                onClick={() => console.log('SignIn button clicked')}
                 style={{
                   width: '300px',
                   padding: '14px 32px',
@@ -191,7 +201,10 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
           <SignedIn>
             {/* Continue to pricing for signed in users */}
             <button
-              onClick={onContinueToPricing}
+              onClick={() => {
+                console.log('Continue to Pricing button clicked')
+                onContinueToPricing()
+              }}
               style={{
                 width: '300px',
                 padding: '16px 32px',
