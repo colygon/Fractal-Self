@@ -43,7 +43,7 @@ async function callAutumnAPI(endpoint, method = 'GET', data = null) {
 }
 
 // Vercel serverless function handler - catch all autumn routes
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
@@ -68,30 +68,30 @@ module.exports = async function handler(req, res) {
         {
           id: 'credits-50',
           name: 'Starter Pack',
-          description: '50 photo credits',
-          price: 500, // $5.00 in cents
-          credits: 50
+          description: '400 photo credits',
+          price: 399, // $3.99 in cents
+          credits: 400
         },
         {
           id: 'credits-200',
           name: 'Gold Pack', 
-          description: '200 photo credits',
-          price: 1500, // $15.00 in cents
-          credits: 200
+          description: '2000 photo credits',
+          price: 1999, // $19.99 in cents
+          credits: 2000
         },
         {
           id: 'credits-500',
           name: 'Premium Pack',
-          description: '500 photo credits',
-          price: 3000, // $30.00 in cents
-          credits: 500
+          description: '5000 photo credits',
+          price: 4999, // $49.99 in cents
+          credits: 5000
         },
         {
           id: 'credits-1000',
           name: 'Diamond Pack',
-          description: '1000 photo credits',
-          price: 5000, // $50.00 in cents
-          credits: 1000
+          description: '50000 photo credits',
+          price: 49999, // $499.99 in cents
+          credits: 50000
         }
       ];
       
@@ -139,10 +139,10 @@ module.exports = async function handler(req, res) {
       
       // Get product details
       const products = {
-        'credits-50': { credits: 50, price: 500 },
-        'credits-200': { credits: 200, price: 1500 },
-        'credits-500': { credits: 500, price: 3000 },
-        'credits-1000': { credits: 1000, price: 5000 }
+        'credits-50': { credits: 400, price: 399 },
+        'credits-200': { credits: 2000, price: 1999 },
+        'credits-500': { credits: 5000, price: 4999 },
+        'credits-1000': { credits: 50000, price: 49999 }
       };
       
       const product = products[productId];

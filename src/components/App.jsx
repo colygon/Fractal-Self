@@ -14,7 +14,6 @@ import {
 } from '@clerk/clerk-react'
 import PricingPage from './PricingPage.jsx'
 import BillingDashboard from './BillingDashboard.jsx'
-import { useCustomer } from "autumn-js/react"
 import {
   snapPhoto,
   setMode,
@@ -41,6 +40,92 @@ import modes from '../lib/modes'
 const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
 const modeKeys = Object.keys(modes)
+
+// Custom useCustomer implementation since autumn-js is broken
+function useCustomer() {
+  const [customer, setCustomer] = useState(null)
+  
+  const openCheckout = async ({ product_id, success_url, cancel_url }) => {
+    try {
+      // Call our custom Autumn API backend (production URL)
+      const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-kbmn5e99r-dablclub.vercel.app'
+      
+      // Get auth token if available, but don't fail if Clerk isn't ready
+      let authToken = ''
+      try {
+        if (window.Clerk?.session) {
+          authToken = await window.Clerk.session.getToken()
+        }
+      } catch (authError) {
+        console.warn('Could not get Clerk token:', authError)
+      }
+      
+      const response = await fetch(`${apiBase}/api/autumn/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ product_id, success_url, cancel_url })
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Checkout API error:', response.status, errorText)
+        throw new Error(`Checkout failed: ${response.status}`)
+      }
+      
+      const checkout = await response.json()
+      console.log('Checkout response:', checkout)
+      if (checkout.url) {
+        window.location.href = checkout.url
+      } else {
+        throw new Error('No checkout URL returned')
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      throw error
+    }
+  }
+  
+  // Load customer data on mount
+  useEffect(() => {
+    async function loadCustomer() {
+      try {
+        const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-kbmn5e99r-dablclub.vercel.app'
+        
+        // Get auth token if available
+        let authToken = ''
+        try {
+          if (window.Clerk?.session) {
+            authToken = await window.Clerk.session.getToken()
+          }
+        } catch (authError) {
+          console.warn('Could not get Clerk token for customer load:', authError)
+        }
+        
+        const response = await fetch(`${apiBase}/api/autumn/customers`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        })
+        if (response.ok) {
+          const customerData = await response.json()
+          console.log('Loaded customer data:', customerData)
+          setCustomer(customerData)
+        } else {
+          console.warn('Failed to load customer:', response.status, await response.text())
+        }
+      } catch (error) {
+        console.error('Failed to load customer:', error)
+      }
+    }
+    
+    loadCustomer()
+  }, [])
+  
+  return { customer, openCheckout }
+}
 
 export default function App() {
   const photos = useStore.use.photos()
@@ -872,9 +957,9 @@ export default function App() {
               }}>
                 <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#10B981', marginBottom: '8px' }}>Starter</h3>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $3.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                  $3.99
                 </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>80 photos included</p>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>400 photo credits</p>
                 <button 
                   onClick={async () => {
                     try {
@@ -938,9 +1023,9 @@ export default function App() {
                 </div>
                 <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#8B5CF6', marginBottom: '8px' }}>Premium</h3>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $19.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                  $19.99
                 </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>400 photos included</p>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>2,000 photo credits</p>
                 <button 
                   onClick={async () => {
                     try {
@@ -988,9 +1073,9 @@ export default function App() {
               }}>
                 <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#F59E0B', marginBottom: '8px' }}>Gold</h3>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $49.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                  $49.99
                 </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>1,000 photos included</p>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>5,000 photo credits</p>
                 <button 
                   onClick={async () => {
                     try {
@@ -1038,9 +1123,9 @@ export default function App() {
               }}>
                 <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#EC4899', marginBottom: '8px' }}>Diamond</h3>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $499.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
+                  $499.99
                 </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>10,000 photos included</p>
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>50,000 photo credits</p>
                 <button 
                   onClick={async () => {
                     try {
@@ -1077,59 +1162,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Custom Photo Booth Plan */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                padding: '24px',
-                backdropFilter: 'blur(10px)'
-              }}>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#FF6B35', marginBottom: '8px' }}>
-                  Custom Photo Booth
-                </h3>
-                <p style={{ marginBottom: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>
-                  Professional event solution
-                </p>
-                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $699.99<span style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.6)' }}>/month</span>
-                </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>25,000 photos included</p>
-                <button 
-                  onClick={async () => {
-                    try {
-                      if (openCheckout) {
-                        await openCheckout({
-                          product_id: 'credits-1000',
-                          success_url: window.location.origin + '?checkout=success',
-                          cancel_url: window.location.origin + '?checkout=canceled'
-                        })
-                      } else {
-                        alert('The checkout system is undergoing maintenance. Please try again later.')
-                      }
-                    } catch (error) {
-                      console.error('Checkout error:', error)
-                      alert('Error starting checkout. Please try again.')
-                    }
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '12px 24px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '8px',
-                    color: 'white',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-                  onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                >
-                  Get Custom Booth
-                </button>
-              </div>
 
               {/* Enterprise Plan */}
               <div style={{

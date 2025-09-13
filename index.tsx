@@ -5,7 +5,7 @@
 import { StrictMode } from 'react'
 import {createRoot} from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
-import { AutumnProvider } from "autumn-js/react"
+// Removed AutumnProvider - using custom useCustomer implementation
 import App from './src/components/App.jsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuYmFuYW5hLmNhbSQ'
@@ -35,18 +35,7 @@ createRoot(document.getElementById('root')).render(
         }
       }}
     >
-      <AutumnProvider 
-        backendUrl={import.meta.env.PROD ? `${window.location.origin}` : "http://localhost:3001"}
-        getBearerToken={async () => {
-          // Get Clerk session token to authenticate with Autumn backend
-          if (window.Clerk?.session) {
-            return await window.Clerk.session.getToken()
-          }
-          return null
-        }}
-      >
-        <App />
-      </AutumnProvider>
+      <App />
     </ClerkProvider>
   </StrictMode>
 )
