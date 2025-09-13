@@ -366,6 +366,14 @@ export default {
     postcardText: 'From the artist\'s studio'
   },
 
+  renfair: {
+    name: 'RenFair',
+    emoji: '🏰',
+    prompt: 'Create a highly realistic, professional photograph of the person or people at a vibrant Renaissance Fair. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in authentic Renaissance Fair attire: think flowing medieval dresses with corsets and full skirts for women, tunics and breeches with leather vests for men, all in rich jewel tones like deep burgundy, forest green, royal blue, and golden yellow. Add period-appropriate accessories like leather pouches, ornate belts, feathered hats, or floral crowns. Place them in a bustling fair setting with colorful merchant tents, wooden stalls selling crafts and food, performers in the background, and other fair-goers in costume. The lighting should be natural daylight filtering through trees, creating a warm, festive atmosphere. Include details like turkey legs, pewter mugs, handcrafted goods, and banners fluttering in the breeze. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the joyful, immersive spirit of the Renaissance Fair experience.',
+    category: 'artistic',
+    postcardText: 'Huzzah! Greetings from ye olde faire!'
+  },
+
   cartoon: {
     name: 'Cartoon',
     emoji: '😃',
