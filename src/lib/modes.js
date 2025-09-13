@@ -235,6 +235,14 @@ export default {
     postcardText: 'Windswept greetings!'
   },
 
+  santaCruz: {
+    name: 'Santa Cruz',
+    emoji: '🏄‍♂️',
+    prompt: 'Transform this photo into a quintessential Santa Cruz, California beach scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. Place them on the iconic Santa Cruz Beach Boardwalk or along West Cliff Drive with the stunning Pacific coastline in the background. Include classic Santa Cruz elements: the historic Giant Dipper roller coaster, colorful beach umbrellas, surfers in the distance, redwood trees on nearby hills, and the famous Santa Cruz Wharf extending into the ocean. The lighting should be that perfect golden California sunshine with a slight ocean breeze effect on hair and clothing. Dress them in casual California beach attire - perhaps a vintage Santa Cruz surfboard shop t-shirt, board shorts, or flowing beach dress. Add authentic details like seagulls flying overhead, the Santa Cruz Mountains visible in the distance, and maybe a classic VW van parked nearby. The overall mood should capture that laid-back, surf culture vibe that Santa Cruz is famous for. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the authentic Santa Cruz beach town atmosphere. The final image should look like a genuine photograph taken during a perfect day in this iconic California coastal town.',
+    category: 'location',
+    postcardText: 'Living the Santa Cruz dream! 🌊☀️'
+  },
+
   tiburon: {
     name: 'Tiburon',
     emoji: '⛵',
@@ -891,13 +899,5 @@ export default {
     prompt: 'Create a highly realistic, professional photograph of the person or people holding a cute Labubu toy figure in their hands. It is absolutely crucial to preserve their exact facial features, expressions of joy and affection, body proportions, and character - they must look exactly like themselves. The Labubu should be the authentic Pop Mart collectible toy with its distinctive features: pointy elf-like ears, small fanged teeth, large round black eyes, and its signature mischievous but adorable expression. The toy should be properly sized (about 3-4 inches tall) and positioned naturally in their hands or arms as if they\'re showing off their precious collectible. Their expression should show genuine happiness and pride in their Labubu, as collectors do with their favorite figures. The lighting should be natural and warm, highlighting both the person and the detailed features of the Labubu toy. The background should remain unchanged from the original photo. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, give each person their own unique Labubu figure to hold, maintaining perfect character consistency. The final image should look like a genuine photograph of Labubu collectors proudly displaying their beloved toys.',
     category: 'character',
     postcardText: 'My precious Labubu! 💕'
-  },
-
-  santaCruz: {
-    name: 'Santa Cruz',
-    emoji: '🏄‍♂️',
-    prompt: 'Transform this photo into a quintessential Santa Cruz, California beach scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. Place them on the iconic Santa Cruz Beach Boardwalk or along West Cliff Drive with the stunning Pacific coastline in the background. Include classic Santa Cruz elements: the historic Giant Dipper roller coaster, colorful beach umbrellas, surfers in the distance, redwood trees on nearby hills, and the famous Santa Cruz Wharf extending into the ocean. The lighting should be that perfect golden California sunshine with a slight ocean breeze effect on hair and clothing. Dress them in casual California beach attire - perhaps a vintage Santa Cruz surfboard shop t-shirt, board shorts, or flowing beach dress. Add authentic details like seagulls flying overhead, the Santa Cruz Mountains visible in the distance, and maybe a classic VW van parked nearby. The overall mood should capture that laid-back, surf culture vibe that Santa Cruz is famous for. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the authentic Santa Cruz beach town atmosphere. The final image should look like a genuine photograph taken during a perfect day in this iconic California coastal town.',
-    category: 'location',
-    postcardText: 'Living the Santa Cruz dream! 🌊☀️'
   }
 }
