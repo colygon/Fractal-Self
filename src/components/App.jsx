@@ -88,43 +88,44 @@ function useCustomer() {
     }
   }
   
+  // Load customer data function
+  const loadCustomer = async () => {
+    try {
+      const apiBase = ''
+      
+      // Get auth token if available
+      let authToken = ''
+      try {
+        if (window.Clerk?.session) {
+          authToken = await window.Clerk.session.getToken()
+        }
+      } catch (authError) {
+        console.warn('Could not get Clerk token for customer load:', authError)
+      }
+      
+      const response = await fetch(`${apiBase}/api/autumn/customers`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      })
+      if (response.ok) {
+        const customerData = await response.json()
+        console.log('Loaded customer data:', customerData)
+        setCustomer(customerData)
+      } else {
+        console.warn('Failed to load customer:', response.status, await response.text())
+      }
+    } catch (error) {
+      console.error('Failed to load customer:', error)
+    }
+  }
+  
   // Load customer data on mount
   useEffect(() => {
-    async function loadCustomer() {
-      try {
-        const apiBase = ''
-        
-        // Get auth token if available
-        let authToken = ''
-        try {
-          if (window.Clerk?.session) {
-            authToken = await window.Clerk.session.getToken()
-          }
-        } catch (authError) {
-          console.warn('Could not get Clerk token for customer load:', authError)
-        }
-        
-        const response = await fetch(`${apiBase}/api/autumn/customers`, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        })
-        if (response.ok) {
-          const customerData = await response.json()
-          console.log('Loaded customer data:', customerData)
-          setCustomer(customerData)
-        } else {
-          console.warn('Failed to load customer:', response.status, await response.text())
-        }
-      } catch (error) {
-        console.error('Failed to load customer:', error)
-      }
-    }
-    
     loadCustomer()
   }, [])
   
-  return { customer, openCheckout }
+  return { customer, openCheckout, refetchCustomer: loadCustomer }
 }
 
 export default function App() {
@@ -154,7 +155,7 @@ export default function App() {
   const [showFlash, setShowFlash] = useState(false)
   const [showBilling, setShowBilling] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
-  const { customer, openCheckout } = useCustomer()
+  const { customer, openCheckout, refetchCustomer } = useCustomer()
   
   // Debug logging
   console.log('useCustomer hook data:', { customer, openCheckout: !!openCheckout })
@@ -321,11 +322,37 @@ export default function App() {
         await snapPhoto(dataURL, signal, user)
         console.log('✅ Photo generated successfully')
         
-        // Increment free photo counter if user is using free photos
-        if (creditsRemaining < 5 && freePhotosUsed < freePhotosLimit) {
+        // Deduct credits if user has paid credits, otherwise increment free photo counter
+        if (creditsRemaining >= 5) {
+          // User has credits, deduct 5 credits via Autumn API
+          try {
+            const response = await fetch('/api/autumn/track', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.primaryEmailAddress?.emailAddress || 'anonymous'}`
+              },
+              body: JSON.stringify({
+                credits: 5 // 5 credits per photo
+              })
+            })
+            
+            if (response.ok) {
+              const result = await response.json()
+              console.log(`💎 Deducted 5 credits. Remaining: ${result.credits_remaining}`)
+              // Refresh customer data to update UI
+              refetchCustomer()
+            } else {
+              console.error('Failed to deduct credits:', await response.text())
+            }
+          } catch (error) {
+            console.error('Error deducting credits:', error)
+          }
+        } else if (freePhotosUsed < freePhotosLimit) {
+          // User is using free photos, increment counter
           const newFreePhotosUsed = freePhotosUsed + 1
           localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
-          console.log(`Free photos used: ${newFreePhotosUsed}/${freePhotosLimit}`)
+          console.log(`📸 Free photos used: ${newFreePhotosUsed}/${freePhotosLimit}`)
         }
       } catch (error) {
         console.error('Photo generation failed', error)
