@@ -48,7 +48,7 @@ function useCustomer() {
   const openCheckout = async ({ product_id, success_url, cancel_url }) => {
     try {
       // Call our custom Autumn API backend (production URL)
-      const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-kbmn5e99r-dablclub.vercel.app'
+      const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-5trpleqtt-dablclub.vercel.app'
       
       // Get auth token if available, but don't fail if Clerk isn't ready
       let authToken = ''
@@ -92,7 +92,7 @@ function useCustomer() {
   useEffect(() => {
     async function loadCustomer() {
       try {
-        const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-kbmn5e99r-dablclub.vercel.app'
+        const apiBase = import.meta.env.PROD ? '' : 'https://fractal-self-5trpleqtt-dablclub.vercel.app'
         
         // Get auth token if available
         let authToken = ''
