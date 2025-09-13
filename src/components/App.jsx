@@ -629,13 +629,14 @@ export default function App() {
           </SignedOut>
           
           <SignedIn>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
               {/* Credits display */}
               {(() => {
                 const creditsRemaining = customer?.usage?.credits || 0
                 return (
                   <div
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent event bubbling
                       // Show dashboard for existing customers, pricing for authenticated free users
                       const currentPlan = customer?.subscription?.product_id
                       if (currentPlan && currentPlan !== 'free') {
@@ -663,7 +664,8 @@ export default function App() {
                       fontFamily: 'inherit',
                       transition: 'all 0.2s ease',
                       boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                      minWidth: '50px'
+                      minWidth: '50px',
+                      zIndex: 1
                     }}
                     onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
                     onMouseLeave={e => e.target.style.transform = 'scale(1)'}
@@ -678,19 +680,21 @@ export default function App() {
               })()}
               
               {/* User profile photo button */}
-              <UserButton 
-                afterSignOutUrl={window.location.origin}
-                appearance={{
-                  elements: {
-                    avatarBox: {
-                      width: '44px',
-                      height: '44px',
-                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                      border: '2px solid rgba(255, 255, 255, 0.15)',
+              <div style={{ zIndex: 2, position: 'relative' }}>
+                <UserButton 
+                  afterSignOutUrl={window.location.origin}
+                  appearance={{
+                    elements: {
+                      avatarBox: {
+                        width: '44px',
+                        height: '44px',
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid rgba(255, 255, 255, 0.15)',
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              </div>
             </div>
           </SignedIn>
         </div>
