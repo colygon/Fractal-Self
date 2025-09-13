@@ -629,56 +629,69 @@ export default function App() {
           </SignedOut>
           
           <SignedIn>
-            {(() => {
-              console.log('Inside SignedIn component')
-              // Get user's current credits from Autumn customer data
-              const creditsRemaining = customer?.usage?.credits || 0
-
-              return (
-                <button
-                  onClick={() => {
-                    // Show dashboard for existing customers, sign up for unauthenticated, pricing for authenticated free users
-                    const currentPlan = customer?.subscription?.product_id
-                    if (currentPlan && currentPlan !== 'free') {
-                      setShowBilling(true)
-                    } else if (user) {
-                      setShowPricing(true)
-                    } else {
-                      setShowSignUp(true)
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Credits display */}
+              {(() => {
+                const creditsRemaining = customer?.usage?.credits || 0
+                return (
+                  <div
+                    onClick={() => {
+                      // Show dashboard for existing customers, pricing for authenticated free users
+                      const currentPlan = customer?.subscription?.product_id
+                      if (currentPlan && currentPlan !== 'free') {
+                        setShowBilling(true)
+                      } else {
+                        setShowPricing(true)
+                      }
+                    }}
+                    style={{
+                      background: creditsRemaining === 0 
+                        ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
+                        : 'rgba(0, 0, 0, 0.75)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '20px',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                      minWidth: '50px'
+                    }}
+                    onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                  >
+                    {creditsRemaining === 0 ? (
+                      <span>⚡0</span>
+                    ) : (
+                      <span>⚡{creditsRemaining}</span>
+                    )}
+                  </div>
+                )
+              })()}
+              
+              {/* User profile photo button */}
+              <UserButton 
+                afterSignOutUrl={window.location.origin}
+                appearance={{
+                  elements: {
+                    avatarBox: {
+                      width: '44px',
+                      height: '44px',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                      border: '2px solid rgba(255, 255, 255, 0.15)',
                     }
-                  }}
-                  style={{
-                    background: creditsRemaining === 0 
-                      ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
-                      : 'rgba(0, 0, 0, 0.75)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: '50%',
-                    width: '50px',
-                    height: '50px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-                  }}
-                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-                  onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                >
-                  {creditsRemaining === 0 ? (
-                    <span>⚡</span>
-                  ) : (
-                    <span>⚡{creditsRemaining}</span>
-                  )}
-                </button>
-              )
-            })()}
+                  }
+                }}
+              />
+            </div>
           </SignedIn>
         </div>
       </header>
