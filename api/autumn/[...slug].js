@@ -1,4 +1,4 @@
-import { autumnHandler } from 'autumn-js/express';
+const { autumnHandler } = require('autumn-js/express');
 
 // Create the Autumn handler
 const autumnMiddleware = autumnHandler({
@@ -54,7 +54,7 @@ const autumnMiddleware = autumnHandler({
 });
 
 // Vercel serverless function handler - catch all autumn routes
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
@@ -67,4 +67,4 @@ export default function handler(req, res) {
 
   // Use the Autumn middleware
   return autumnMiddleware(req, res);
-}
+};
