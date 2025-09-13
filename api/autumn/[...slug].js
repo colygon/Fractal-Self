@@ -1,57 +1,6 @@
-const { autumnHandler } = require('autumn-js/express');
-
-// Create the Autumn handler
-const autumnMiddleware = autumnHandler({
-  secretKey: process.env.AUTUMN_SECRET_KEY,
-  identify: async (request) => {
-    const authHeader = request.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('No auth header found, using anonymous user');
-      return {
-        customerId: 'anonymous-' + Date.now(),
-        customerData: {
-          name: 'Anonymous User',
-          email: 'anonymous@example.com',
-        },
-      };
-    }
-
-    try {
-      const token = authHeader.split(' ')[1];
-      
-      if (!token || token.split('.').length !== 3) {
-        console.log('Invalid token format, using anonymous user');
-        return {
-          customerId: 'anonymous-' + Date.now(),
-          customerData: {
-            name: 'Anonymous User',
-            email: 'anonymous@example.com',
-          },
-        };
-      }
-      
-      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-      
-      return {
-        customerId: payload.sub || 'clerk-' + Date.now(),
-        customerData: {
-          name: payload.name || 'Clerk User',
-          email: payload.email || 'user@clerk.dev',
-        },
-      };
-    } catch (error) {
-      console.error('Error parsing auth token:', error);
-      return {
-        customerId: 'anonymous-' + Date.now(),
-        customerData: {
-          name: 'Anonymous User',
-          email: 'anonymous@example.com',
-        },
-      };
-    }
-  },
-});
+// Temporary workaround for autumn-js ERR_REQUIRE_ESM bug
+// The autumn-js library has a compatibility issue with ES modules
+// Until this is fixed, we return a meaningful error message
 
 // Vercel serverless function handler - catch all autumn routes
 module.exports = function handler(req, res) {
@@ -65,6 +14,11 @@ module.exports = function handler(req, res) {
     return;
   }
 
-  // Use the Autumn middleware
-  return autumnMiddleware(req, res);
+  // Return a temporary service unavailable message
+  console.log('Autumn billing service temporarily disabled due to library compatibility issue');
+  res.status(503).json({
+    error: 'Billing service temporarily unavailable',
+    message: 'The checkout system is undergoing maintenance. Please try again later.',
+    code: 'SERVICE_MAINTENANCE'
+  });
 };
