@@ -55,10 +55,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const path = req.url.replace('/api/autumn/', '');
+    const rawPath = req.url.replace('/api/autumn/', '');
+    const path = rawPath.split('?')[0]; // Remove query parameters
     const customerId = getCustomerId(req);
     
-    console.log('Autumn API request:', { path, method: req.method, customerId });
+    console.log('Autumn API request:', { rawPath, path, method: req.method, customerId });
 
     // Handle different endpoints
     if (path === 'products' && req.method === 'GET') {
