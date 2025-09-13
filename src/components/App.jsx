@@ -13,6 +13,7 @@ import {
   useClerk,
 } from '@clerk/clerk-react'
 import PricingPage from './PricingPage.jsx'
+import SignUpPage from './SignUpPage.jsx'
 import BillingDashboard from './BillingDashboard.jsx'
 import {
   snapPhoto,
@@ -154,6 +155,7 @@ export default function App() {
   const [replayImageIndex, setReplayImageIndex] = useState(0)
   const [showFlash, setShowFlash] = useState(false)
   const [showBilling, setShowBilling] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
   const { customer, openCheckout, refetchCustomer } = useCustomer()
   
@@ -313,7 +315,12 @@ export default function App() {
       // No credits and no free photos left
       else {
         console.warn('No credits or free photos remaining')
-        setShowPricing(true) // Show pricing page to upgrade
+        // Show sign up page first for unauthenticated users, pricing for authenticated
+        if (user) {
+          setShowPricing(true)
+        } else {
+          setShowSignUp(true)
+        }
         return
       }
       
@@ -531,12 +538,14 @@ export default function App() {
           {/* Credits/Balance button - always visible */}
           <button
             onClick={() => {
-              // Show dashboard for existing customers, pricing for new/free users
+              // Show dashboard for existing customers, sign up for unauthenticated, pricing for authenticated free users
               const currentPlan = customer?.subscription?.product_id
               if (currentPlan && currentPlan !== 'free') {
                 setShowBilling(true)
-              } else {
+              } else if (user) {
                 setShowPricing(true)
+              } else {
+                setShowSignUp(true)
               }
             }}
             style={(() => {
@@ -628,12 +637,14 @@ export default function App() {
               return (
                 <button
                   onClick={() => {
-                    // Show dashboard for existing customers, pricing for new/free users
+                    // Show dashboard for existing customers, sign up for unauthenticated, pricing for authenticated free users
                     const currentPlan = customer?.subscription?.product_id
                     if (currentPlan && currentPlan !== 'free') {
                       setShowBilling(true)
-                    } else {
+                    } else if (user) {
                       setShowPricing(true)
+                    } else {
+                      setShowSignUp(true)
                     }
                   }}
                   style={{
@@ -900,6 +911,16 @@ export default function App() {
           onBack={() => setShowBilling(false)} 
           onUpgrade={() => {
             setShowBilling(false)
+            setShowPricing(true)
+          }}
+        />
+      )}
+
+      {showSignUp && (
+        <SignUpPage 
+          onBack={() => setShowSignUp(false)}
+          onContinueToPricing={() => {
+            setShowSignUp(false)
             setShowPricing(true)
           }}
         />
