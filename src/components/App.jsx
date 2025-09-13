@@ -885,7 +885,7 @@ export default function App() {
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
-                        alert('Checkout system not available. Please try again.')
+                        alert('The checkout system is undergoing maintenance. Please try again later.')
                       }
                     } catch (error) {
                       console.error('Checkout error:', error)
@@ -951,7 +951,7 @@ export default function App() {
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
-                        alert('Checkout system not available. Please try again.')
+                        alert('The checkout system is undergoing maintenance. Please try again later.')
                       }
                     } catch (error) {
                       console.error('Checkout error:', error)
@@ -1001,7 +1001,7 @@ export default function App() {
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
-                        alert('Checkout system not available. Please try again.')
+                        alert('The checkout system is undergoing maintenance. Please try again later.')
                       }
                     } catch (error) {
                       console.error('Checkout error:', error)
@@ -1051,7 +1051,7 @@ export default function App() {
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
-                        alert('Checkout system not available. Please try again.')
+                        alert('The checkout system is undergoing maintenance. Please try again later.')
                       }
                     } catch (error) {
                       console.error('Checkout error:', error)
@@ -1105,7 +1105,7 @@ export default function App() {
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
-                        alert('Checkout system not available. Please try again.')
+                        alert('The checkout system is undergoing maintenance. Please try again later.')
                       }
                     } catch (error) {
                       console.error('Checkout error:', error)
