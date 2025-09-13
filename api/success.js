@@ -152,6 +152,25 @@ export default async function handler(req, res) {
         
         <a href="/" class="button">Start Creating Photos</a>
         
+        <script>
+          // Auto-redirect to main app after 5 seconds
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 5000);
+          
+          // Show countdown
+          let countdown = 5;
+          const updateCountdown = () => {
+            const button = document.querySelector('.button');
+            if (button && countdown > 0) {
+              button.textContent = \`Start Creating Photos (\${countdown}s)\`;
+              countdown--;
+              setTimeout(updateCountdown, 1000);
+            }
+          };
+          setTimeout(updateCountdown, 1000);
+        </script>
+        
         ${sessionDetails ? `
         <div class="session-info">
             <p><strong>Order Details:</strong></p>

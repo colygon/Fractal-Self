@@ -990,10 +990,16 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
+                      // Require user authentication before purchase
+                      if (!user) {
+                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
+                        return
+                      }
+                      
                       if (openCheckout) {
                         await openCheckout({
                           product_id: 'credits-50',
-                          success_url: window.location.origin + '?checkout=success',
+                          success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
@@ -1056,10 +1062,16 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
+                      // Require user authentication before purchase
+                      if (!user) {
+                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
+                        return
+                      }
+                      
                       if (openCheckout) {
                         await openCheckout({
                           product_id: 'credits-200',
-                          success_url: window.location.origin + '?checkout=success',
+                          success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
@@ -1106,10 +1118,16 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
+                      // Require user authentication before purchase
+                      if (!user) {
+                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
+                        return
+                      }
+                      
                       if (openCheckout) {
                         await openCheckout({
                           product_id: 'credits-500',
-                          success_url: window.location.origin + '?checkout=success',
+                          success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
@@ -1156,10 +1174,16 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
+                      // Require user authentication before purchase
+                      if (!user) {
+                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
+                        return
+                      }
+                      
                       if (openCheckout) {
                         await openCheckout({
                           product_id: 'credits-1000',
-                          success_url: window.location.origin + '?checkout=success',
+                          success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
                           cancel_url: window.location.origin + '?checkout=canceled'
                         })
                       } else {
