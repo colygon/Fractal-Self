@@ -2253,6 +2253,15 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   transform: scale(0.95);
 }
 
+/* Mobile-specific positioning for close button to avoid being hidden by notch/status bar */
+@media (max-width: 768px) {
+  .focusedCloseBtn {
+    top: max(env(safe-area-inset-top), 20px);
+    top: max(constant(safe-area-inset-top), 20px); /* iOS 11.0 fallback */
+    margin-top: 10px; /* Additional margin for better visibility */
+  }
+}
+
 .focusedCloseBtn .icon {
   color: #007AFF;
   font-size: 28px;
