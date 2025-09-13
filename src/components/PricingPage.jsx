@@ -189,7 +189,7 @@ export default function PricingPage({ onBack, onPlanSelect }) {
                 color: '#10B981'
               }}
             >
-              💎 You have {currentCredits} credits remaining
+              ⚡ You have {currentCredits} credits remaining
             </div>
           )}
         </div>

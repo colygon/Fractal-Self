@@ -109,6 +109,22 @@ export default async function handler(req, res) {
         }
       });
       
+      // Give new users 50 initial credits
+      try {
+        await callAutumnAPI('/track', 'POST', {
+          customer_id: customerId,
+          feature_id: 'welcome-credits',
+          usage: -50, // Negative usage adds credits
+          metadata: {
+            type: 'initial_credits',
+            amount: 50
+          }
+        });
+        console.log(`🎉 New user ${customerId} received 50 welcome credits`);
+      } catch (error) {
+        console.error('Failed to add welcome credits:', error);
+      }
+      
       res.json(customer);
       return;
     }
@@ -127,6 +143,23 @@ export default async function handler(req, res) {
             email: 'user@example.com'
           }
         });
+        
+        // Give new users 50 initial credits
+        try {
+          await callAutumnAPI('/track', 'POST', {
+            customer_id: customerId,
+            feature_id: 'welcome-credits',
+            usage: -50, // Negative usage adds credits
+            metadata: {
+              type: 'initial_credits',
+              amount: 50
+            }
+          });
+          console.log(`🎉 New user ${customerId} received 50 welcome credits`);
+        } catch (creditError) {
+          console.error('Failed to add welcome credits:', creditError);
+        }
+        
         res.json(newCustomer);
       }
       return;

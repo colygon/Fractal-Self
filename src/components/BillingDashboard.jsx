@@ -118,7 +118,7 @@ export default function BillingDashboard({ onBack, onUpgrade }) {
               }}
             >
               <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10B981', marginBottom: '8px' }}>
-                💎 {creditsRemaining}
+                ⚡ {creditsRemaining}
               </div>
               <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px' }}>
                 Credits Remaining

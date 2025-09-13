@@ -339,7 +339,7 @@ export default function App() {
             
             if (response.ok) {
               const result = await response.json()
-              console.log(`💎 Deducted 5 credits. Remaining: ${result.credits_remaining}`)
+              console.log(`⚡ Deducted 5 credits. Remaining: ${result.credits_remaining}`)
               // Refresh customer data to update UI
               refetchCustomer()
             } else {
@@ -582,13 +582,13 @@ export default function App() {
               const freePhotosRemaining = Math.max(0, freePhotosLimit - freePhotosUsed)
               
               if (credits > 0) {
-                return <span>{credits + '💎'}</span>
+                return <span>⚡{credits}</span>
               } else if (freePhotosRemaining > 0) {
                 return <span style={{ fontSize: '10px', fontWeight: '600' }}>
                   {freePhotosRemaining} FREE
                 </span>
               } else {
-                return <span style={{ fontSize: '11px', fontWeight: '600' }}>Upgrade</span>
+                return <span style={{ fontSize: '11px', fontWeight: '600' }}>Sign Up</span>
               }
             })()}
           </button>
@@ -663,7 +663,7 @@ export default function App() {
                   {creditsRemaining === 0 ? (
                     <span>⚡</span>
                   ) : (
-                    <span>{creditsRemaining + '💎'}</span>
+                    <span>⚡{creditsRemaining}</span>
                   )}
                 </button>
               )
