@@ -11,14 +11,24 @@
     />
   <!-- <link rel="stylesheet" href="/index.css"> -->
 <link rel="stylesheet" href="/index.css">
+
+<!-- Outseta Authentication & Billing -->
+<script>
+var o_options = {
+    domain: 'bananacam.outseta.com',
+    load: 'auth,customForm,emailList,leadCapture,nocode,profile,support',
+    monitorDom: true
+};
+</script>
+<script src="https://cdn.outseta.com/outseta.min.js"
+        data-options="o_options">
+</script>
 </head>
   <body>
     <div id="root"></div>
     <script type="importmap">
     {
       "imports": {
-        "@clerk/clerk-react": "https://esm.sh/@clerk/clerk-react@5",
-        "@clerk/clerk-react/": "https://esm.sh/@clerk/clerk-react@5/",
         "@google/genai": "https://esm.sh/@google/genai",
         "@google/genai/": "https://esm.sh/@google/genai/",
         "auto-zustand-selectors-hook": "https://esm.sh/auto-zustand-selectors-hook",

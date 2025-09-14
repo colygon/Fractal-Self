@@ -9,9 +9,8 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
-  useUser,
-  useClerk,
-} from '@clerk/clerk-react'
+  useOutseta,
+} from '../hooks/useOutseta.jsx'
 import PricingPage from './PricingPage.jsx'
 import SignUpPage from './SignUpPage.jsx'
 import BillingDashboard from './BillingDashboard.jsx'
@@ -168,11 +167,10 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user } = useUser()
-  const { openUserProfile } = useClerk()
+  const { user, openProfile } = useOutseta()
   
   // Debug logging
-  console.log('User state:', { user: !!user, userId: user?.id })
+  console.log('User state:', { user: !!user, userId: user?.Uid })
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth > 768)
@@ -680,7 +678,16 @@ export default function App() {
               })()}
               
               {/* User profile photo button */}
-              <div style={{ zIndex: 2, position: 'relative' }}>
+              <div 
+                style={{ 
+                  zIndex: 10, 
+                  position: 'relative',
+                  pointerEvents: 'auto'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <UserButton 
                   afterSignOutUrl={window.location.origin}
                   appearance={{
@@ -690,6 +697,8 @@ export default function App() {
                         height: '44px',
                         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
                         border: '2px solid rgba(255, 255, 255, 0.15)',
+                        position: 'relative',
+                        zIndex: 10
                       }
                     }
                   }}

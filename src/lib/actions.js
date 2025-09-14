@@ -553,10 +553,36 @@ export const cleanupCorruptedPhotos = () => {
 
 init().catch(e => console.error("Initialization failed", e));
 
+// Test API keys function for debugging
+export const testApiKeys = async () => {
+  const { model } = get()
+  console.log('Testing API keys...')
+  
+  try {
+    // Create a simple test prompt
+    const testPrompt = 'Generate a simple test image with the text "API TEST" in large letters on a white background.'
+    const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==' // 1x1 pixel
+    
+    const result = await gen({
+      model,
+      prompt: testPrompt,
+      inputFile: testImage,
+      signal: null
+    })
+    
+    console.log('✅ API test successful:', !!result)
+    return { success: true, result: !!result }
+  } catch (error) {
+    console.error('❌ API test failed:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
 // Make debug functions available globally for troubleshooting
 if (typeof window !== 'undefined') {
   window.debugPhotoStorage = debugPhotoStorage
   window.cleanupCorruptedPhotos = cleanupCorruptedPhotos
   window.clearAllPhotos = clearAllPhotos
   window.clearLastError = clearLastError
+  window.testApiKeys = testApiKeys
 }

@@ -902,6 +902,14 @@ export default {
     postcardText: 'WANTED: Dead or Alive!'
   },
 
+  seinfeld: {
+    name: 'Seinfeld',
+    emoji: '🥨',
+    prompt: 'Create a highly realistic photograph that places the person or people directly into the iconic TV show Seinfeld. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves as if they are guest stars or new characters in the show. Place them in one of the classic Seinfeld settings: Jerry\'s apartment with its distinctive kitchen, couch, and brick wall, or Monk\'s Cafe with the classic booth seating and retro diner atmosphere. Dress them in authentic 1990s casual New York style clothing - think oversized shirts, high-waisted jeans, vintage sneakers, or classic NYC outerwear. The lighting should match the show\'s characteristic bright, sitcom-style lighting with even illumination typical of 1990s television production. Include authentic Seinfeld-era details like vintage NYC elements, classic diner food, or 90s props. The scene should have that unmistakable Seinfeld vibe - casual, observational, and distinctly New York. The overall aesthetic should look like a genuine behind-the-scenes photo or promotional still from the actual show. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the show\'s iconic atmosphere. Apply all changes consistently to everyone, maintaining perfect character consistency.',
+    category: 'entertainment',
+    postcardText: 'What\'s the deal with postcards? Not that there\'s anything wrong with that!'
+  },
+
   labubu: {
     name: 'Labubu',
     emoji: '🧸',
