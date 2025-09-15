@@ -638,7 +638,7 @@ export default {
   owl: {
     name: 'Night Forest',
     emoji: '🦉',
-    prompt: 'Place the person or people in a mystical moonlit forest. It is crucial to preserve their exact facial features, expressions, and character. Add a wise owl, perched on an arm or a nearby branch. The scene should be magical, with moonbeams filtering through ancient trees, and the lighting applied consistently to all individuals for character consistency.',
+    prompt: 'Create a highly photorealistic, cinematic photograph of the person or people in a dense nighttime forest. It is crucial to preserve their exact facial features, expressions, and character. The forest should be incredibly realistic with detailed textures: rough bark on towering oak and pine trees, moss-covered fallen logs, scattered autumn leaves on the forest floor, and dense undergrowth with ferns and bushes. Add a magnificent, lifelike great horned owl with intricate feather detail, piercing yellow eyes, and natural coloring, either perched gracefully on their arm or on a nearby branch within arm\'s reach. The lighting should be dramatic and atmospheric: soft, silvery moonlight filtering through the tree canopy, creating dappled patterns of light and shadow on the forest floor and the people. Add subtle fog or mist weaving between the trees to enhance the mystical atmosphere. The scene must look like a professional wildlife photography shot taken with a high-end DSLR camera, with sharp focus on the subjects and owl while the background trees fade into atmospheric depth. Ensure all figures are portrayed in a flattering, natural, and realistic way, with the lighting applied consistently to all individuals for character consistency.',
     category: 'animal',
     postcardText: 'Hoo\'s there?'
   },
