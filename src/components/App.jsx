@@ -355,6 +355,12 @@ export default function App() {
           const newFreePhotosUsed = freePhotosUsed + 1
           localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
           console.log(`📸 Free photos used: ${newFreePhotosUsed}/10`)
+          
+          // Show sign-up popup after 5 photos
+          if (newFreePhotosUsed === 5) {
+            console.log('🎯 Showing sign-up popup after 5 photos')
+            setTimeout(() => setShowSignUp(true), 2000) // Show after 2 seconds delay
+          }
         }
       } catch (error) {
         console.error('Photo generation failed', error)
@@ -365,7 +371,7 @@ export default function App() {
         console.error('Failed to take photo', e)
       }
     }
-  }, [videoActive])
+  }, [videoActive, user, credits, deductCredits, setShowSignUp, setShowPricing])
 
   const stopTimers = useCallback(() => {
     clearTimeout(autoCaptureTimerRef.current)

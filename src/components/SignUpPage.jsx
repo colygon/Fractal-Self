@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React from 'react'
-import { SignInButton, SignUpButton, SignedIn, SignedOut } from '@clerk/clerk-react'
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from '../hooks/useOutseta.jsx'
 
 export default function SignUpPage({ onBack, onContinueToPricing }) {
   return (
@@ -49,7 +49,7 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
             }}
           >
             Transform your photos with <span style={{color: '#8B5CF6', fontWeight: '700'}}>100+ AI styles</span> and locations! 
-            Join thousands creating <span style={{color: '#EC4899', fontWeight: '700'}}>mind-blowing</span> AI photos every day.
+            You've taken <span style={{color: '#F59E0B', fontWeight: '700'}}>5 free photos</span> - ready to unlock unlimited creativity?
           </p>
         </div>
 
@@ -120,11 +120,7 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
           <SignedOut>
             {/* Sign Up Button */}
-            <SignUpButton 
-              mode="modal" 
-              redirectUrl={window.location.origin}
-              afterSignUpUrl={window.location.origin}
-            >
+            <SignUpButton>
               <button
                 onClick={() => console.log('SignUp button clicked')}
                 style={{
@@ -164,11 +160,7 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
             </div>
 
             {/* Sign In Button */}
-            <SignInButton 
-              mode="modal" 
-              redirectUrl={window.location.origin}
-              afterSignInUrl={window.location.origin}
-            >
+            <SignInButton>
               <button
                 onClick={() => console.log('SignIn button clicked')}
                 style={{
@@ -196,6 +188,40 @@ export default function SignUpPage({ onBack, onContinueToPricing }) {
                 Already have an account? Sign In
               </button>
             </SignInButton>
+
+            {/* View Plans Button */}
+            <button
+              onClick={() => {
+                console.log('View Plans button clicked')
+                onContinueToPricing()
+              }}
+              style={{
+                width: '300px',
+                padding: '12px 32px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(10px)',
+                marginTop: '8px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)'
+                e.target.style.color = 'white'
+                e.target.style.transform = 'translateY(-1px)'
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.05)'
+                e.target.style.color = 'rgba(255, 255, 255, 0.8)'
+                e.target.style.transform = 'translateY(0)'
+              }}
+            >
+              💰 View Plans & Pricing
+            </button>
           </SignedOut>
 
           <SignedIn>
