@@ -42,92 +42,7 @@ const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
 const modeKeys = Object.keys(modes)
 
-// Custom useCustomer implementation since autumn-js is broken
-function useCustomer() {
-  const [customer, setCustomer] = useState(null)
-  
-  const openCheckout = async ({ product_id, success_url, cancel_url }) => {
-    try {
-      // Call our custom Autumn API backend (production URL)
-      const apiBase = ''
-      
-      // Get auth token if available, but don't fail if Clerk isn't ready
-      let authToken = ''
-      try {
-        if (window.Clerk?.session) {
-          authToken = await window.Clerk.session.getToken()
-        }
-      } catch (authError) {
-        console.warn('Could not get Clerk token:', authError)
-      }
-      
-      const response = await fetch(`${apiBase}/api/autumn/checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ product_id, success_url, cancel_url })
-      })
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Checkout API error:', response.status, errorText)
-        throw new Error(`Checkout failed: ${response.status}`)
-      }
-      
-      const checkout = await response.json()
-      console.log('Checkout response:', checkout)
-      if (checkout.checkout_url) {
-        window.location.href = checkout.checkout_url
-      } else {
-        throw new Error('No checkout URL returned')
-      }
-    } catch (error) {
-      console.error('Checkout error:', error)
-      throw error
-    }
-  }
-  
-  // Load customer data function
-  const loadCustomer = async () => {
-    try {
-      const apiBase = ''
-      
-      // Get auth token if available
-      let authToken = ''
-      try {
-        if (window.Clerk?.session) {
-          authToken = await window.Clerk.session.getToken()
-        }
-      } catch (authError) {
-        console.warn('Could not get Clerk token for customer load:', authError)
-      }
-      
-      const response = await fetch(`${apiBase}/api/autumn/customers`, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      })
-      if (response.ok) {
-        const customerData = await response.json()
-        console.log('Loaded customer data:', customerData)
-        setCustomer(customerData)
-      } else {
-        console.warn('Failed to load customer:', response.status, await response.text())
-      }
-    } catch (error) {
-      console.error('Failed to load customer:', error)
-    }
-  }
-  
-  // Load customer data on mount
-  useEffect(() => {
-    loadCustomer()
-  }, [])
-  
-  return { customer, openCheckout, refetchCustomer: loadCustomer }
-}
+// Note: useCustomer removed - now using Outseta directly
 
 export default function App() {
   const photos = useStore.use.photos()
@@ -157,10 +72,7 @@ export default function App() {
   const [showBilling, setShowBilling] = useState(false)
   const [showSignUp, setShowSignUp] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
-  const { customer, openCheckout, refetchCustomer } = useCustomer()
-  
-  // Debug logging
-  console.log('useCustomer hook data:', { customer, openCheckout: !!openCheckout })
+  // Note: customer functionality now handled by Outseta
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
   const [desktopMirror, setDesktopMirror] = useState(true)

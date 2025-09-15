@@ -285,8 +285,14 @@ export const SignInButton = ({ children, className, style, onClick }) => {
     if (onClick) onClick(e)
   }
 
-  if (children && typeof children === 'function') {
-    return children({ onClick: handleClick })
+  // Always use render prop pattern to avoid button nesting
+  if (children) {
+    return React.cloneElement(children, {
+      onClick: (e) => {
+        handleClick(e)
+        if (children.props.onClick) children.props.onClick(e)
+      }
+    })
   }
 
   return (
@@ -295,7 +301,7 @@ export const SignInButton = ({ children, className, style, onClick }) => {
       className={className}
       style={style}
     >
-      {children || 'Sign In'}
+      Sign In
     </button>
   )
 }
@@ -309,8 +315,14 @@ export const SignUpButton = ({ children, className, style, onClick }) => {
     if (onClick) onClick(e)
   }
 
-  if (children && typeof children === 'function') {
-    return children({ onClick: handleClick })
+  // Always use render prop pattern to avoid button nesting
+  if (children) {
+    return React.cloneElement(children, {
+      onClick: (e) => {
+        handleClick(e)
+        if (children.props.onClick) children.props.onClick(e)
+      }
+    })
   }
 
   return (
@@ -319,7 +331,7 @@ export const SignUpButton = ({ children, className, style, onClick }) => {
       className={className}
       style={style}
     >
-      {children || 'Sign Up'}
+      Sign Up
     </button>
   )
 }
