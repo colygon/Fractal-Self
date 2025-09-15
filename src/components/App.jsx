@@ -580,7 +580,7 @@ export default function App() {
                   textDecoration: 'underline',
                   textUnderlineOffset: '2px'
                 }}>
-                  Already have an account? Sign in
+                  Sign in
                 </button>
               </SignInButton>
             </div>
