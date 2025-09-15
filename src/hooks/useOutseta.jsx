@@ -18,14 +18,18 @@ export const useOutseta = () => {
           // Poll for Outseta to be available
           const checkOutseta = () => {
             if (typeof window.Outseta !== 'undefined') {
+              console.log('Outseta loaded, initializing user data...')
               loadUserData()
+              setupAuthEvents()
             } else {
               setTimeout(checkOutseta, 100)
             }
           }
           checkOutseta()
         } else {
+          console.log('Outseta already loaded, initializing user data...')
           loadUserData()
+          setupAuthEvents()
         }
       } catch (error) {
         console.error('Error initializing Outseta:', error)
@@ -35,15 +39,20 @@ export const useOutseta = () => {
 
     const loadUserData = async () => {
       try {
+        console.log('Loading user data from Outseta...')
+        
         // Get current user
         const currentUser = await window.Outseta.getUser()
+        console.log('Outseta user result:', currentUser)
         
         if (currentUser && currentUser.Email) {
+          console.log('User found:', currentUser.Email)
           setUser(currentUser)
           setIsSignedIn(true)
           // Load user credits
           await loadCredits()
         } else {
+          console.log('No user found or missing email')
           setUser(null)
           setIsSignedIn(false)
           setCredits(0)
@@ -76,41 +85,66 @@ export const useOutseta = () => {
       }
     }
 
-    // Listen for Outseta authentication events
-    const handleAuthEvents = () => {
+    // Setup authentication event listeners
+    const setupAuthEvents = () => {
       if (typeof window.Outseta !== 'undefined') {
+        console.log('Setting up Outseta auth event listeners...')
+        
         // Listen for login/logout events
         window.Outseta.on('accessToken.set', () => {
-          console.log('Outseta: User logged in')
-          loadUserData()
+          console.log('Outseta: User logged in, reloading user data...')
+          setTimeout(() => loadUserData(), 500) // Small delay to ensure token is set
         })
 
         window.Outseta.on('user.logout', () => {
           console.log('Outseta: User logged out')
           setUser(null)
           setIsSignedIn(false)
+          setCredits(0)
+        })
+
+        // Also listen for modal close events in case user logs in
+        window.Outseta.on('modal.close', () => {
+          console.log('Outseta: Modal closed, checking auth status...')
+          setTimeout(() => loadUserData(), 1000) // Delay to allow for redirect processing
         })
       }
     }
 
+    // Listen for window focus to check auth status when user returns
+    const handleWindowFocus = () => {
+      if (typeof window.Outseta !== 'undefined') {
+        console.log('Window focused, checking auth status...')
+        loadUserData()
+      }
+    }
+
+    window.addEventListener('focus', handleWindowFocus)
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus)
+    }
+
     initOutseta()
-    handleAuthEvents()
   }, [])
 
   const openSignUp = () => {
     if (typeof window.Outseta !== 'undefined') {
+      console.log('Opening Outseta sign-up modal...')
       window.Outseta.auth.open({
         widgetMode: 'register',
-        redirectUrl: window.location.origin
+        redirectUrl: window.location.href // Use current URL instead of just origin
       })
     }
   }
 
   const openSignIn = () => {
     if (typeof window.Outseta !== 'undefined') {
+      console.log('Opening Outseta sign-in modal...')
       window.Outseta.auth.open({
         widgetMode: 'login',
-        redirectUrl: window.location.origin
+        redirectUrl: window.location.href // Use current URL instead of just origin
       })
     }
   }
