@@ -8,6 +8,7 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
+  SignUpButton,
   UserButton,
   useOutseta,
 } from '../hooks/useOutseta.jsx'
@@ -533,97 +534,56 @@ export default function App() {
       <header style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 9999 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
-          {/* Credits/Balance button - always visible */}
-          <button
-            onClick={() => {
-              // Show dashboard for existing customers, sign up for unauthenticated, pricing for authenticated free users
-              const currentPlan = customer?.subscription?.product_id
-              if (currentPlan && currentPlan !== 'free') {
-                setShowBilling(true)
-              } else if (user) {
-                setShowPricing(true)
-              } else {
-                setShowSignUp(true)
-              }
-            }}
-            style={(() => {
-              const credits = customer?.usage?.credits || 0
-              const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-              const freePhotosLimit = 10
-              const freePhotosRemaining = Math.max(0, freePhotosLimit - freePhotosUsed)
-              const needsUpgrade = credits === 0 && freePhotosRemaining === 0
-              const isRectangular = needsUpgrade || freePhotosRemaining > 0
-              
-              return {
-                background: needsUpgrade
-                  ? 'linear-gradient(135deg, #8B5CF6, #EC4899)'
-                  : freePhotosRemaining > 0
-                  ? 'linear-gradient(135deg, #10B981, #059669)'
-                  : 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: isRectangular ? '8px' : '50%',
-                width: isRectangular ? 'auto' : '50px',
-                height: isRectangular ? 'auto' : '50px',
-                padding: isRectangular ? '8px 16px' : '0',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: '10px',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-              }
-            })()}
-            onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-            onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-          >
-            {(() => {
-              const credits = customer?.usage?.credits || 0
-              const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-              const freePhotosLimit = 10
-              const freePhotosRemaining = Math.max(0, freePhotosLimit - freePhotosUsed)
-              
-              if (credits > 0) {
-                return <span>⚡{credits}</span>
-              } else if (freePhotosRemaining > 0) {
-                return <span style={{ fontSize: '10px', fontWeight: '600' }}>
-                  {freePhotosRemaining} FREE
-                </span>
-              } else {
-                return <span style={{ fontSize: '11px', fontWeight: '600' }}>Sign Up</span>
-              }
-            })()}
-          </button>
 
           <SignedOut>
-            <SignInButton mode="modal">
-              <button style={{
-                background: 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '12px',
-                padding: '10px 16px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'inherit',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                minWidth: '80px'
-              }}>
-                Sign In
-              </button>
-            </SignInButton>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              {/* Primary CTA - Sign Up */}
+              <SignUpButton>
+                <button style={{
+                  background: 'linear-gradient(45deg, #007AFF, #0056CC)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '12px 20px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 6px 20px rgba(0, 122, 255, 0.4)',
+                  minWidth: '120px',
+                  textTransform: 'none'
+                }}>
+                  Get Started
+                </button>
+              </SignUpButton>
+              
+              {/* Secondary action - Sign In */}
+              <SignInButton>
+                <button style={{
+                  background: 'transparent',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.2s ease',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px'
+                }}>
+                  Already have an account? Sign in
+                </button>
+              </SignInButton>
+            </div>
           </SignedOut>
           
           <SignedIn>
@@ -676,6 +636,25 @@ export default function App() {
                   </div>
                 )
               })()}
+              
+              {/* Welcome message */}
+              {user && (
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.75)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '12px',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  fontFamily: 'inherit',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                }}>
+                  Welcome, {user.FirstName || user.Email?.split('@')[0] || 'User'}!
+                </div>
+              )}
               
               {/* User profile photo button */}
               <div 

@@ -77,7 +77,8 @@ export const useOutseta = () => {
   const openSignUp = () => {
     if (typeof window.Outseta !== 'undefined') {
       window.Outseta.auth.open({
-        widgetMode: 'register'
+        widgetMode: 'register',
+        redirectUrl: window.location.origin
       })
     }
   }
@@ -85,7 +86,8 @@ export const useOutseta = () => {
   const openSignIn = () => {
     if (typeof window.Outseta !== 'undefined') {
       window.Outseta.auth.open({
-        widgetMode: 'login'
+        widgetMode: 'login',
+        redirectUrl: window.location.origin
       })
     }
   }
