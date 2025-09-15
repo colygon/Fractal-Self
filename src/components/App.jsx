@@ -168,7 +168,7 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user, openProfile } = useOutseta()
+  const { user, credits, deductCredits } = useOutseta()
   
   // Debug logging
   console.log('User state:', { user: !!user, userId: user?.Uid })
@@ -297,30 +297,24 @@ export default function App() {
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
       
-      // Check if user has sufficient credits or free photos remaining
-      const creditsRemaining = customer?.usage?.credits || 0
-      const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-      const freePhotosLimit = 10
-      
-      // If user has credits, use them
-      if (creditsRemaining >= 5) {
-        // User has credits, proceed normally
-      } 
-      // If no credits but still have free photos available
-      else if (freePhotosUsed < freePhotosLimit) {
-        // User can use free photos, will increment counter after successful generation
-        console.log(`Using free photo ${freePhotosUsed + 1} of ${freePhotosLimit}`)
-      } 
-      // No credits and no free photos left
-      else {
-        console.warn('No credits or free photos remaining')
-        // Show sign up page first for unauthenticated users, pricing for authenticated
-        if (user) {
+      // Check if user has sufficient credits
+      if (user) {
+        // Signed in user - check credits
+        if (credits < 5) {
+          console.warn('Insufficient credits')
           setShowPricing(true)
-        } else {
-          setShowSignUp(true)
+          return
         }
-        return
+      } else {
+        // Not signed in - allow free photos with limit
+        const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+        const freePhotosLimit = 10
+        
+        if (freePhotosUsed >= freePhotosLimit) {
+          console.warn('Free photo limit reached')
+          setShowSignUp(true)
+          return
+        }
       }
       
       // Take the photo (credit tracking will be handled by Autumn backend)
@@ -328,37 +322,39 @@ export default function App() {
         await snapPhoto(dataURL, signal, user)
         console.log('✅ Photo generated successfully')
         
-        // Deduct credits if user has paid credits, otherwise increment free photo counter
-        if (creditsRemaining >= 5) {
-          // User has credits, deduct 5 credits via Autumn API
+        // Track usage and deduct credits
+        if (user) {
+          // Signed in user - track usage via Outseta API and deduct local credits
           try {
-            const response = await fetch('/api/autumn/track', {
+            const response = await fetch('/api/outseta/usage', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.primaryEmailAddress?.emailAddress || 'anonymous'}`
               },
               body: JSON.stringify({
-                credits: 5 // 5 credits per photo
+                userEmail: user.Email,
+                amount: 1 // 1 photo generated
               })
             })
-            
+
             if (response.ok) {
-              const result = await response.json()
-              console.log(`⚡ Deducted 5 credits. Remaining: ${result.credits_remaining}`)
-              // Refresh customer data to update UI
-              refetchCustomer()
+              console.log('📊 Usage tracked in Outseta')
             } else {
-              console.error('Failed to deduct credits:', await response.text())
+              console.warn('Failed to track usage in Outseta:', await response.text())
             }
           } catch (error) {
-            console.error('Error deducting credits:', error)
+            console.error('Error tracking usage:', error)
           }
-        } else if (freePhotosUsed < freePhotosLimit) {
-          // User is using free photos, increment counter
+
+          // Also deduct from local credits for immediate UI feedback
+          deductCredits(5)
+          console.log(`⚡ Deducted 5 credits. Remaining: ${credits - 5}`)
+        } else {
+          // Not signed in - increment free photo counter
+          const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
           const newFreePhotosUsed = freePhotosUsed + 1
           localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
-          console.log(`📸 Free photos used: ${newFreePhotosUsed}/${freePhotosLimit}`)
+          console.log(`📸 Free photos used: ${newFreePhotosUsed}/10`)
         }
       } catch (error) {
         console.error('Photo generation failed', error)
@@ -588,56 +584,9 @@ export default function App() {
           
           <SignedIn>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-              {/* Credits display */}
-              {(() => {
-                const creditsRemaining = customer?.usage?.credits || 0
-                return (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent event bubbling
-                      // Show dashboard for existing customers, pricing for authenticated free users
-                      const currentPlan = customer?.subscription?.product_id
-                      if (currentPlan && currentPlan !== 'free') {
-                        setShowBilling(true)
-                      } else {
-                        setShowPricing(true)
-                      }
-                    }}
-                    style={{
-                      background: creditsRemaining === 0 
-                        ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' 
-                        : 'rgba(0, 0, 0, 0.75)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)',
-                      color: 'white',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '20px',
-                      padding: '6px 12px',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: 'inherit',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                      minWidth: '50px',
-                      zIndex: 1
-                    }}
-                    onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                  >
-                    {creditsRemaining === 0 ? (
-                      <span>⚡0</span>
-                    ) : (
-                      <span>⚡{creditsRemaining}</span>
-                    )}
-                  </div>
-                )
-              })()}
               
-              {/* Welcome message */}
+              
+              {/* Credits display */}
               {user && (
                 <div style={{
                   background: 'rgba(0, 0, 0, 0.75)',
@@ -652,7 +601,7 @@ export default function App() {
                   fontFamily: 'inherit',
                   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
                 }}>
-                  Welcome, {user.FirstName || user.Email?.split('@')[0] || 'User'}!
+                  {credits} credits
                 </div>
               )}
               

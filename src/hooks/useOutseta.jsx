@@ -8,6 +8,7 @@ export const useOutseta = () => {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSignedIn, setIsSignedIn] = useState(false)
+  const [credits, setCredits] = useState(0)
 
   useEffect(() => {
     const initOutseta = async () => {
@@ -40,16 +41,38 @@ export const useOutseta = () => {
         if (currentUser && currentUser.Email) {
           setUser(currentUser)
           setIsSignedIn(true)
+          // Load user credits
+          await loadCredits()
         } else {
           setUser(null)
           setIsSignedIn(false)
+          setCredits(0)
         }
       } catch (error) {
         console.log('No user signed in or error getting user:', error)
         setUser(null)
         setIsSignedIn(false)
+        setCredits(0)
       } finally {
         setIsLoading(false)
+      }
+    }
+
+    const loadCredits = async () => {
+      try {
+        // For now, we'll use localStorage to track credits
+        // In a real implementation, this would come from Outseta's API
+        const savedCredits = localStorage.getItem('userCredits')
+        if (savedCredits) {
+          setCredits(parseInt(savedCredits))
+        } else {
+          // Default credits for new users
+          setCredits(500)
+          localStorage.setItem('userCredits', '500')
+        }
+      } catch (error) {
+        console.error('Error loading credits:', error)
+        setCredits(0)
       }
     }
 
@@ -112,10 +135,18 @@ export const useOutseta = () => {
     }
   }
 
+  const deductCredits = (amount) => {
+    const newCredits = Math.max(0, credits - amount)
+    setCredits(newCredits)
+    localStorage.setItem('userCredits', newCredits.toString())
+  }
+
   return {
     user,
     isLoading,
     isSignedIn,
+    credits,
+    deductCredits,
     openSignUp,
     openSignIn,
     openProfile,
