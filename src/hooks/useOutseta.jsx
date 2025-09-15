@@ -40,13 +40,26 @@ export const useOutseta = () => {
     const loadUserData = async () => {
       try {
         console.log('Loading user data from Outseta...')
+        console.log('Outseta object available:', typeof window.Outseta)
+        
+        if (typeof window.Outseta === 'undefined') {
+          console.error('Outseta not loaded yet')
+          setIsLoading(false)
+          return
+        }
+
+        // Check if Outseta has access token
+        const accessToken = window.Outseta.getAccessToken?.()
+        console.log('Access token present:', !!accessToken)
         
         // Get current user
         const currentUser = await window.Outseta.getUser()
         console.log('Outseta user result:', currentUser)
+        console.log('User properties:', currentUser ? Object.keys(currentUser) : 'No user')
         
-        if (currentUser && currentUser.Email) {
-          console.log('User found:', currentUser.Email)
+        if (currentUser && (currentUser.Email || currentUser.email)) {
+          const email = currentUser.Email || currentUser.email
+          console.log('User found:', email)
           setUser(currentUser)
           setIsSignedIn(true)
           // Load user credits
@@ -121,9 +134,18 @@ export const useOutseta = () => {
 
     window.addEventListener('focus', handleWindowFocus)
 
-    // Cleanup event listener
+    // Set up periodic auth check (every 30 seconds) to catch missed events
+    const authCheckInterval = setInterval(() => {
+      if (typeof window.Outseta !== 'undefined' && !isLoading) {
+        console.log('Periodic auth check...')
+        loadUserData()
+      }
+    }, 30000)
+
+    // Cleanup event listeners and interval
     return () => {
       window.removeEventListener('focus', handleWindowFocus)
+      clearInterval(authCheckInterval)
     }
 
     initOutseta()
@@ -131,21 +153,31 @@ export const useOutseta = () => {
 
   const openSignUp = () => {
     if (typeof window.Outseta !== 'undefined') {
-      console.log('Opening Outseta sign-up modal...')
-      window.Outseta.auth.open({
-        widgetMode: 'register',
-        redirectUrl: window.location.href // Use current URL instead of just origin
-      })
+      console.log('Opening Outseta sign-up...')
+      // Try both modal and direct redirect approaches
+      try {
+        window.Outseta.auth.open({
+          widgetMode: 'register'
+        })
+      } catch (error) {
+        console.log('Modal failed, trying redirect...')
+        window.location.href = 'https://bananacam.outseta.com/auth?widgetMode=register&redirectUrl=' + encodeURIComponent(window.location.href)
+      }
     }
   }
 
   const openSignIn = () => {
     if (typeof window.Outseta !== 'undefined') {
-      console.log('Opening Outseta sign-in modal...')
-      window.Outseta.auth.open({
-        widgetMode: 'login',
-        redirectUrl: window.location.href // Use current URL instead of just origin
-      })
+      console.log('Opening Outseta sign-in...')
+      // Try both modal and direct redirect approaches
+      try {
+        window.Outseta.auth.open({
+          widgetMode: 'login'
+        })
+      } catch (error) {
+        console.log('Modal failed, trying redirect...')
+        window.location.href = 'https://bananacam.outseta.com/auth?widgetMode=login&redirectUrl=' + encodeURIComponent(window.location.href)
+      }
     }
   }
 
