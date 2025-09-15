@@ -13,24 +13,57 @@ export const useOutseta = () => {
   useEffect(() => {
     const initOutseta = async () => {
       try {
-        // Wait for Outseta to load
-        if (typeof window.Outseta === 'undefined') {
-          // Poll for Outseta to be available
-          const checkOutseta = () => {
+        // Check for access token in URL parameters (in case of redirect)
+        const urlParams = new URLSearchParams(window.location.search)
+        const accessToken = urlParams.get('access_token')
+        
+        if (accessToken) {
+          console.log('Found access token in URL, setting in Outseta...')
+          // Clean the URL
+          window.history.replaceState({}, document.title, window.location.pathname)
+          
+          // Wait for Outseta to load, then set the token
+          const setTokenWhenReady = () => {
             if (typeof window.Outseta !== 'undefined') {
-              console.log('Outseta loaded, initializing user data...')
-              loadUserData()
-              setupAuthEvents()
+              try {
+                window.Outseta.setAccessToken(accessToken)
+                console.log('Access token set from URL parameter')
+                loadUserData()
+                setupAuthEvents()
+              } catch (error) {
+                console.error('Error setting access token:', error)
+                fallbackToNormalInit()
+              }
             } else {
-              setTimeout(checkOutseta, 100)
+              setTimeout(setTokenWhenReady, 100)
             }
           }
-          checkOutseta()
-        } else {
-          console.log('Outseta already loaded, initializing user data...')
-          loadUserData()
-          setupAuthEvents()
+          setTokenWhenReady()
+          return
         }
+
+        // Normal initialization
+        const fallbackToNormalInit = () => {
+          if (typeof window.Outseta === 'undefined') {
+            // Poll for Outseta to be available
+            const checkOutseta = () => {
+              if (typeof window.Outseta !== 'undefined') {
+                console.log('Outseta loaded, initializing user data...')
+                loadUserData()
+                setupAuthEvents()
+              } else {
+                setTimeout(checkOutseta, 100)
+              }
+            }
+            checkOutseta()
+          } else {
+            console.log('Outseta already loaded, initializing user data...')
+            loadUserData()
+            setupAuthEvents()
+          }
+        }
+        
+        fallbackToNormalInit()
       } catch (error) {
         console.error('Error initializing Outseta:', error)
         setIsLoading(false)
