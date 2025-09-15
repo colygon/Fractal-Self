@@ -141,12 +141,19 @@ export const useOutseta = () => {
     localStorage.setItem('userCredits', newCredits.toString())
   }
 
+  const refundCredits = (amount) => {
+    const newCredits = credits + amount
+    setCredits(newCredits)
+    localStorage.setItem('userCredits', newCredits.toString())
+  }
+
   return {
     user,
     isLoading,
     isSignedIn,
     credits,
     deductCredits,
+    refundCredits,
     openSignUp,
     openSignIn,
     openProfile,

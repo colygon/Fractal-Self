@@ -168,7 +168,7 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user, credits, deductCredits } = useOutseta()
+  const { user, credits, deductCredits, refundCredits } = useOutseta()
   
   // Debug logging
   console.log('User state:', { user: !!user, userId: user?.Uid })
@@ -316,54 +316,68 @@ export default function App() {
           return
         }
       }
+
+      // Deduct credits IMMEDIATELY when photo is taken (before AI generation)
+      if (user) {
+        // Signed in user - deduct local credits for immediate UI feedback
+        deductCredits(5)
+        console.log(`⚡ Deducted 5 credits immediately. Remaining: ${credits - 5}`)
+        
+        // Track usage via Outseta API (fire and forget - don't block photo generation)
+        fetch('/api/outseta/usage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userEmail: user.Email,
+            amount: 1 // 1 photo taken
+          })
+        }).then(response => {
+          if (response.ok) {
+            console.log('📊 Usage tracked in Outseta')
+          } else {
+            console.warn('Failed to track usage in Outseta:', response.status)
+          }
+        }).catch(error => {
+          console.error('Error tracking usage:', error)
+        })
+      } else {
+        // Not signed in - increment free photo counter immediately
+        const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+        const newFreePhotosUsed = freePhotosUsed + 1
+        localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
+        console.log(`📸 Free photos used immediately: ${newFreePhotosUsed}/10`)
+        
+        // Show sign-up popup after 5 photos
+        if (newFreePhotosUsed === 5) {
+          console.log('🎯 Showing sign-up popup after 5 photos')
+          setTimeout(() => setShowSignUp(true), 2000) // Show after 2 seconds delay
+        }
+      }
       
-      // Take the photo (credit tracking will be handled by Autumn backend)
+      // Take the photo (AI generation)
       try {
         await snapPhoto(dataURL, signal, user)
         console.log('✅ Photo generated successfully')
-        
-        // Track usage and deduct credits
-        if (user) {
-          // Signed in user - track usage via Outseta API and deduct local credits
-          try {
-            const response = await fetch('/api/outseta/usage', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                userEmail: user.Email,
-                amount: 1 // 1 photo generated
-              })
-            })
-
-            if (response.ok) {
-              console.log('📊 Usage tracked in Outseta')
-            } else {
-              console.warn('Failed to track usage in Outseta:', await response.text())
-            }
-          } catch (error) {
-            console.error('Error tracking usage:', error)
-          }
-
-          // Also deduct from local credits for immediate UI feedback
-          deductCredits(5)
-          console.log(`⚡ Deducted 5 credits. Remaining: ${credits - 5}`)
-        } else {
-          // Not signed in - increment free photo counter
-          const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-          const newFreePhotosUsed = freePhotosUsed + 1
-          localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
-          console.log(`📸 Free photos used: ${newFreePhotosUsed}/10`)
-          
-          // Show sign-up popup after 5 photos
-          if (newFreePhotosUsed === 5) {
-            console.log('🎯 Showing sign-up popup after 5 photos')
-            setTimeout(() => setShowSignUp(true), 2000) // Show after 2 seconds delay
-          }
-        }
       } catch (error) {
         console.error('Photo generation failed', error)
+        
+        // Refund credits if generation fails (only for signed in users)
+        if (user) {
+          // Add back the 5 credits we deducted
+          refundCredits(5)
+          console.log(`💰 Refunded 5 credits due to generation failure. New balance: ${credits + 5}`)
+        } else {
+          // For free users, decrement the counter since generation failed
+          const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
+          if (freePhotosUsed > 0) {
+            const newFreePhotosUsed = freePhotosUsed - 1
+            localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
+            console.log(`🔄 Refunded free photo due to generation failure. Count: ${newFreePhotosUsed}/10`)
+          }
+        }
+        
         throw error
       }
     } catch (e) {
@@ -371,7 +385,7 @@ export default function App() {
         console.error('Failed to take photo', e)
       }
     }
-  }, [videoActive, user, credits, deductCredits, setShowSignUp, setShowPricing])
+  }, [videoActive, user, credits, deductCredits, refundCredits, setShowSignUp, setShowPricing])
 
   const stopTimers = useCallback(() => {
     clearTimeout(autoCaptureTimerRef.current)
@@ -533,7 +547,7 @@ export default function App() {
         liveMode: liveMode
       })}
     >
-      <header style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 9999 }}>
+      <header style={{ position: 'absolute', top: '30px', right: '10px', zIndex: 9999 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
 
