@@ -608,19 +608,36 @@ export default function App() {
               
               {/* Credits display */}
               {user && (
-                <div style={{
-                  background: 'rgba(0, 0, 0, 0.75)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: '12px',
-                  padding: '8px 12px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  fontFamily: 'inherit',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                }}>
+                <div 
+                  onClick={() => {
+                    window.open('https://bananacam.outseta.com/profile?tab=planChange#o-authenticated', '_blank')
+                  }}
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.75)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    fontFamily: 'inherit',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(0, 0, 0, 0.85)'
+                    e.target.style.transform = 'translateY(-1px)'
+                    e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(0, 0, 0, 0.75)'
+                    e.target.style.transform = 'translateY(0)'
+                    e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+                  }}
+                >
                   {credits} credits
                 </div>
               )}
