@@ -11,6 +11,10 @@ export const useOutseta = () => {
   const [credits, setCredits] = useState(0)
 
   useEffect(() => {
+    console.log('🔵 useOutseta hook initializing...')
+    console.log('🔵 Current domain:', window.location.hostname)
+    console.log('🔵 Outseta available at startup:', typeof window.Outseta)
+    
     const initOutseta = async () => {
       try {
         // Check for access token in URL parameters (in case of redirect)
@@ -45,19 +49,32 @@ export const useOutseta = () => {
         // Normal initialization
         const fallbackToNormalInit = () => {
           if (typeof window.Outseta === 'undefined') {
+            console.log('🟡 Outseta not loaded yet, polling...')
+            let pollCount = 0
             // Poll for Outseta to be available
             const checkOutseta = () => {
+              pollCount++
               if (typeof window.Outseta !== 'undefined') {
-                console.log('Outseta loaded, initializing user data...')
+                console.log('🟢 Outseta loaded after', pollCount, 'polls, initializing user data...')
+                console.log('🟢 Outseta methods available:', Object.keys(window.Outseta || {}))
                 loadUserData()
                 setupAuthEvents()
               } else {
+                if (pollCount % 50 === 0) { // Log every 5 seconds
+                  console.log('🟡 Still waiting for Outseta...', pollCount, 'polls')
+                }
+                if (pollCount > 200) { // Stop after 20 seconds
+                  console.error('🔴 Outseta failed to load after 20 seconds')
+                  setIsLoading(false)
+                  return
+                }
                 setTimeout(checkOutseta, 100)
               }
             }
             checkOutseta()
           } else {
-            console.log('Outseta already loaded, initializing user data...')
+            console.log('🟢 Outseta already loaded, initializing user data...')
+            console.log('🟢 Outseta methods available:', Object.keys(window.Outseta || {}))
             loadUserData()
             setupAuthEvents()
           }
