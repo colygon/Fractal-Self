@@ -30,8 +30,10 @@ import {
   clearLastError
 } from '../lib/actions'
 import useStore from '../lib/store'
+const set = useStore.setState
 import imageData from '../lib/imageData'
 import modes from '../lib/modes'
+import { CONFIG } from '../lib/constants'
 
 const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
@@ -68,7 +70,7 @@ export default function App() {
   const [showPricing, setShowPricing] = useState(false)
   // Billing functionality handled by RevenueCat in guest mode
 
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > CONFIG.DESKTOP_BREAKPOINT)
   const [desktopMirror, setDesktopMirror] = useState(true)
   const [facingMode, setFacingMode] = useState('user')
 
@@ -76,11 +78,9 @@ export default function App() {
   const pipVideoRef = useRef(null)
   const { user, credits, deductCredits, refundCredits, hasActiveSubscription } = useAuth()
   
-  // Debug logging
-  console.log('User state:', { user: !!user, userId: user?.Uid })
 
   useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth > 768)
+    const checkDesktop = () => setIsDesktop(window.innerWidth > CONFIG.DESKTOP_BREAKPOINT)
     window.addEventListener('resize', checkDesktop)
     return () => window.removeEventListener('resize', checkDesktop)
   }, [])
@@ -90,6 +90,7 @@ export default function App() {
   const genControllersRef = useRef([])
   const autoCaptureTimerRef = useRef(null)
   const countdownTimerRef = useRef(null)
+  const countdownIntervalRef = useRef(null)
 
   const latestFinishedPhoto = photos.find(p => !p.isBusy && imageData.outputs[p.id]?.startsWith('data:image/'))
   const replayPhotos = selectedPhotos.length > 0 
@@ -131,7 +132,7 @@ export default function App() {
   const startVideo = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {width: {ideal: 1920}, height: {ideal: 1080}, facingMode: {ideal: facingMode}},
+        video: {width: {ideal: CONFIG.VIDEO_DIMENSIONS.WIDTH}, height: {ideal: CONFIG.VIDEO_DIMENSIONS.HEIGHT}, facingMode: {ideal: facingMode}},
         audio: false
       })
       streamRef.current = stream
@@ -178,7 +179,7 @@ export default function App() {
       // Trigger flash effect only if requested
       if (showFlashEffect) {
         setShowFlash(true)
-        setTimeout(() => setShowFlash(false), 300)
+        setTimeout(() => setShowFlash(false), CONFIG.FLASH_DURATION)
       }
 
       const {videoWidth, videoHeight} = video
@@ -196,75 +197,47 @@ export default function App() {
       ctx.drawImage(video, 0, 0, videoWidth, videoHeight)
 
       const dataURL = canvas.toDataURL('image/jpeg')
-      if (dataURL.length < 1000) {
+      if (dataURL.length < CONFIG.MIN_IMAGE_DATA_SIZE) {
         console.error('Generated image data too small', { length: dataURL.length })
+        // Show user feedback for failed capture
+        set(state => {
+          state.lastError = {
+            message: 'Failed to capture photo. Please try again.',
+            timestamp: Date.now(),
+            type: 'capture_error'
+          }
+        })
         return
       }
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
       
-      // Check if user has sufficient credits
-      if (user) {
-        // Signed in user - check credits
-        if (credits < 5) {
-          console.warn('Insufficient credits')
-          setShowPricing(true)
-          return
-        }
-      } else {
-        // Not signed in - allow free photos with limit
-        const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-        const freePhotosLimit = 10
-        
-        if (freePhotosUsed >= freePhotosLimit) {
-          console.warn('Free photo limit reached')
-          setShowBilling(true)
-          return
-        }
+      // Check if user has sufficient credits (non-premium only)
+      if (!hasActiveSubscription && credits < CONFIG.PHOTO_COST) {
+        console.warn('Insufficient credits for capture')
+        setShowBilling(true)
+        return
       }
 
-      // Deduct credits IMMEDIATELY when photo is taken (before AI generation)
-      if (user) {
-        // Signed in user - deduct local credits for immediate UI feedback
-        deductCredits(5)
-        console.log(`⚡ Deducted 5 credits immediately. Remaining: ${credits - 5}`)
-        
-        // TODO: Track usage via RevenueCat for analytics
-        console.log('📊 Photo generated', { userId: user?.id, credits: credits - 5 })
+      // Deduct credits immediately to keep UI responsive for non-premium users
+      if (!hasActiveSubscription) {
+        deductCredits(CONFIG.PHOTO_COST)
       } else {
-        // Not signed in - increment free photo counter immediately
-        const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-        const newFreePhotosUsed = freePhotosUsed + 1
-        localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
-        console.log(`📸 Free photos used immediately: ${newFreePhotosUsed}/10`)
-        
-        // Show billing modal after 5 photos to encourage upgrade
-        if (newFreePhotosUsed === 5) {
-          console.log('🎯 Showing billing modal after 5 photos')
-          setTimeout(() => setShowBilling(true), 2000) // Show after 2 seconds delay
-        }
+      }
+
+      // TODO: Track usage via RevenueCat for analytics
+      if (user) {
       }
       
       // Take the photo (AI generation)
       try {
         await snapPhoto(dataURL, signal, user)
-        console.log('✅ Photo generated successfully')
       } catch (error) {
         console.error('Photo generation failed', error)
         
-        // Refund credits if generation fails (only for signed in users)
-        if (user) {
-          // Add back the 5 credits we deducted
-          refundCredits(5)
-          console.log(`💰 Refunded 5 credits due to generation failure. New balance: ${credits + 5}`)
-        } else {
-          // For free users, decrement the counter since generation failed
-          const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
-          if (freePhotosUsed > 0) {
-            const newFreePhotosUsed = freePhotosUsed - 1
-            localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
-            console.log(`🔄 Refunded free photo due to generation failure. Count: ${newFreePhotosUsed}/10`)
-          }
+        // Refund credits if generation fails (only for users without unlimited access)
+        if (!hasActiveSubscription) {
+          refundCredits(CONFIG.PHOTO_COST)
         }
         
         throw error
@@ -274,12 +247,12 @@ export default function App() {
         console.error('Failed to take photo', e)
       }
     }
-  }, [videoActive, user, credits, deductCredits, refundCredits, setShowPricing])
+  }, [videoActive, user, credits, deductCredits, refundCredits, hasActiveSubscription])
 
   const stopTimers = useCallback(() => {
     clearTimeout(autoCaptureTimerRef.current)
     clearTimeout(countdownTimerRef.current)
-    clearInterval(countdownTimerRef.current) // Clear both timeout and interval
+    clearInterval(countdownIntervalRef.current)
     setCountdown(null)
     setIsCountingDown(false)
     genControllersRef.current.forEach(controller => controller.abort())
@@ -306,7 +279,7 @@ export default function App() {
     if (cameraMode === 'STREAM') {
       const continuousCapture = () => {
         performCapture();
-        autoCaptureTimerRef.current = setTimeout(continuousCapture, 5000); // 5-second interval
+        autoCaptureTimerRef.current = setTimeout(continuousCapture, CONFIG.AUTO_CAPTURE_INTERVAL);
       };
       continuousCapture();
     }
@@ -364,7 +337,7 @@ export default function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [focusedId, gifUrl])
+  }, [focusedId, gifUrl, photos])
 
   useEffect(() => {
     // Manage gallery visibility based on device
@@ -385,21 +358,17 @@ export default function App() {
     if (cameraMode === 'TIMER') {
       // Stop any existing timers first
       clearTimeout(countdownTimerRef.current)
-      clearInterval(countdownTimerRef.current)
+      clearInterval(countdownIntervalRef.current)
       setIsCountingDown(true)
-      setCountdown(5)
-
-      console.log('Starting timer countdown from 5')
+      setCountdown(CONFIG.COUNTDOWN_DURATION)
 
       // Use a simpler approach with direct countdown state management
-      let currentCount = 5
+      let currentCount = CONFIG.COUNTDOWN_DURATION
       const timerInterval = setInterval(() => {
         currentCount--
-        console.log('Timer tick:', currentCount)
         if (currentCount > 0) {
           setCountdown(currentCount)
         } else {
-          console.log('Timer finished, taking photo')
           clearInterval(timerInterval)
           setCountdown(null)
           setIsCountingDown(false)
@@ -408,7 +377,7 @@ export default function App() {
       }, 1000)
       
       // Store the interval ID so we can clear it if needed
-      countdownTimerRef.current = timerInterval
+      countdownIntervalRef.current = timerInterval
     } else if (cameraMode === 'STREAM') {
       setAutoCapture(true)
       setLiveMode(true)
@@ -445,7 +414,7 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             
             {/* Credits display */}
-            <div 
+            <div
               onClick={() => {
                 setShowBilling(true) // Open RevenueCat billing modal
               }}
@@ -736,9 +705,11 @@ export default function App() {
 
 
       {showBilling && (
-        <RevenueCatBilling 
-          onClose={() => setShowBilling(false)} 
-        />
+        <>
+          <RevenueCatBilling
+            onClose={() => setShowBilling(false)}
+          />
+        </>
       )}
 
       

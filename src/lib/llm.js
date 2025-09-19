@@ -10,19 +10,17 @@ const timeoutMs = 123_333;
 const safetySettings = [
   'HARM_CATEGORY_HATE_SPEECH',
   'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-  'HARM_CATEGORY_DANGEROUS_CONTENT',/**
+  'HARM_CATEGORY_DANGEROUS_CONTENT',
   'HARM_CATEGORY_HARASSMENT'
-*/
 ].map(category => ({category, threshold: 'BLOCK_NONE'}))
 
-const fallbackApiKeys = [
-  'AIzaSyCG3Z4Qv76zTmcTaWJ-nXAsV7MVbVeChYU',
-  'AIzaSyDH9kQn7beJPGU_kbiL-fwTyQKUBjFJ7_0',
-  'AIzaSyATGzn7RlDGYLH3FHxg_B8SBGteGOLcils',
-  'AIzaSyD2zQievvt5cQkH-VX7SEdljOAHwJlGsWs'
-];
-
-const apiKeys = [process.env.API_KEY, ...fallbackApiKeys].filter(Boolean);
+// Use Vite's import.meta.env for environment variables in browser
+const apiKeys = [
+  import.meta.env?.VITE_GEMINI_API_KEY,
+  import.meta.env?.VITE_GEMINI_API_KEY_2,
+  import.meta.env?.VITE_GEMINI_API_KEY_3,
+  import.meta.env?.VITE_GEMINI_API_KEY_4,
+].filter(Boolean);
 
 if (apiKeys.length === 0) {
     console.error("No API keys found. Please provide an API_KEY environment variable or add fallback keys.");
@@ -38,8 +36,14 @@ async function generate({model, prompt, inputFile, signal}) {
   for (const apiKey of apiKeys) {
     attemptCount++;
     const keyPrefix = apiKey.substring(0, 8) + '...';
-    
+
     try {
+      // Check if aborted before starting
+      if (signal?.aborted) {
+        console.log('Request aborted before API call.');
+        throw new Error('Aborted');
+      }
+
       console.log(`Attempt ${attemptCount}/${apiKeys.length}: Using API key ${keyPrefix}`);
       const ai = new GoogleGenAI({apiKey});
 
@@ -56,7 +60,7 @@ async function generate({model, prompt, inputFile, signal}) {
           }
         });
       }
-    
+
       const modelPromise = ai.models.generateContent(
         {
           model,
@@ -69,6 +73,7 @@ async function generate({model, prompt, inputFile, signal}) {
 
       const response = await Promise.race([modelPromise, timeoutPromise]);
 
+      // Check again after API call completes
       if (signal?.aborted) {
         throw new Error('Aborted');
       }

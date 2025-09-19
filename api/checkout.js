@@ -10,9 +10,15 @@ export default function handler(req, res) {
     'credits-1000': 'Diamond Pack'
   };
   
-  const productName = productNames[product_id] || 'Unknown Pack';
+  // Sanitize inputs to prevent XSS
+  const sanitize = (str) => String(str || '').replace(/[<>&"']/g, (match) => {
+    const entities = { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#x27;' };
+    return entities[match];
+  });
+  
+  const productName = sanitize(productNames[product_id] || 'Unknown Pack');
   const priceDisplay = amount ? `$${(parseInt(amount) / 100).toFixed(2)}` : '$0.00';
-  const creditsDisplay = credits || '0';
+  const creditsDisplay = sanitize(credits || '0');
   
   // Extract session data from our mock session ID
   const sessionData = {
@@ -113,8 +119,8 @@ export default function handler(req, res) {
   <div class="container">
     <div class="success-icon">✓</div>
     <h1>Payment Successful!</h1>
-    <p>You have successfully purchased <strong>${sessionData.product}</strong> for <strong>${sessionData.price}</strong>!</p>
-    <p>Your account has been credited with <strong>${sessionData.credits} photo credits</strong>.</p>
+    <p>You have successfully purchased <strong>${sanitize(sessionData.product)}</strong> for <strong>${sanitize(sessionData.price)}</strong>!</p>
+    <p>Your account has been credited with <strong>${sanitize(sessionData.credits)} photo credits</strong>.</p>
     
     <div class="session-info">
       <strong>Product:</strong> ${sessionData.product}<br>

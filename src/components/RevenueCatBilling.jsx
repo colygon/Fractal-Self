@@ -4,7 +4,6 @@
  */
 import React, { useState, useEffect } from 'react'
 import { useRevenueCat } from '../hooks/useRevenueCat.jsx'
-import c from 'clsx'
 
 export default function RevenueCatBilling({ onClose }) {
   const { 
@@ -19,6 +18,67 @@ export default function RevenueCatBilling({ onClose }) {
   
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [purchasing, setPurchasing] = useState(false)
+
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    zIndex: 100000,
+  }
+
+  const baseModalStyle = {
+    background: '#ffffff',
+    color: '#111111',
+    borderRadius: '16px',
+    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.45)',
+    width: '100%',
+  }
+
+  const loadingModalStyle = {
+    ...baseModalStyle,
+    padding: '32px',
+    maxWidth: '360px',
+    textAlign: 'center'
+  }
+
+  const fullModalStyle = {
+    ...baseModalStyle,
+    maxWidth: '960px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  }
+
+  const subtleTextStyle = {
+    fontSize: '14px',
+    color: '#4b5563'
+  }
+
+  const gridStyle = {
+    display: 'grid',
+    gap: '24px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))'
+  }
+
+  const primaryButtonStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    border: 'none',
+    width: '100%'
+  }
 
   useEffect(() => {
     // Identify anonymous user with RevenueCat when component mounts
@@ -51,85 +111,179 @@ export default function RevenueCatBilling({ onClose }) {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8">
-          <div className="text-center">Loading billing options...</div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!offerings || !offerings.current) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8">
+      <div className="fixed inset-0" style={overlayStyle}>
+        <div className="bg-white rounded-lg" style={loadingModalStyle}>
           <div className="text-center">
-            <p>No billing options available.</p>
-            <button 
-              onClick={onClose}
-              className="mt-4 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-            >
-              Close
-            </button>
+            <div className="mb-4">Loading billing options...</div>
+            <div style={subtleTextStyle}>
+              Initializing RevenueCat SDK...
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  const currentOffering = offerings.current
-  const packages = currentOffering.availablePackages || []
+  const resolveOffering = (offerings) => {
+    if (!offerings) return null
+
+    // Prefer the current offering when it has purchasable packages
+    if (offerings.current?.availablePackages?.length) {
+      return offerings.current
+    }
+
+    // Fall back to the first offering that has available packages
+    const offeringList = Object.values(offerings.all || {})
+    return offeringList.find(offering => offering?.availablePackages?.length)
+      || offeringList[0]
+      || null
+  }
+
+  const currentOffering = resolveOffering(offerings)
+  const packages = currentOffering?.availablePackages || []
+
+  if (!offerings || !currentOffering || packages.length === 0) {
+    return (
+      <div className="fixed inset-0" style={overlayStyle}>
+        <div className="bg-white rounded-lg" style={{
+          ...loadingModalStyle,
+          maxWidth: '420px'
+        }}>
+          <div className="text-center">
+            <p className="mb-4">RevenueCat Configuration Issue</p>
+            <div style={{ ...subtleTextStyle, marginBottom: '16px' }}>
+              <p>The billing system is not properly configured.</p>
+              <p className="mt-2">Possible issues:</p>
+              <ul className="text-left mt-2 space-y-1">
+                <li>• Invalid API key</li>
+                <li>• No products/offerings configured</li>
+                <li>• RevenueCat project not set up</li>
+                <li>• No packages assigned to the current offering</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <button 
+                onClick={() => window.open('https://app.revenuecat.com', '_blank')}
+                className="w-full"
+                style={{
+                  ...primaryButtonStyle,
+                  background: 'linear-gradient(135deg, #2563eb, #4338ca)',
+                  color: '#fff',
+                  marginBottom: '12px'
+                }}
+              >
+                Open RevenueCat Dashboard
+              </button>
+              <button 
+                onClick={onClose}
+                className="w-full"
+                style={{
+                  ...primaryButtonStyle,
+                  background: '#6b7280',
+                  color: '#fff'
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0" style={overlayStyle}>
+      <div className="bg-white rounded-lg" style={fullModalStyle}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-2xl font-bold">Choose Your Plan</h2>
+        <div className="flex items-center justify-between p-6 border-b" style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '24px',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
+        }}>
+          <h2 className="text-2xl font-bold" style={{ fontSize: '24px', fontWeight: 700 }}>Choose Your Plan</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+            style={{
+              fontSize: '28px',
+              lineHeight: 1,
+              color: '#6b7280'
+            }}
           >
             ×
           </button>
         </div>
 
         {/* Packages */}
-        <div className="p-6">
-          <div className="grid md:grid-cols-3 gap-6">
+        <div className="p-6" style={{ padding: '24px' }}>
+          <div className="grid md:grid-cols-3 gap-6" style={gridStyle}>
             {packages.map((pkg) => {
               const isActive = hasActiveSubscription() && 
                 customerInfo?.entitlements.active[pkg.product.identifier]?.isActive
+              const isHighlighted = pkg.identifier.includes('premium') || pkg.identifier.includes('pro')
+              const isSelected = selectedPackage?.identifier === pkg.identifier
+              const cardStyle = {
+                position: 'relative',
+                borderRadius: '16px',
+                padding: '24px',
+                cursor: 'pointer',
+                border: `2px solid ${isHighlighted ? '#6366f1' : '#e5e7eb'}`,
+                boxShadow: isHighlighted
+                  ? '0 20px 45px rgba(99, 102, 241, 0.25)'
+                  : '0 14px 35px rgba(15, 23, 42, 0.12)',
+                transform: isHighlighted ? 'scale(1.02)' : 'scale(1)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+                background: '#fff',
+                outline: isSelected ? '3px solid rgba(99, 102, 241, 0.45)' : 'none'
+              }
               
               return (
                 <div
                   key={pkg.identifier}
-                  className={c(
-                    "relative border-2 rounded-lg p-6 cursor-pointer transition-all",
-                    pkg.identifier.includes('premium') || pkg.identifier.includes('pro')
-                      ? "border-blue-500 shadow-lg transform scale-105" 
-                      : "border-gray-200 hover:border-gray-300",
-                    selectedPackage?.identifier === pkg.identifier && "ring-2 ring-blue-500"
-                  )}
+                  className="relative border-2 rounded-lg p-6 cursor-pointer transition-all"
+                  style={cardStyle}
                   onClick={() => setSelectedPackage(pkg)}
                 >
-                  {(pkg.identifier.includes('premium') || pkg.identifier.includes('pro')) && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-blue-500 text-white px-3 py-1 text-sm rounded-full">
+                  {isHighlighted && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2" style={{
+                      position: 'absolute',
+                      top: '-12px',
+                      left: '50%',
+                      transform: 'translateX(-50%)'
+                    }}>
+                      <span className="bg-blue-500 text-white px-3 py-1 text-sm rounded-full" style={{
+                        background: '#6366f1',
+                        color: '#fff',
+                        padding: '6px 12px',
+                        borderRadius: '999px',
+                        fontSize: '12px',
+                        fontWeight: 600
+                      }}>
                         Most Popular
                       </span>
                     </div>
                   )}
                   
-                  <div className="text-center">
-                    <h3 className="text-xl font-bold mb-2">{pkg.product.title}</h3>
+                  <div className="text-center" style={{ textAlign: 'center' }}>
+                    <h3 className="text-xl font-bold mb-2" style={{
+                      fontSize: '20px',
+                      fontWeight: 700,
+                      marginBottom: '12px'
+                    }}>{pkg.product.title}</h3>
                     
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold">{pkg.product.priceString}</span>
-                      <span className="text-gray-600">/{pkg.product.subscriptionPeriod}</span>
+                    <div className="mb-4" style={{ marginBottom: '16px' }}>
+                      <span className="text-3xl font-bold" style={{ fontSize: '34px', fontWeight: 700 }}>{pkg.product.priceString}</span>
+                      <span className="text-gray-600" style={{ marginLeft: '4px', color: '#4b5563' }}>/{pkg.product.subscriptionPeriod}</span>
                     </div>
                     
-                    <p className="text-gray-600 mb-6 min-h-[3rem]">
+                    <p className="text-gray-600 mb-6 min-h-[3rem]" style={{
+                      color: '#4b5563',
+                      marginBottom: '24px',
+                      minHeight: '48px'
+                    }}>
                       {pkg.product.description}
                     </p>
 
@@ -140,14 +294,16 @@ export default function RevenueCatBilling({ onClose }) {
                         handlePurchase(pkg)
                       }}
                       disabled={purchasing || isActive}
-                      className={c(
-                        "w-full font-bold py-3 px-4 rounded-lg transition-colors",
-                        isActive 
-                          ? "bg-green-500 text-white cursor-not-allowed"
+                      className="w-full font-bold py-3 px-4 rounded-lg transition-colors"
+                      style={{
+                        ...primaryButtonStyle,
+                        background: isActive
+                          ? '#22c55e'
                           : purchasing
-                          ? "bg-gray-400 text-white cursor-not-allowed"
-                          : "bg-blue-500 hover:bg-blue-600 text-white"
-                      )}
+                            ? '#9ca3af'
+                            : 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                        color: '#ffffff'
+                      }}
                     >
                       {isActive 
                         ? 'Current Plan' 
@@ -185,7 +341,13 @@ export default function RevenueCatBilling({ onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="border-t p-6 text-center text-sm text-gray-600">
+        <div className="border-t p-6 text-center text-sm text-gray-600" style={{
+          borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+          padding: '20px',
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#4b5563'
+        }}>
           <p>✓ Cancel anytime • ✓ Secure payment processing • ✓ Powered by RevenueCat</p>
         </div>
       </div>

@@ -3,8 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { useEffect, useState } from 'react'
+import { Purchases } from '@revenuecat/purchases-js'
 
 const REVENUECAT_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY || 'your-public-api-key'
+// Note: sk_ keys are secret keys for server-side use. For web SDK, we need rcb_ public keys
+// Running in test mode if no key, default key, test key, or secret key (sk_) is provided
+const USE_TEST_MODE = !REVENUECAT_API_KEY ||
+  REVENUECAT_API_KEY === 'your-public-api-key' ||
+  REVENUECAT_API_KEY.includes('test') ||
+  REVENUECAT_API_KEY.startsWith('sk_')
 
 export const useRevenueCat = () => {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -13,11 +20,46 @@ export const useRevenueCat = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate RevenueCat initialization
-    const timer = setTimeout(() => {
-      console.log('RevenueCat API Key configured:', REVENUECAT_API_KEY ? 'Yes' : 'No')
-      
-      // Mock offerings structure
+    const initializeRevenueCat = async () => {
+      console.log('Initializing RevenueCat with API key:', REVENUECAT_API_KEY ? `${REVENUECAT_API_KEY.substring(0, 8)}...` : 'Missing')
+      console.log('Test mode:', USE_TEST_MODE)
+
+      if (REVENUECAT_API_KEY && REVENUECAT_API_KEY.startsWith('sk_')) {
+        console.warn('⚠️ RevenueCat: You provided a secret key (sk_) but the web SDK requires a public key (rcb_).')
+        console.warn('Please get your public API key from: https://app.revenuecat.com/projects/[YOUR_PROJECT_ID]/api-keys')
+        console.warn('Running in TEST MODE with mock data.')
+      }
+
+      if (!USE_TEST_MODE) {
+        try {
+          // Initialize RevenueCat
+          await Purchases.configure({ apiKey: REVENUECAT_API_KEY })
+          console.log('RevenueCat configured successfully')
+
+          // Get current customer info
+          const customerInfo = await Purchases.getCustomerInfo()
+          console.log('Customer info:', customerInfo)
+          setCustomerInfo(customerInfo)
+
+          // Get current offerings
+          const offerings = await Purchases.getOfferings()
+          console.log('Offerings:', offerings)
+          setOfferings(offerings)
+
+          setIsLoaded(true)
+          setIsLoading(false)
+          console.log('RevenueCat initialization complete')
+          return // Exit early if successful
+        } catch (error) {
+          console.error('Failed to initialize RevenueCat:', error)
+          console.log('Falling back to test mode with mock data')
+        }
+      } else {
+        console.warn('RevenueCat running in TEST MODE - using mock data')
+      }
+
+      // Fallback to mock data if RevenueCat fails or in test mode
+      console.log('Using mock data for RevenueCat')
       setOfferings({
         current: {
           identifier: 'default',
@@ -46,49 +88,120 @@ export const useRevenueCat = () => {
         }
       })
 
-      // Mock customer info
+      // Check for stored mock subscription
+      const storedMockSubscription = localStorage.getItem('mock_subscription')
+      let activeEntitlements = {}
+
+      if (storedMockSubscription) {
+        try {
+          const mockEntitlement = JSON.parse(storedMockSubscription)
+          // Check if subscription is still valid
+          if (new Date(mockEntitlement.expirationDate) > new Date()) {
+            activeEntitlements = { premium: mockEntitlement }
+            console.log('Restored mock subscription from localStorage')
+          } else {
+            // Expired - remove from storage
+            localStorage.removeItem('mock_subscription')
+            console.log('Mock subscription expired, removed from localStorage')
+          }
+        } catch (e) {
+          console.error('Failed to parse mock subscription:', e)
+        }
+      }
+
       setCustomerInfo({
         entitlements: {
-          active: {} // No active subscriptions by default
+          active: activeEntitlements
         }
       })
-
       setIsLoaded(true)
       setIsLoading(false)
-      console.log('RevenueCat mock integration ready')
-    }, 500)
+    }
 
-    return () => clearTimeout(timer)
+    initializeRevenueCat()
   }, [])
 
   const identifyUser = async (userId) => {
-    console.log('Would identify user with RevenueCat:', userId)
-    return customerInfo
+    try {
+      console.log('Setting user ID with RevenueCat:', userId)
+      // For web SDK, we use logIn instead of identifyUser
+      const { customerInfo: updatedCustomerInfo } = await Purchases.logIn(userId)
+      setCustomerInfo(updatedCustomerInfo)
+      return updatedCustomerInfo
+    } catch (error) {
+      console.error('Failed to set user ID:', error)
+      // If login fails, try to continue anonymously
+      return customerInfo
+    }
   }
 
   const purchasePackage = async (packageToPurchase) => {
-    console.log('Would purchase package:', packageToPurchase)
-    alert(`Mock purchase: ${packageToPurchase.product.title}\n\nIn production, this would redirect to RevenueCat's billing flow.`)
-    
-    // Mock successful purchase
-    const updatedCustomerInfo = {
-      entitlements: {
-        active: {
-          premium: {
-            isActive: true,
-            productIdentifier: packageToPurchase.product.identifier,
-            expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          }
+    try {
+      console.log('Purchasing package:', packageToPurchase)
+
+      if (!isLoaded) {
+        throw new Error('RevenueCat not initialized')
+      }
+
+      if (USE_TEST_MODE) {
+        // Simulate purchase in test mode
+        console.log('TEST MODE: Simulating successful purchase')
+
+        // Update mock customer info to show active subscription
+        const mockEntitlement = {
+          productIdentifier: packageToPurchase.product.identifier,
+          isActive: true,
+          willRenew: true,
+          expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
         }
+
+        setCustomerInfo({
+          entitlements: {
+            active: {
+              premium: mockEntitlement
+            }
+          }
+        })
+
+        // Store in localStorage for persistence
+        localStorage.setItem('mock_subscription', JSON.stringify(mockEntitlement))
+
+        return { entitlements: { active: { premium: mockEntitlement } } }
+      }
+
+      // For RevenueCat Web SDK, purchasePackage returns an object with customerInfo
+      const { customerInfo: updatedCustomerInfo } = await Purchases.purchasePackage(packageToPurchase)
+      console.log('Purchase successful, updated customer info:', updatedCustomerInfo)
+
+      // Update state with the new customer info
+      setCustomerInfo(updatedCustomerInfo)
+
+      return updatedCustomerInfo
+    } catch (error) {
+      console.error('Purchase failed:', error)
+
+      // Show a more user-friendly error message
+      if (error.code === 'user_cancelled') {
+        throw new Error('Purchase was cancelled')
+      } else if (error.code === 'payment_pending') {
+        throw new Error('Payment is pending. Please wait for confirmation.')
+      } else {
+        throw new Error('Purchase failed. Please try again.')
       }
     }
-    setCustomerInfo(updatedCustomerInfo)
-    return updatedCustomerInfo
   }
 
   const restorePurchases = async () => {
-    console.log('Would restore purchases with RevenueCat')
-    return customerInfo
+    try {
+      console.log('Restoring purchases with RevenueCat')
+      // For web SDK, restorePurchases returns an object with customerInfo
+      const { customerInfo: restoredCustomerInfo } = await Purchases.restorePurchases()
+      setCustomerInfo(restoredCustomerInfo)
+      return restoredCustomerInfo
+    } catch (error) {
+      console.error('Failed to restore purchases:', error)
+      return customerInfo
+    }
   }
 
   const getActiveSubscriptions = () => {

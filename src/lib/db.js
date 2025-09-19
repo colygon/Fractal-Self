@@ -108,12 +108,20 @@ async function getAll(storeName) {
                 }
             };
             request.onerror = event => {
+                console.error(`IndexedDB cursor error in ${storeName}:`, event.target.error);
+                reject(event.target.error);
+            };
+            
+            transaction.onerror = event => {
+                console.error(`IndexedDB transaction error in ${storeName}:`, event.target.error);
                 reject(event.target.error);
             };
         });
     } catch (error) {
         console.error(`Failed to get all from ${storeName}`, error);
-        return {}; // Return empty object if DB is not supported
+        // Return empty object with warning for graceful degradation
+        console.warn(`IndexedDB unavailable for ${storeName}, data will not persist across sessions`);
+        return {};
     }
 }
 
