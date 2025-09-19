@@ -193,14 +193,23 @@ export const useRevenueCat = () => {
         return { entitlements: { active: { premium: mockEntitlement } } }
       }
 
-      // For RevenueCat Web SDK, purchasePackage returns an object with customerInfo
-      const { customerInfo: updatedCustomerInfo } = await Purchases.purchasePackage(packageToPurchase)
-      console.log('Purchase successful, updated customer info:', updatedCustomerInfo)
+      // For production, use RevenueCat Web Purchase Links
+      // Get the current user ID for the purchase link
+      const userId = customerInfo?.originalAppUserId ||
+        (typeof window !== 'undefined' && localStorage.getItem('anonymous_user_id')) ||
+        `guest_${Math.random().toString(36).substring(2, 11)}`
 
-      // Update state with the new customer info
-      setCustomerInfo(updatedCustomerInfo)
+      // RevenueCat Web Purchase Link template
+      const webPurchaseUrl = `https://pay.rev.cat/agvuhpvjihtinpwc/${encodeURIComponent(userId)}`
 
-      return updatedCustomerInfo
+      console.log('Redirecting to RevenueCat web purchase:', webPurchaseUrl)
+
+      // Open RevenueCat purchase page in new window
+      window.open(webPurchaseUrl, '_blank', 'width=600,height=800,scrollbars=yes,resizable=yes')
+
+      // Note: The actual purchase will be handled by RevenueCat's web interface
+      // The customer info will be updated when they return to the app or refresh
+      return customerInfo
     } catch (error) {
       console.error('Purchase failed:', error)
 
