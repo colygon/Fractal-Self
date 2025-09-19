@@ -11,6 +11,8 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.47.0",
+    "@clerk/express": "^1.7.31",
     "@google/genai": "latest",
     "@revenuecat/purchases-js": "^1.14.0",
     "@tailwindcss/postcss": "^4.1.13",

@@ -15,6 +15,7 @@ export const CONFIG = {
   // Credit system
   PHOTO_COST: 5,
   FREE_PHOTO_LIMIT: 10,
+  DEFAULT_FREE_CREDITS: 50,
   
   // Timer settings
   COUNTDOWN_DURATION: 5,

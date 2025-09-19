@@ -6,7 +6,12 @@ import React, {useRef, useState, useCallback, useEffect} from 'react'
 import c from 'clsx'
 import {
   useAuth,
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton
 } from '../hooks/useAuth.jsx'
+import { useClerk } from '@clerk/clerk-react'
 import PricingPage from './PricingPage.jsx'
 import BillingDashboard from './BillingDashboard.jsx'
 import RevenueCatBilling from './RevenueCatBilling.jsx'
@@ -76,7 +81,9 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user, credits, deductCredits, refundCredits, hasActiveSubscription } = useAuth()
+  const { user, credits, deductCredits, refundCredits, hasActiveSubscription, isLoading: authLoading, isSignedIn } = useAuth()
+  const { openSignIn } = useClerk()
+  const photoCost = CONFIG.PHOTO_COST
   
 
   useEffect(() => {
@@ -221,12 +228,19 @@ export default function App() {
 
       // Deduct credits immediately to keep UI responsive for non-premium users
       if (!hasActiveSubscription) {
+        const remainingCredits = Math.max(0, credits - CONFIG.PHOTO_COST)
         deductCredits(CONFIG.PHOTO_COST)
+        console.log(`⚡ Deducted ${CONFIG.PHOTO_COST} credits immediately. Remaining: ${remainingCredits}`)
       } else {
+        console.log('⚡ Premium capture - no credits deducted')
       }
 
       // TODO: Track usage via RevenueCat for analytics
       if (user) {
+        console.log('📊 Photo generated', {
+          userId: user?.id,
+          credits: hasActiveSubscription ? 'unlimited' : Math.max(0, credits - CONFIG.PHOTO_COST)
+        })
       }
       
       // Take the photo (AI generation)
@@ -238,6 +252,7 @@ export default function App() {
         // Refund credits if generation fails (only for users without unlimited access)
         if (!hasActiveSubscription) {
           refundCredits(CONFIG.PHOTO_COST)
+          console.log(`💰 Refunded ${CONFIG.PHOTO_COST} credits due to generation failure.`)
         }
         
         throw error
@@ -413,10 +428,62 @@ export default function App() {
           {/* Always show credits and upgrade button for all users */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             
-            {/* Credits display */}
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                Sign in
+              </button>
+            </SignInButton>
+          </SignedOut>
+
+          <SignedIn>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <UserButton
+                afterSignOutUrl="/"
+                userProfileMode="modal"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: {
+                      border: '2px solid rgba(255, 255, 255, 0.2)'
+                    },
+                    userButtonTrigger: {
+                      borderRadius: '999px'
+                    }
+                  }
+                }}
+              />
+            </div>
+          </SignedIn>
+
+          {/* Credits display */}
             <div
               onClick={() => {
-                setShowBilling(true) // Open RevenueCat billing modal
+                if (!authLoading && !isSignedIn) {
+                  openSignIn?.({})
+                  return
+                }
+                setShowBilling(true)
               }}
               style={{
                 background: 'rgba(0, 0, 0, 0.75)',
@@ -450,7 +517,13 @@ export default function App() {
             {/* Upgrade to Premium button */}
             {!hasActiveSubscription && (
               <button
-                onClick={() => setShowBilling(true)}
+                onClick={() => {
+                  if (!authLoading && !isSignedIn) {
+                    openSignIn?.({})
+                    return
+                  }
+                  setShowBilling(true)
+                }}
                 style={{
                   background: 'linear-gradient(45deg, #8B5CF6, #EC4899)',
                   color: 'white',

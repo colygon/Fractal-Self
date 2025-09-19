@@ -2,71 +2,119 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React, { useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  useAuth as useClerkAuth,
+  useUser as useClerkUser,
+  SignedIn as ClerkSignedIn,
+  SignedOut as ClerkSignedOut,
+  SignInButton as ClerkSignInButton,
+  SignUpButton as ClerkSignUpButton,
+  UserButton as ClerkUserButton
+} from '@clerk/clerk-react'
 import { useRevenueCat } from './useRevenueCat.jsx'
+import { CONFIG } from '../lib/constants.js'
+
+const { DEFAULT_FREE_CREDITS = 50, PHOTO_COST = 5 } = CONFIG
+const GUEST_STORAGE_KEY = 'guestCredits'
+
+const canUseStorage = () => typeof window !== 'undefined' && !!window.localStorage
+
+const parseCredits = (value) => {
+  const parsed = parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_FREE_CREDITS
+}
+
+const readCredits = (key) => {
+  if (!canUseStorage()) return DEFAULT_FREE_CREDITS
+  const stored = window.localStorage.getItem(key)
+  return parseCredits(stored)
+}
+
+const writeCredits = (key, value) => {
+  if (!canUseStorage()) return
+  window.localStorage.setItem(key, value.toString())
+}
+
+const clearCredits = (key) => {
+  if (!canUseStorage()) return
+  window.localStorage.removeItem(key)
+}
 
 export const useAuth = () => {
-  const { hasActiveSubscription } = useRevenueCat()
-  const [guestCredits, setGuestCredits] = useState(() => {
-    const saved = localStorage.getItem('guestCredits')
-    return saved ? parseInt(saved) : 50
-  })
-  
-  // Simple guest-only mode - no authentication
-  const user = null
-  const isLoaded = true
-  const isSignedIn = false
-  
-  // Credits based on subscription status or guest credits
-  const getCreditsBalance = () => {
-    // Check if user has active subscription via RevenueCat
-    if (hasActiveSubscription()) {
-      // Premium users get unlimited credits
-      return 999999
+  const { hasActiveSubscription, identifyUser, logOut } = useRevenueCat()
+  const { isSignedIn, isLoaded: isUserLoaded, user } = useClerkUser()
+  const { isLoaded: isAuthLoaded, getToken, signOut } = useClerkAuth()
+
+  const storageKey = useMemo(() => {
+    if (isSignedIn && user?.id) {
+      return `credits_${user.id}`
     }
-    
-    // Guest/free users use localStorage credits
-    return guestCredits
-  }
-  
+    return GUEST_STORAGE_KEY
+  }, [isSignedIn, user?.id])
+
+  const [credits, setCredits] = useState(() => readCredits(storageKey))
+
+  // Keep local state in sync when the active user changes
+  useEffect(() => {
+    setCredits(readCredits(storageKey))
+  }, [storageKey])
+
+  // Coordinate RevenueCat identity with Clerk user state
+  useEffect(() => {
+    if (isSignedIn && user?.id) {
+      identifyUser?.(user.id)
+    } else {
+      logOut?.()
+    }
+  }, [identifyUser, logOut, isSignedIn, user?.id])
+
+  const subscriptionActive = hasActiveSubscription()
+
+  const updateCredits = useCallback((updater) => {
+    setCredits(prev => {
+      const next = updater(prev)
+      writeCredits(storageKey, next)
+      return next
+    })
+  }, [storageKey])
+
+  const deductCredits = useCallback((amount = PHOTO_COST) => {
+    if (subscriptionActive) return
+    updateCredits(prev => Math.max(0, prev - amount))
+  }, [subscriptionActive, updateCredits])
+
+  const refundCredits = useCallback((amount = PHOTO_COST) => {
+    if (subscriptionActive) return
+    updateCredits(prev => prev + amount)
+  }, [subscriptionActive, updateCredits])
+
+  const resetCredits = useCallback(() => {
+    clearCredits(storageKey)
+    setCredits(DEFAULT_FREE_CREDITS)
+  }, [storageKey])
+
   return {
-    user,
-    isLoading: false,
-    isSignedIn: false, // Always false since no auth
-    credits: getCreditsBalance(),
-    hasActiveSubscription: hasActiveSubscription(),
-    deductCredits: (amount) => {
-      if (!hasActiveSubscription()) {
-        // Use localStorage for credits
-        const newCredits = Math.max(0, guestCredits - amount)
-        setGuestCredits(newCredits)
-        localStorage.setItem('guestCredits', newCredits.toString())
-      }
-      // Don't deduct credits for premium users
-    },
-    refundCredits: (amount) => {
-      if (!hasActiveSubscription()) {
-        // Use localStorage for credits
-        const newCredits = guestCredits + amount
-        setGuestCredits(newCredits)
-        localStorage.setItem('guestCredits', newCredits.toString())
-      }
-      // Don't need to refund credits for premium users
-    }
+    user: user ? {
+      id: user.id,
+      primaryEmailAddress: user.primaryEmailAddress?.emailAddress || null,
+      fullName: user.fullName,
+      imageUrl: user.imageUrl
+    } : null,
+    isLoading: !isUserLoaded || !isAuthLoaded,
+    isSignedIn: Boolean(isSignedIn),
+    credits,
+    hasActiveSubscription: subscriptionActive,
+    deductCredits,
+    refundCredits,
+    resetCredits,
+    getToken,
+    signOut
   }
 }
 
-// Simple UI components for no-auth mode
-export const SignedIn = ({ children }) => null // Never show signed-in content
-export const SignedOut = ({ children }) => children // Always show signed-out content
-export const SignInButton = ({ children, ...props }) => (
-  <button {...props} onClick={() => alert('Authentication disabled - using guest mode with RevenueCat billing')}>
-    {children || 'Sign In'}
-  </button>
-)
-export const SignUpButton = ({ children, ...props }) => (
-  <button {...props} onClick={() => alert('Authentication disabled - using guest mode with RevenueCat billing')}>
-    {children || 'Sign Up'}
-  </button>
-)
-export const UserButton = () => null // Don't show user button
+export const SignedIn = ClerkSignedIn
+export const SignedOut = ClerkSignedOut
+export const SignInButton = ClerkSignInButton
+export const SignUpButton = ClerkSignUpButton
+export const UserButton = ClerkUserButton

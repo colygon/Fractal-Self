@@ -135,6 +135,30 @@ export const useRevenueCat = () => {
     }
   }
 
+  const logOut = async () => {
+    try {
+      console.log('Logging out of RevenueCat')
+
+      if (USE_TEST_MODE) {
+        localStorage.removeItem('mock_subscription')
+        setCustomerInfo({
+          entitlements: {
+            active: {}
+          }
+        })
+        return
+      }
+
+      await Purchases.logOut()
+      const updatedCustomerInfo = await Purchases.getCustomerInfo()
+      setCustomerInfo(updatedCustomerInfo)
+      return updatedCustomerInfo
+    } catch (error) {
+      console.error('Failed to log out from RevenueCat:', error)
+      return customerInfo
+    }
+  }
+
   const purchasePackage = async (packageToPurchase) => {
     try {
       console.log('Purchasing package:', packageToPurchase)
@@ -234,6 +258,7 @@ export const useRevenueCat = () => {
     purchasePackage,
     restorePurchases,
     getActiveSubscriptions,
-    hasActiveSubscription
+    hasActiveSubscription,
+    logOut
   }
 }

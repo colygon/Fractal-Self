@@ -4,6 +4,7 @@
  */
 import React, { useState, useEffect } from 'react'
 import { useRevenueCat } from '../hooks/useRevenueCat.jsx'
+import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function RevenueCatBilling({ onClose }) {
   const { 
@@ -15,6 +16,7 @@ export default function RevenueCatBilling({ onClose }) {
     purchasePackage,
     hasActiveSubscription 
   } = useRevenueCat()
+  const { isSignedIn, user } = useAuth()
   
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [purchasing, setPurchasing] = useState(false)
@@ -81,15 +83,18 @@ export default function RevenueCatBilling({ onClose }) {
   }
 
   useEffect(() => {
-    // Identify anonymous user with RevenueCat when component mounts
-    if (isLoaded) {
-      // Generate or get existing anonymous user ID
-      const anonymousUserId = localStorage.getItem('anonymous_user_id') || 
-        `guest_${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem('anonymous_user_id', anonymousUserId)
-      identifyUser(anonymousUserId).catch(console.error)
+    if (!isLoaded) return
+    if (isSignedIn && user?.id) {
+      // App-level auth hook synchronizes RevenueCat for signed-in users
+      return
     }
-  }, [isLoaded])
+
+    // Guest fallback: maintain a stable anonymous RevenueCat identifier
+    const anonymousUserId = localStorage.getItem('anonymous_user_id') || 
+      `guest_${Math.random().toString(36).substring(2, 11)}`
+    localStorage.setItem('anonymous_user_id', anonymousUserId)
+    identifyUser(anonymousUserId).catch(console.error)
+  }, [identifyUser, isLoaded, isSignedIn, user?.id])
 
   const handlePurchase = async (pkg) => {
     if (!pkg || purchasing) return

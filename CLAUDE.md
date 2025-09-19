@@ -27,8 +27,24 @@ Before running the app, you need a Google Gemini API key:
    GEMINI_API_KEY=your_api_key_here
    ```
 
+### Authentication (Clerk)
+Clerk provides authentication and user management for the app.
+
+#### Clerk Setup:
+1. Create a Clerk application at [clerk.com](https://clerk.com)
+2. Copy your publishable key and secret key
+3. Configure environment variables:
+   ```
+   VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuYmFuYW5hLmNhbSQ
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   ```
+4. Ensure the frontend origin is whitelisted in the Clerk dashboard (`https://clerk.banana.cam`)
+5. Optional: update the JWKS URL if hosting on a different domain (current: `https://clerk.banana.cam/.well-known/jwks.json`)
+
+The React app wraps the root component with `ClerkProvider`. Sign-in/sign-out controls live in the header via Clerk's `SignInButton` and `UserButton`. For API access, authenticated routes use `@clerk/express` middleware.
+
 ### Billing (RevenueCat)
-The app uses RevenueCat for subscription billing without user authentication:
+The app uses RevenueCat for subscription billing alongside Clerk-authenticated users:
 
 #### RevenueCat Setup:
 1. Create a RevenueCat project at [revenuecat.com](https://revenuecat.com)
@@ -41,12 +57,11 @@ The app uses RevenueCat for subscription billing without user authentication:
 5. Configure entitlements for your subscription plans
 
 #### User Flow:
-- All users start as guests with 50 credits
-- No authentication required - simple guest mode
-- Click credits display to open billing/subscription modal
-- RevenueCat handles all payment processing
-- Premium subscribers get unlimited credits
-- Credits are stored in localStorage for guest users
+- Guests receive 50 local credits on first visit
+- Signed-in users sync their RevenueCat identity and keep a per-account credit balance in localStorage
+- Click the credits display or "Upgrade" button to open the RevenueCat modal
+- RevenueCat handles all payment processing and entitlements
+- Premium subscribers get unlimited credits (displayed as ∞)
 
 #### Billing Tiers:
 - **Free**: 10 photos per month, basic styles, watermarked exports
