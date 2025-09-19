@@ -432,27 +432,29 @@ export default function App() {
             <SignInButton mode="modal">
               <button
                 style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'linear-gradient(135deg, #667eea, #764ba2, #f093fb)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  border: 'none',
                   borderRadius: '12px',
-                  padding: '8px 12px',
-                  fontSize: '12px',
-                  fontWeight: 600,
+                  padding: '10px 18px',
+                  fontSize: '13px',
+                  fontWeight: 700,
                   fontFamily: 'inherit',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
-                  e.currentTarget.style.transform = 'translateY(-1px)'
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
-                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'
                 }}
               >
-                Sign in
+                ✨ Sign in
               </button>
             </SignInButton>
           </SignedOut>
