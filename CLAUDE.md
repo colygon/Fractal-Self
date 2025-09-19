@@ -27,22 +27,26 @@ Before running the app, you need a Google Gemini API key:
    GEMINI_API_KEY=your_api_key_here
    ```
 
-### Authentication & Billing (Clerk)
-The app uses Clerk for user authentication and billing:
-1. Set up a Clerk application at [clerk.com](https://clerk.com)
-2. Enable Clerk Elements billing in your Clerk dashboard
-3. Set up Stripe integration in Clerk for payment processing
-4. Add your keys to `.env.local`:
+### Billing (RevenueCat)
+The app uses RevenueCat for subscription billing without user authentication:
+
+#### RevenueCat Setup:
+1. Create a RevenueCat project at [revenuecat.com](https://revenuecat.com)
+2. Get your public API key from the RevenueCat dashboard
+3. Add to `.env.local`:
    ```
-   VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
-   CLERK_SECRET_KEY=your_clerk_secret_key_here
-   VITE_STRIPE_PRO_MONTHLY_PRICE_ID=your_stripe_price_id
-   VITE_STRIPE_PREMIUM_YEARLY_PRICE_ID=your_stripe_price_id
+   VITE_REVENUECAT_API_KEY=your_revenuecat_public_api_key_here
    ```
-5. The auth flow allows all users (signed-in and signed-out) to use the camera app
-6. A "Sign In" button appears in the top-right for guest users
-7. A user profile button appears for authenticated users
-8. Usage tracking and upgrade prompts appear for signed-in users
+4. Set up your products and offerings in the RevenueCat dashboard
+5. Configure entitlements for your subscription plans
+
+#### User Flow:
+- All users start as guests with 50 credits
+- No authentication required - simple guest mode
+- Click credits display to open billing/subscription modal
+- RevenueCat handles all payment processing
+- Premium subscribers get unlimited credits
+- Credits are stored in localStorage for guest users
 
 #### Billing Tiers:
 - **Free**: 10 photos per month, basic styles, watermarked exports

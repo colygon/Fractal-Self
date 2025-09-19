@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React from 'react'
-import { useCustomer } from "autumn-js/react"
+import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function PricingPage({ onBack, onPlanSelect }) {
-  const { customer, openCheckout } = useCustomer()
+  const { user, hasActiveSubscription } = useAuth()
 
   // Updated plans with new pricing structure
   const plans = [
@@ -116,12 +116,9 @@ export default function PricingPage({ onBack, onPlanSelect }) {
         return
       }
 
-      // Use Autumn checkout for paid plans
-      await openCheckout({
-        product_id: plan.id,
-        success_url: window.location.origin + '?checkout=success',
-        cancel_url: window.location.origin + '?checkout=canceled'
-      })
+      // TODO: Integrate with RevenueCat billing
+      console.log('Would open RevenueCat checkout for plan:', plan.id)
+      alert('RevenueCat billing integration needed - plan: ' + plan.name)
       
       if (onPlanSelect) onPlanSelect(plan)
     } catch (error) {

@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React from 'react'
-import { useCustomer } from "autumn-js/react"
+import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function BillingDashboard({ onBack, onUpgrade }) {
-  const { customer } = useCustomer()
+  const { user, credits, hasActiveSubscription } = useAuth()
 
-  const creditsRemaining = customer?.usage?.credits || 0
-  const currentPlan = customer?.subscription?.product_id || 'free'
+  const creditsRemaining = credits
+  const currentPlan = hasActiveSubscription ? 'premium' : 'free'
   
   // Plan details based on current subscription
   const planDetails = {

@@ -5,16 +5,11 @@
 import React, {useRef, useState, useCallback, useEffect} from 'react'
 import c from 'clsx'
 import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  useOutseta,
-} from '../hooks/useOutseta.jsx'
+  useAuth,
+} from '../hooks/useAuth.jsx'
 import PricingPage from './PricingPage.jsx'
-import SignUpPage from './SignUpPage.jsx'
 import BillingDashboard from './BillingDashboard.jsx'
+import RevenueCatBilling from './RevenueCatBilling.jsx'
 import {
   snapPhoto,
   setMode,
@@ -42,7 +37,7 @@ const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
 const modeKeys = Object.keys(modes)
 
-// Note: useCustomer removed - now using Outseta directly
+// Using RevenueCat for billing in guest mode
 
 export default function App() {
   const photos = useStore.use.photos()
@@ -70,9 +65,8 @@ export default function App() {
   const [replayImageIndex, setReplayImageIndex] = useState(0)
   const [showFlash, setShowFlash] = useState(false)
   const [showBilling, setShowBilling] = useState(false)
-  const [showSignUp, setShowSignUp] = useState(false)
   const [showPricing, setShowPricing] = useState(false)
-  // Note: customer functionality now handled by Outseta
+  // Billing functionality handled by RevenueCat in guest mode
 
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768)
   const [desktopMirror, setDesktopMirror] = useState(true)
@@ -80,7 +74,7 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user, credits, deductCredits, refundCredits } = useOutseta()
+  const { user, credits, deductCredits, refundCredits, hasActiveSubscription } = useAuth()
   
   // Debug logging
   console.log('User state:', { user: !!user, userId: user?.Uid })
@@ -224,7 +218,7 @@ export default function App() {
         
         if (freePhotosUsed >= freePhotosLimit) {
           console.warn('Free photo limit reached')
-          setShowSignUp(true)
+          setShowBilling(true)
           return
         }
       }
@@ -235,25 +229,8 @@ export default function App() {
         deductCredits(5)
         console.log(`⚡ Deducted 5 credits immediately. Remaining: ${credits - 5}`)
         
-        // Track usage via Outseta API (fire and forget - don't block photo generation)
-        fetch('/api/outseta/usage', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userEmail: user.Email,
-            amount: 1 // 1 photo taken
-          })
-        }).then(response => {
-          if (response.ok) {
-            console.log('📊 Usage tracked in Outseta')
-          } else {
-            console.warn('Failed to track usage in Outseta:', response.status)
-          }
-        }).catch(error => {
-          console.error('Error tracking usage:', error)
-        })
+        // TODO: Track usage via RevenueCat for analytics
+        console.log('📊 Photo generated', { userId: user?.id, credits: credits - 5 })
       } else {
         // Not signed in - increment free photo counter immediately
         const freePhotosUsed = parseInt(localStorage.getItem('freePhotosUsed') || '0')
@@ -261,10 +238,10 @@ export default function App() {
         localStorage.setItem('freePhotosUsed', newFreePhotosUsed.toString())
         console.log(`📸 Free photos used immediately: ${newFreePhotosUsed}/10`)
         
-        // Show sign-up popup after 5 photos
+        // Show billing modal after 5 photos to encourage upgrade
         if (newFreePhotosUsed === 5) {
-          console.log('🎯 Showing sign-up popup after 5 photos')
-          setTimeout(() => setShowSignUp(true), 2000) // Show after 2 seconds delay
+          console.log('🎯 Showing billing modal after 5 photos')
+          setTimeout(() => setShowBilling(true), 2000) // Show after 2 seconds delay
         }
       }
       
@@ -297,7 +274,7 @@ export default function App() {
         console.error('Failed to take photo', e)
       }
     }
-  }, [videoActive, user, credits, deductCredits, refundCredits, setShowSignUp, setShowPricing])
+  }, [videoActive, user, credits, deductCredits, refundCredits, setShowPricing])
 
   const stopTimers = useCallback(() => {
     clearTimeout(autoCaptureTimerRef.current)
@@ -463,126 +440,75 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
 
-          <SignedOut>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-              {/* Primary CTA - Sign Up */}
-              <SignUpButton>
-                <button style={{
-                  background: 'linear-gradient(45deg, #007AFF, #0056CC)',
+          
+          {/* Always show credits and upgrade button for all users */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+            
+            {/* Credits display */}
+            <div 
+              onClick={() => {
+                setShowBilling(true) // Open RevenueCat billing modal
+              }}
+              style={{
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                padding: '8px 12px',
+                fontSize: '12px',
+                fontWeight: '600',
+                fontFamily: 'inherit',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(0, 0, 0, 0.85)'
+                e.target.style.transform = 'translateY(-1px)'
+                e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)'
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(0, 0, 0, 0.75)'
+                e.target.style.transform = 'translateY(0)'
+                e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              {hasActiveSubscription ? '∞' : credits} credits
+            </div>
+            
+            {/* Upgrade to Premium button */}
+            {!hasActiveSubscription && (
+              <button
+                onClick={() => setShowBilling(true)}
+                style={{
+                  background: 'linear-gradient(45deg, #8B5CF6, #EC4899)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '12px',
-                  padding: '12px 20px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: 'inherit',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 6px 20px rgba(0, 122, 255, 0.4)',
-                  minWidth: '120px',
-                  textTransform: 'none'
-                }}>
-                  Get Started
-                </button>
-              </SignUpButton>
-              
-              {/* Secondary action - Sign In */}
-              <SignInButton>
-                <button style={{
-                  background: 'transparent',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  border: 'none',
-                  borderRadius: '8px',
                   padding: '8px 12px',
-                  cursor: 'pointer',
                   fontSize: '12px',
-                  fontWeight: '500',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  fontWeight: '600',
                   fontFamily: 'inherit',
+                  boxShadow: '0 4px 16px rgba(139, 92, 246, 0.3)',
+                  cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px'
-                }}>
-                  Sign in
-                </button>
-              </SignInButton>
-            </div>
-          </SignedOut>
-          
-          <SignedIn>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-              
-              
-              {/* Credits display */}
-              {user && (
-                <div 
-                  onClick={() => {
-                    window.open('https://bananacam.outseta.com/profile?tab=planChange#o-authenticated', '_blank')
-                  }}
-                  style={{
-                    background: 'rgba(0, 0, 0, 0.75)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: '12px',
-                    padding: '8px 12px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    fontFamily: 'inherit',
-                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(0, 0, 0, 0.85)'
-                    e.target.style.transform = 'translateY(-1px)'
-                    e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(0, 0, 0, 0.75)'
-                    e.target.style.transform = 'translateY(0)'
-                    e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
-                  }}
-                >
-                  {credits} credits
-                </div>
-              )}
-              
-              {/* User profile photo button */}
-              <div 
-                style={{ 
-                  zIndex: 10, 
-                  position: 'relative',
-                  pointerEvents: 'auto'
                 }}
-                onClick={(e) => {
-                  e.stopPropagation();
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-1px)'
+                  e.target.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 4px 16px rgba(139, 92, 246, 0.3)'
                 }}
               >
-                <UserButton 
-                  afterSignOutUrl={window.location.origin}
-                  appearance={{
-                    elements: {
-                      avatarBox: {
-                        width: '44px',
-                        height: '44px',
-                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                        border: '2px solid rgba(255, 255, 255, 0.15)',
-                        position: 'relative',
-                        zIndex: 10
-                      }
-                    }
-                  }}
-                />
-              </div>
+                Upgrade
+              </button>
+            )}
+              
             </div>
-          </SignedIn>
         </div>
       </header>
       {liveMode && (
@@ -810,24 +736,11 @@ export default function App() {
 
 
       {showBilling && (
-        <BillingDashboard 
-          onBack={() => setShowBilling(false)} 
-          onUpgrade={() => {
-            setShowBilling(false)
-            setShowPricing(true)
-          }}
+        <RevenueCatBilling 
+          onClose={() => setShowBilling(false)} 
         />
       )}
 
-      {showSignUp && (
-        <SignUpPage 
-          onBack={() => setShowSignUp(false)}
-          onContinueToPricing={() => {
-            setShowSignUp(false)
-            setShowPricing(true)
-          }}
-        />
-      )}
       
       {showPricing && (
         <div style={{
@@ -914,11 +827,9 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
-                      // Require user authentication before purchase
-                      if (!user) {
-                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
-                        return
-                      }
+                      // Open billing modal for subscription
+                      setShowBilling(true)
+                      return
                       
                       if (openCheckout) {
                         await openCheckout({
@@ -986,11 +897,9 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
-                      // Require user authentication before purchase
-                      if (!user) {
-                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
-                        return
-                      }
+                      // Open billing modal for subscription
+                      setShowBilling(true)
+                      return
                       
                       if (openCheckout) {
                         await openCheckout({
@@ -1042,11 +951,9 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
-                      // Require user authentication before purchase
-                      if (!user) {
-                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
-                        return
-                      }
+                      // Open billing modal for subscription
+                      setShowBilling(true)
+                      return
                       
                       if (openCheckout) {
                         await openCheckout({
@@ -1098,11 +1005,9 @@ export default function App() {
                 <button 
                   onClick={async () => {
                     try {
-                      // Require user authentication before purchase
-                      if (!user) {
-                        alert('Please sign in to purchase credits. Click the "Sign In" button in the top right.')
-                        return
-                      }
+                      // Open billing modal for subscription
+                      setShowBilling(true)
+                      return
                       
                       if (openCheckout) {
                         await openCheckout({

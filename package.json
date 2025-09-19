@@ -11,13 +11,10 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.46.2",
-    "@clerk/elements": "^0.23.62",
     "@google/genai": "latest",
+    "@revenuecat/purchases-js": "^1.14.0",
     "@tailwindcss/postcss": "^4.1.13",
-    "@useautumn/react": "^0.0.13",
     "auto-zustand-selectors-hook": "latest",
-    "autumn-js": "^0.1.34",
     "clsx": "latest",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
