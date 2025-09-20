@@ -275,6 +275,85 @@ export default {
     postcardText: 'Coastal greetings from Cape Cod'
   },
 
+  oktoberfest: {
+    name: 'Oktoberfest',
+    emoji: '🍺',
+    prompt: 'Place the person or people at the famous Oktoberfest festival in Munich, Germany, inside a bustling beer hall tent with traditional Bavarian decorations. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in authentic German Oktoberfest attire - lederhosen for men with suspenders and checkered shirts, dirndl dresses for women with white blouses and aprons. The scene should be lively and festive, with long wooden tables, large beer steins, pretzels, and other festival-goers in traditional costume celebrating in the background. The lighting should be warm and golden, typical of a festive indoor celebration, with traditional lanterns and decorations visible. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the joyful, celebratory atmosphere of this iconic German festival. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Prost from Oktoberfest! 🍻'
+  },
+
+  friends: {
+    name: 'Central Perk',
+    emoji: '☕',
+    prompt: 'Place the person or people in the iconic Central Perk coffee house from the TV show Friends, sitting on the famous orange couch or around the casual seating area. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in classic 90s casual fashion - comfortable sweaters, jeans, flannel shirts, or casual dresses typical of the Friends era. The scene should capture the cozy, welcoming atmosphere of the coffee shop with warm lighting, the distinctive brick walls, plants, and coffee shop ambiance. Include details like coffee cups, comfortable furniture, and the relaxed social atmosphere that made Central Perk the perfect hangout spot. The lighting should be warm and inviting, like the soft indoor lighting of a beloved neighborhood coffee shop. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the nostalgic, friendly atmosphere of this iconic TV location. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'entertainment',
+    postcardText: 'Could this BE any better? ☕'
+  },
+
+  jerusalem: {
+    name: 'Jerusalem',
+    emoji: '🕊️',
+    prompt: 'Place the person or people in the historic Old City of Jerusalem, with the iconic golden Dome of the Rock and ancient stone walls visible in the background. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in respectful, modest attire appropriate for visiting holy sites - long pants, covered shoulders, and comfortable walking shoes. The scene should capture the spiritual and historical significance of this sacred city, with warm, golden sunlight reflecting off the ancient limestone buildings and sacred structures. Include details like the distinctive Jerusalem stone architecture, olive trees, and the reverent atmosphere of this holy city sacred to Judaism, Christianity, and Islam. The lighting should be warm and ethereal, as if blessed by the divine presence that permeates this ancient place. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the respectful, contemplative mood appropriate for this sacred location. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Blessings from the Holy City 🕊️'
+  },
+
+  mecca: {
+    name: 'Mecca',
+    emoji: '🕌',
+    prompt: 'Place the person or people in the holy city of Mecca, Saudi Arabia, with the magnificent Masjid al-Haram and the sacred Kaaba visible in the background. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in appropriate modest attire for visiting this most sacred Islamic site - traditional white pilgrim clothing (ihram) or respectful modest dress with full coverage. The scene should capture the profound spiritual significance and reverence of this holiest site in Islam, with the distinctive architecture of the Grand Mosque and its iconic minarets. Include details like the white marble courtyards, the crowd of pilgrims, and the serene, sacred atmosphere. The lighting should be soft and divine, as if touched by spiritual grace, creating a sense of peace and devotion. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the deeply respectful and contemplative mood appropriate for this most sacred Islamic location. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Peace be upon you from Mecca 🕌'
+  },
+
+  vatican: {
+    name: 'Vatican',
+    emoji: '⛪',
+    prompt: 'Place the person or people in Vatican City at St. Peter\'s Square, with the magnificent St. Peter\'s Basilica and its iconic dome visible in the background. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in respectful, modest attire appropriate for visiting the Vatican - formal or semi-formal clothing with covered shoulders and long pants or skirts. The scene should capture the awe-inspiring grandeur and spiritual significance of this center of Catholic Christianity, with the distinctive colonnade designed by Bernini, the Swiss Guards, and pilgrims from around the world. Include details like the ancient cobblestones, Renaissance architecture, and the reverent atmosphere of the world\'s smallest sovereign state. The lighting should be soft and heavenly, as if touched by divine grace, creating golden reflections off the ancient marble and travertine. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the respectful, contemplative mood appropriate for this sacred Christian location. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Blessed greetings from Vatican City ⛪'
+  },
+
+  bahaitemple: {
+    name: 'Bahá\'í Temple',
+    emoji: '🕊️',
+    prompt: 'Place the person or people at one of the magnificent Bahá\'í Houses of Worship, featuring the distinctive nine-sided architecture with its elegant dome and intricate geometric patterns. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in modest, respectful attire suitable for visiting a sacred space - neat, clean clothing that covers shoulders and extends to at least the knees. The scene should capture the serene beauty and spiritual harmony of these temples, known for their stunning architecture that blends various cultural influences, pristine gardens, and peaceful atmosphere welcoming people of all faiths. Include details like the beautiful landscaped gardens, reflecting pools, and the temple\'s signature white or light-colored facade that seems to glow with inner light. The lighting should be soft and transcendent, creating a sense of unity and peace that reflects the Bahá\'í principle of the oneness of humanity. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the contemplative, inclusive atmosphere appropriate for this sacred space that welcomes all people regardless of background. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Unity and peace from the Bahá\'í Temple 🕊️'
+  },
+
+  angkorwat: {
+    name: 'Angkor Wat',
+    emoji: '🏛️',
+    prompt: 'Place the person or people at the magnificent Angkor Wat temple complex in Cambodia, with the iconic temple towers rising majestically in the background, ancient stone carvings, and lush tropical vegetation growing over parts of the ruins. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in lightweight, modest clothing suitable for exploring ancient temples in tropical heat - breathable fabrics, covered shoulders, and comfortable walking shoes. The scene should capture the mystical beauty and spiritual significance of this UNESCO World Heritage site, with massive tree roots intertwining with ancient stone structures, intricate bas-relief carvings, and the mysterious atmosphere of a lost civilization reclaimed by nature. Include details like the distinctive Khmer architecture, moss-covered stones, shafts of golden sunlight filtering through jungle canopy, and the serene reflection pools. The lighting should be dappled and atmospheric, as if filtered through centuries-old trees, creating an ethereal, timeless quality that speaks to the enduring power of faith and artistry. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the contemplative, awe-inspiring mood appropriate for this ancient sacred site where Buddhism and Hinduism converged. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Ancient wisdom from Cambodia 🏛️'
+  },
+
+  phuket: {
+    name: 'Phuket Beach',
+    emoji: '🏝️',
+    prompt: 'Place the person or people on the stunning beaches of Phuket, Thailand, with pristine white sand, crystal-clear turquoise waters, and the iconic limestone karst islands rising dramatically from the Andaman Sea in the background. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in tropical beach attire - colorful swimwear, flowing cover-ups, or lightweight summer clothes perfect for a Thai beach paradise. The scene should capture the breathtaking natural beauty of this tropical destination, with traditional Thai longtail boats moored nearby, palm trees swaying in the ocean breeze, and the distinctive towering limestone cliffs and islands that make Phuket famous. Include details like the vibrant blue-green waters, smooth beach sand, tropical flowers, and the warm, welcoming atmosphere of Thailand\'s most famous beach destination. The lighting should be bright and tropical, with intense sunlight creating sparkling reflections on the water and casting pleasant shadows under palm trees. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the relaxed, vacation paradise atmosphere of this world-renowned beach destination. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Paradise found in Phuket! 🏝️'
+  },
+
+  moodeng: {
+    name: 'Moo Deng',
+    emoji: '🦛',
+    prompt: 'Place the person or people in an adorable scene with Moo Deng, the famous pygmy hippo from Khao Kheow Open Zoo in Thailand, creating a heartwarming and playful interaction. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in casual zoo-visiting attire - comfortable clothing suitable for a day at the zoo. The scene should capture the irresistible charm and cuteness that made Moo Deng an internet sensation, with the adorable baby pygmy hippo displaying its characteristic playful, bouncy behavior. Include details like the lush, naturalistic zoo habitat with water features, tropical plants, and the warm, humid environment of Thailand. Moo Deng should appear exactly as the beloved viral sensation - small, round, incredibly cute with the distinctive pygmy hippo features that captured hearts worldwide. The lighting should be natural and warm, as if during a pleasant day at the zoo, creating a joyful, family-friendly atmosphere. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the pure joy and delight of encountering this adorable animal celebrity. The overall mood should be one of wonder, happiness, and the special magic that happens when humans connect with amazing animals. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'animals',
+    postcardText: 'Meeting the cutest hippo ever! 🦛'
+  },
+
+  comedyclub: {
+    name: 'Comedy Club',
+    emoji: '🎤',
+    prompt: 'Place the person or people on stage at a famous comedy club like The Comedy Cellar in New York or The Laugh Factory in Los Angeles, with a microphone in hand and bright stage lights illuminating them. It is absolutely crucial to preserve their exact facial features, expressions, and character. Dress them in stylish, confident stage attire - perhaps a casual button-down shirt, blazer, or trendy outfit perfect for performing stand-up comedy. The scene should capture the electric energy and atmosphere of a live comedy performance, with the distinctive brick wall backdrop typical of comedy clubs, warm stage lighting creating dramatic shadows, and the audience barely visible in the darkened club beyond the stage lights. Include details like the classic comedy club microphone on its stand, the intimate venue setting with small tables and chairs, and the palpable excitement of live performance. The lighting should be theatrical and focused, with bright stage spots creating that classic comedy club ambiance where the performer is the center of attention. Ensure all figures are portrayed in a flattering, natural, and realistic way while capturing the confidence, charisma, and magnetic presence needed to command a comedy stage. The overall mood should be one of entertainment, wit, and the special energy that comes from live performance. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'entertainment',
+    postcardText: 'Bringing the laughs! 🎤'
+  },
 
   lincolnmemorial: {
     name: 'Lincoln Memorial',
