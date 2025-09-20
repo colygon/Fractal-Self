@@ -209,8 +209,17 @@ export const useRevenueCat = () => {
         throw new Error('RevenueCat not initialized')
       }
 
-      if (USE_TEST_MODE) {
-        // Simulate credit purchase in test mode
+      // Map package identifiers to their specific RevenueCat Web Purchase Links
+      const purchaseLinks = {
+        'credits_300': 'https://pay.rev.cat/agvuhpvjihtinpwc/',
+        'credits_3000': 'https://pay.rev.cat/ygwurdgtsjjcsinc/',
+        'credits_30000': 'https://pay.rev.cat/ttowpyvmudproaof/'
+      }
+
+      const directPurchaseUrl = purchaseLinks[packageToPurchase.product.identifier]
+
+      if (USE_TEST_MODE && !directPurchaseUrl) {
+        // Simulate credit purchase in test mode only if no direct links available
         console.log('TEST MODE: Simulating successful credit purchase')
 
         // Get the number of credits from the package
@@ -233,19 +242,23 @@ export const useRevenueCat = () => {
         return { success: true, creditsAdded: creditsToAdd }
       }
 
-      // For production, use RevenueCat Web Purchase Links
-      // Get the current user ID for the purchase link
-      const userId = customerInfo?.originalAppUserId ||
-        (typeof window !== 'undefined' && localStorage.getItem('anonymous_user_id')) ||
-        `guest_${Math.random().toString(36).substring(2, 11)}`
+      if (directPurchaseUrl) {
+        // Use direct RevenueCat Web Purchase Link
+        const userId = customerInfo?.originalAppUserId ||
+          (typeof window !== 'undefined' && localStorage.getItem('anonymous_user_id')) ||
+          `guest_${Math.random().toString(36).substring(2, 11)}`
 
-      // RevenueCat Web Purchase Link template
-      const webPurchaseUrl = `https://pay.rev.cat/agvuhpvjihtinpwc/${encodeURIComponent(userId)}`
+        const webPurchaseUrl = `${directPurchaseUrl}${encodeURIComponent(userId)}`
+        console.log('Opening RevenueCat web purchase:', webPurchaseUrl)
 
-      console.log('Redirecting to RevenueCat web purchase:', webPurchaseUrl)
+        // Open RevenueCat purchase page in new window
+        window.open(webPurchaseUrl, '_blank', 'width=600,height=800,scrollbars=yes,resizable=yes')
 
-      // Open RevenueCat purchase page in new window
-      window.open(webPurchaseUrl, '_blank', 'width=600,height=800,scrollbars=yes,resizable=yes')
+        return { success: true, method: 'direct_link' }
+      }
+
+      // Fallback: No direct purchase links available
+      throw new Error(`No purchase method available for package: ${packageToPurchase.product.identifier}`)
 
       // Note: The actual purchase will be handled by RevenueCat's web interface
       // The customer info will be updated when they return to the app or refresh
