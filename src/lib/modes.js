@@ -3,18 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 export default {
-  auto: {
-    name: 'Auto',
-    emoji: '🔄',
-    prompt: 'Automatic mode will cycle through different styles.',
-    category: 'utility'
-  },
-  random: {
-    name: 'Random',
-    emoji: '🎲', 
-    prompt: 'Truly random style selection with smart distribution to avoid repetition.',
-    category: 'utility'
-  },
+  // San Francisco Bay Area styles - moved to top
   sf: {
     name: 'SF',
     emoji: '🏠',
@@ -43,7 +32,72 @@ export default {
     category: 'location',
     postcardText: 'Greetings from the Golden Gate!'
   },
-  
+  dutchwindmill: {
+    name: 'Windmill',
+    emoji: '🌷',
+    prompt: 'Place the person or people in front of the historic Dutch Windmill in San Francisco\'s Golden Gate Park, surrounded by its beautiful tulip garden. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, comfortable park attire. Their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be the soft, gentle light of a pleasant spring day, with realistic shadows. Ensure the styling is applied consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Greetings from Golden Gate Park'
+  },
+  dolorespark: {
+    name: 'Dolores Park',
+    emoji: '☀️',
+    prompt: 'Place the person or people at the vibrant top corner of Dolores Park in San Francisco, in the area famously known as "gay beach," with the iconic city skyline in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, sunny-day park attire; their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The park around them should be bustling with life, filled with other people having picnics, sunbathing, and dogs playing. The lighting should be bright and cheerful, like a perfect San Francisco afternoon, with soft shadows on the lawn. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Soaking up the sun in Dolores Park!'
+  },
+  presidio: {
+    name: 'Presidio',
+    emoji: '🌲',
+    prompt: 'Place the person or people walking on a trail in the Presidio, with eucalyptus trees and a view of the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable, modern outdoor or hiking clothes, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be soft and filtered through the trees, creating a peaceful and natural atmosphere. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Exploring the Presidio'
+  },
+  milerockbeach: {
+    name: 'Mile Rock Beach',
+    emoji: '🌊',
+    prompt: 'Place the person or people on the rugged, scenic Mile Rock Beach in San Francisco, with the rocky coastline and the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in light jackets or windbreakers. Their style should be modern, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be dramatic, as if on a cool, windy day, with the ocean mist in the air. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Windswept greetings!'
+  },
+  santaCruz: {
+    name: 'Santa Cruz',
+    emoji: '🏄‍♂️',
+    prompt: 'Transform this photo into a quintessential Santa Cruz, California beach scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. Place them on the iconic Santa Cruz Beach Boardwalk or along West Cliff Drive with the stunning Pacific coastline in the background. Include classic Santa Cruz elements: the historic Giant Dipper roller coaster, colorful beach umbrellas, surfers in the distance, redwood trees on nearby hills, and the famous Santa Cruz Wharf extending into the ocean. The lighting should be that perfect golden California sunshine with a slight ocean breeze effect on hair and clothing. Dress them in casual California beach attire - perhaps a vintage Santa Cruz surfboard shop t-shirt, board shorts, or flowing beach dress. Add authentic details like seagulls flying overhead, the Santa Cruz Mountains visible in the distance, and maybe a classic VW van parked nearby. The overall mood should capture that laid-back, surf culture vibe that Santa Cruz is famous for. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the authentic Santa Cruz beach town atmosphere. The final image should look like a genuine photograph taken during a perfect day in this iconic California coastal town.',
+    category: 'location',
+    postcardText: 'Living the Santa Cruz dream! 🌊☀️'
+  },
+  tiburon: {
+    name: 'Tiburon',
+    emoji: '⛵',
+    prompt: 'Place the person or people in the charming waterfront town of Tiburon, with a stunning view of the San Francisco skyline and Angel Island across the bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish, casual bayside attire. The lighting should be bright and clear, as if on a sunny afternoon, reflecting off the water. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Greetings from Tiburon!'
+  },
+  laketahoe: {
+    name: 'Tahoe',
+    emoji: '🚤',
+    prompt: 'Place the person or people driving a classic wooden speedboat across the iconic turquoise waters of Lake Tahoe\'s Crystal Bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish summer boating attire. The scene should be set under a bright, sunny sky, creating dynamic, sparkling reflections on the water and crisp shadows. The famous granite boulders and pine-covered shores of Crystal Bay should be visible in the background. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Making waves in Lake Tahoe!'
+  },
+  yosemite: {
+    name: 'Yosemite',
+    emoji: '🏞️',
+    prompt: 'Place the person or people in Yosemite Valley with the majestic El Capitan or Half Dome in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable outdoor or hiking clothes. The lighting should be the crisp, clear morning light of a bright day, with realistic shadows cast by the granite cliffs and tall pine trees. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Adventure Awaits!'
+  },
+
+  surfing: {
+    name: 'Perfect Wave',
+    emoji: '🏄',
+    prompt: 'Transform the photo into a photorealistic action shot of the person or people surfing a massive, powerful wave at Ocean Beach, San Francisco. Dress them in matching wetsuits. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, capturing the exhilarating and intense moment. The scene should have a sense of dynamic motion, with sea spray and the foggy San Francisco coastline in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all surfers.',
+    category: 'sports',
+    postcardText: 'HANG TEN'
+  },
+
+  // Other locations
   nyc: {
     name: 'New York',
     emoji: '🗽',
@@ -204,13 +258,6 @@ export default {
     postcardText: 'Sending good vibes from Sedona'
   },
 
-  yosemite: {
-    name: 'Yosemite',
-    emoji: '🏞️',
-    prompt: 'Place the person or people in Yosemite Valley with the majestic El Capitan or Half Dome in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable outdoor or hiking clothes. The lighting should be the crisp, clear morning light of a bright day, with realistic shadows cast by the granite cliffs and tall pine trees. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Adventure Awaits!'
-  },
 
   yellowstone: {
     name: 'Yellowstone',
@@ -228,60 +275,6 @@ export default {
     postcardText: 'Coastal greetings from Cape Cod'
   },
 
-  dutchwindmill: {
-    name: 'Windmill',
-    emoji: '🌷',
-    prompt: 'Place the person or people in front of the historic Dutch Windmill in San Francisco\'s Golden Gate Park, surrounded by its beautiful tulip garden. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, comfortable park attire. Their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be the soft, gentle light of a pleasant spring day, with realistic shadows. Ensure the styling is applied consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Greetings from Golden Gate Park'
-  },
-  dolorespark: {
-    name: 'Dolores Park',
-    emoji: '☀️',
-    prompt: 'Place the person or people at the vibrant top corner of Dolores Park in San Francisco, in the area famously known as "gay beach," with the iconic city skyline in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, sunny-day park attire; their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The park around them should be bustling with life, filled with other people having picnics, sunbathing, and dogs playing. The lighting should be bright and cheerful, like a perfect San Francisco afternoon, with soft shadows on the lawn. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Soaking up the sun in Dolores Park!'
-  },
-
-  presidio: {
-    name: 'Presidio',
-    emoji: '🌲',
-    prompt: 'Place the person or people walking on a trail in the Presidio, with eucalyptus trees and a view of the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable, modern outdoor or hiking clothes, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be soft and filtered through the trees, creating a peaceful and natural atmosphere. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Exploring the Presidio'
-  },
-
-  milerockbeach: {
-    name: 'Mile Rock Beach',
-    emoji: '🌊',
-    prompt: 'Place the person or people on the rugged, scenic Mile Rock Beach in San Francisco, with the rocky coastline and the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in light jackets or windbreakers. Their style should be modern, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be dramatic, as if on a cool, windy day, with the ocean mist in the air. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Windswept greetings!'
-  },
-
-  santaCruz: {
-    name: 'Santa Cruz',
-    emoji: '🏄‍♂️',
-    prompt: 'Transform this photo into a quintessential Santa Cruz, California beach scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. Place them on the iconic Santa Cruz Beach Boardwalk or along West Cliff Drive with the stunning Pacific coastline in the background. Include classic Santa Cruz elements: the historic Giant Dipper roller coaster, colorful beach umbrellas, surfers in the distance, redwood trees on nearby hills, and the famous Santa Cruz Wharf extending into the ocean. The lighting should be that perfect golden California sunshine with a slight ocean breeze effect on hair and clothing. Dress them in casual California beach attire - perhaps a vintage Santa Cruz surfboard shop t-shirt, board shorts, or flowing beach dress. Add authentic details like seagulls flying overhead, the Santa Cruz Mountains visible in the distance, and maybe a classic VW van parked nearby. The overall mood should capture that laid-back, surf culture vibe that Santa Cruz is famous for. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the authentic Santa Cruz beach town atmosphere. The final image should look like a genuine photograph taken during a perfect day in this iconic California coastal town.',
-    category: 'location',
-    postcardText: 'Living the Santa Cruz dream! 🌊☀️'
-  },
-
-  tiburon: {
-    name: 'Tiburon',
-    emoji: '⛵',
-    prompt: 'Place the person or people in the charming waterfront town of Tiburon, with a stunning view of the San Francisco skyline and Angel Island across the bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish, casual bayside attire. The lighting should be bright and clear, as if on a sunny afternoon, reflecting off the water. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Greetings from Tiburon!'
-  },
-
-  laketahoe: {
-    name: 'Tahoe',
-    emoji: '🚤',
-    prompt: 'Place the person or people driving a classic wooden speedboat across the iconic turquoise waters of Lake Tahoe\'s Crystal Bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish summer boating attire. The scene should be set under a bright, sunny sky, creating dynamic, sparkling reflections on the water and crisp shadows. The famous granite boulders and pine-covered shores of Crystal Bay should be visible in the background. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Making waves in Lake Tahoe!'
-  },
 
   lincolnmemorial: {
     name: 'Lincoln Memorial',
@@ -731,12 +724,76 @@ export default {
     postcardText: 'SHRED IT'
   },
 
-  surfing: {
-    name: 'Perfect Wave',
-    emoji: '🏄',
-    prompt: 'Transform the photo into a photorealistic action shot of the person or people surfing a massive, powerful wave at Ocean Beach, San Francisco. Dress them in matching wetsuits. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, capturing the exhilarating and intense moment. The scene should have a sense of dynamic motion, with sea spray and the foggy San Francisco coastline in the background. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone, maintaining character consistency for all surfers.',
-    category: 'sports',
-    postcardText: 'HANG TEN'
+  // Utility modes
+  auto: {
+    name: 'Windmill',
+    emoji: '🌷',
+    prompt: 'Place the person or people in front of the historic Dutch Windmill in San Francisco\'s Golden Gate Park, surrounded by its beautiful tulip garden. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, comfortable park attire. Their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be the soft, gentle light of a pleasant spring day, with realistic shadows. Ensure the styling is applied consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Greetings from Golden Gate Park'
+  },
+  dolorespark: {
+    name: 'Dolores Park',
+    emoji: '☀️',
+    prompt: 'Place the person or people at the vibrant top corner of Dolores Park in San Francisco, in the area famously known as "gay beach," with the iconic city skyline in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in casual, sunny-day park attire; their modern outfits should not include skinny jeans, turtlenecks, or crossbody purses for women. The park around them should be bustling with life, filled with other people having picnics, sunbathing, and dogs playing. The lighting should be bright and cheerful, like a perfect San Francisco afternoon, with soft shadows on the lawn. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Soaking up the sun in Dolores Park!'
+  },
+  presidio: {
+    name: 'Presidio',
+    emoji: '🌲',
+    prompt: 'Place the person or people walking on a trail in the Presidio, with eucalyptus trees and a view of the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable, modern outdoor or hiking clothes, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be soft and filtered through the trees, creating a peaceful and natural atmosphere. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Exploring the Presidio'
+  },
+  milerockbeach: {
+    name: 'Mile Rock Beach',
+    emoji: '🌊',
+    prompt: 'Place the person or people on the rugged, scenic Mile Rock Beach in San Francisco, with the rocky coastline and the Golden Gate Bridge in the distance. It is crucial to preserve their exact facial features, expressions, and character. Dress them in light jackets or windbreakers. Their style should be modern, avoiding skinny jeans, turtlenecks, or crossbody purses for women. The lighting should be dramatic, as if on a cool, windy day, with the ocean mist in the air. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Windswept greetings!'
+  },
+  santaCruz: {
+    name: 'Santa Cruz',
+    emoji: '🏄‍♂️',
+    prompt: 'Transform this photo into a quintessential Santa Cruz, California beach scene. It is absolutely crucial to preserve the exact facial features, expressions, body proportions, and character of the person or people - they must look exactly like themselves. Place them on the iconic Santa Cruz Beach Boardwalk or along West Cliff Drive with the stunning Pacific coastline in the background. Include classic Santa Cruz elements: the historic Giant Dipper roller coaster, colorful beach umbrellas, surfers in the distance, redwood trees on nearby hills, and the famous Santa Cruz Wharf extending into the ocean. The lighting should be that perfect golden California sunshine with a slight ocean breeze effect on hair and clothing. Dress them in casual California beach attire - perhaps a vintage Santa Cruz surfboard shop t-shirt, board shorts, or flowing beach dress. Add authentic details like seagulls flying overhead, the Santa Cruz Mountains visible in the distance, and maybe a classic VW van parked nearby. The overall mood should capture that laid-back, surf culture vibe that Santa Cruz is famous for. Ensure all figures are portrayed in a flattering, natural, and realistic way while maintaining the authentic Santa Cruz beach town atmosphere. The final image should look like a genuine photograph taken during a perfect day in this iconic California coastal town.',
+    category: 'location',
+    postcardText: 'Living the Santa Cruz dream! 🌊☀️'
+  },
+  tiburon: {
+    name: 'Tiburon',
+    emoji: '⛵',
+    prompt: 'Place the person or people in the charming waterfront town of Tiburon, with a stunning view of the San Francisco skyline and Angel Island across the bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish, casual bayside attire. The lighting should be bright and clear, as if on a sunny afternoon, reflecting off the water. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Greetings from Tiburon!'
+  },
+  laketahoe: {
+    name: 'Tahoe',
+    emoji: '🚤',
+    prompt: 'Place the person or people driving a classic wooden speedboat across the iconic turquoise waters of Lake Tahoe\'s Crystal Bay. It is crucial to preserve their exact facial features, expressions, and character. Dress them in stylish summer boating attire. The scene should be set under a bright, sunny sky, creating dynamic, sparkling reflections on the water and crisp shadows. The famous granite boulders and pine-covered shores of Crystal Bay should be visible in the background. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Making waves in Lake Tahoe!'
+  },
+  yosemite: {
+    name: 'Yosemite',
+    emoji: '🏞️',
+    prompt: 'Place the person or people in Yosemite Valley with the majestic El Capitan or Half Dome in the background. It is crucial to preserve their exact facial features, expressions, and character. Dress them in comfortable outdoor or hiking clothes. The lighting should be the crisp, clear morning light of a bright day, with realistic shadows cast by the granite cliffs and tall pine trees. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Adventure Awaits!'
+  },
+
+  // Utility modes
+  auto: {
+    name: 'Auto',
+    emoji: '🔄',
+    prompt: 'Automatic mode will cycle through different styles.',
+    category: 'utility'
+  },
+  random: {
+    name: 'Random',
+    emoji: '🎲',
+    prompt: 'Truly random style selection with smart distribution to avoid repetition.',
+    category: 'utility'
   },
 
   golf: {
