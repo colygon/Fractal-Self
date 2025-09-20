@@ -75,6 +75,14 @@ export const useAuth = () => {
     }
   }, [identifyUser, logOut, isSignedIn, user?.id])
 
+  const updateCredits = useCallback((updater) => {
+    setCredits(prev => {
+      const next = updater(prev)
+      writeCredits(storageKey, next)
+      return next
+    })
+  }, [storageKey])
+
   const addCredits = useCallback((amount) => {
     // Add credits when user purchases them
     updateCredits(prev => prev + amount)
@@ -93,14 +101,6 @@ export const useAuth = () => {
   }, [addCredits])
 
   const subscriptionActive = hasActiveSubscription()
-
-  const updateCredits = useCallback((updater) => {
-    setCredits(prev => {
-      const next = updater(prev)
-      writeCredits(storageKey, next)
-      return next
-    })
-  }, [storageKey])
 
   const deductCredits = useCallback((amount = PHOTO_COST) => {
     // Always deduct credits for all users - no unlimited usage
