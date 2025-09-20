@@ -124,6 +124,17 @@ export const useRevenueCat = () => {
   const identifyUser = async (userId) => {
     try {
       console.log('Setting user ID with RevenueCat:', userId)
+
+      if (USE_TEST_MODE) {
+        console.log('TEST MODE: Simulating user identification')
+        return customerInfo
+      }
+
+      if (!isLoaded || !Purchases.logIn) {
+        console.warn('RevenueCat not properly initialized, cannot identify user')
+        return customerInfo
+      }
+
       // For web SDK, we use logIn instead of identifyUser
       const { customerInfo: updatedCustomerInfo } = await Purchases.logIn(userId)
       setCustomerInfo(updatedCustomerInfo)
@@ -147,6 +158,11 @@ export const useRevenueCat = () => {
           }
         })
         return
+      }
+
+      if (!isLoaded || !Purchases.logOut) {
+        console.warn('RevenueCat not properly initialized, cannot log out')
+        return customerInfo
       }
 
       await Purchases.logOut()
@@ -227,6 +243,17 @@ export const useRevenueCat = () => {
   const restorePurchases = async () => {
     try {
       console.log('Restoring purchases with RevenueCat')
+
+      if (USE_TEST_MODE) {
+        console.log('TEST MODE: Cannot restore purchases in test mode')
+        return customerInfo
+      }
+
+      if (!isLoaded || !Purchases.restorePurchases) {
+        console.warn('RevenueCat not properly initialized, cannot restore purchases')
+        return customerInfo
+      }
+
       // For web SDK, restorePurchases returns an object with customerInfo
       const { customerInfo: restoredCustomerInfo } = await Purchases.restorePurchases()
       setCustomerInfo(restoredCustomerInfo)
