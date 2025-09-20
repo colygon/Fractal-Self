@@ -81,7 +81,7 @@ export default function App() {
 
   const videoRef = useRef(null)
   const pipVideoRef = useRef(null)
-  const { user, credits, deductCredits, refundCredits, hasActiveSubscription, isLoading: authLoading, isSignedIn } = useAuth()
+  const { user, bananas, deductBananas, refundBananas, hasActiveSubscription, isLoading: authLoading, isSignedIn } = useAuth()
   const { openSignIn } = useClerk()
   const photoCost = CONFIG.PHOTO_COST
   
@@ -219,27 +219,31 @@ export default function App() {
 
       console.log('Capturing photo', { videoWidth, videoHeight, dataLength: dataURL.length })
       
-      // Check if user has sufficient credits (non-premium only)
-      if (!hasActiveSubscription && credits < CONFIG.PHOTO_COST) {
-        console.warn('Insufficient credits for capture')
+      // Check if user has sufficient bananas (non-premium only)
+      if (!hasActiveSubscription && bananas < CONFIG.PHOTO_COST) {
+        console.warn('Insufficient 🍌 bananas for capture')
         setShowBilling(true)
         return
       }
 
-      // Deduct credits immediately to keep UI responsive for non-premium users
+      // Deduct bananas immediately to keep UI responsive for non-premium users
       if (!hasActiveSubscription) {
-        const remainingCredits = Math.max(0, credits - CONFIG.PHOTO_COST)
-        deductCredits(CONFIG.PHOTO_COST)
-        console.log(`⚡ Deducted ${CONFIG.PHOTO_COST} credits immediately. Remaining: ${remainingCredits}`)
+        const remainingBananas = Math.max(0, bananas - CONFIG.PHOTO_COST)
+        const spendResult = await deductBananas(CONFIG.PHOTO_COST)
+        if (!spendResult) {
+          console.error('Failed to deduct bananas, aborting photo capture')
+          return
+        }
+        console.log(`⚡ Deducted ${CONFIG.PHOTO_COST} 🍌 bananas immediately. Remaining: ${remainingBananas}`)
       } else {
-        console.log('⚡ Premium capture - no credits deducted')
+        console.log('⚡ Premium capture - no bananas deducted')
       }
 
       // TODO: Track usage via RevenueCat for analytics
       if (user) {
         console.log('📊 Photo generated', {
           userId: user?.id,
-          credits: hasActiveSubscription ? 'unlimited' : Math.max(0, credits - CONFIG.PHOTO_COST)
+          bananas: hasActiveSubscription ? 'unlimited' : Math.max(0, bananas - CONFIG.PHOTO_COST)
         })
       }
       
@@ -249,10 +253,10 @@ export default function App() {
       } catch (error) {
         console.error('Photo generation failed', error)
         
-        // Refund credits if generation fails (only for users without unlimited access)
+        // Refund bananas if generation fails (only for users without unlimited access)
         if (!hasActiveSubscription) {
-          refundCredits(CONFIG.PHOTO_COST)
-          console.log(`💰 Refunded ${CONFIG.PHOTO_COST} credits due to generation failure.`)
+          refundBananas(CONFIG.PHOTO_COST)
+          console.log(`💰 Refunded ${CONFIG.PHOTO_COST} 🍌 bananas due to generation failure.`)
         }
         
         throw error
@@ -262,7 +266,7 @@ export default function App() {
         console.error('Failed to take photo', e)
       }
     }
-  }, [videoActive, user, credits, deductCredits, refundCredits, hasActiveSubscription])
+  }, [videoActive, user, bananas, deductBananas, refundBananas, hasActiveSubscription])
 
   const stopTimers = useCallback(() => {
     clearTimeout(autoCaptureTimerRef.current)
@@ -428,56 +432,6 @@ export default function App() {
           {/* Always show credits and upgrade button for all users */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button
-                style={{
-                  background: 'linear-gradient(135deg, #667eea, #764ba2, #f093fb)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '10px 18px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  fontFamily: 'inherit',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'
-                }}
-              >
-                ✨ Sign in
-              </button>
-            </SignInButton>
-          </SignedOut>
-
-          <SignedIn>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <UserButton
-                afterSignOutUrl="/"
-                userProfileMode="modal"
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: {
-                      border: '2px solid rgba(255, 255, 255, 0.2)'
-                    },
-                    userButtonTrigger: {
-                      borderRadius: '999px'
-                    }
-                  }
-                }}
-              />
-            </div>
-          </SignedIn>
-
           {/* Credits display */}
             <div
               onClick={() => {
@@ -513,11 +467,11 @@ export default function App() {
                 e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
             >
-              {hasActiveSubscription ? '∞' : credits} credits
+              {hasActiveSubscription ? '∞' : bananas} 🍌 bananas
             </div>
             
             {/* Upgrade to Premium button */}
-            {!hasActiveSubscription && (
+            {bananas < 50 && (
               <button
                 onClick={() => {
                   if (!authLoading && !isSignedIn) {
@@ -551,7 +505,61 @@ export default function App() {
                 Upgrade
               </button>
             )}
-              
+
+            {/* User Profile Button */}
+            <SignedIn>
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '12px' }}>
+                <UserButton
+                  afterSignOutUrl="/"
+                  userProfileMode="modal"
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: {
+                        border: '2px solid rgba(255, 255, 255, 0.2)'
+                      },
+                      userButtonTrigger: {
+                        borderRadius: '999px'
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </SignedIn>
+
+            {/* Sign In Button */}
+            <SignedOut>
+              <div style={{ marginLeft: '12px' }}>
+                <SignInButton mode="modal">
+                  <button
+                    style={{
+                      background: 'linear-gradient(135deg, #667eea, #764ba2, #f093fb)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '10px 18px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'
+                    }}
+                  >
+                    ✨ Sign in
+                  </button>
+                </SignInButton>
+              </div>
+            </SignedOut>
+
             </div>
         </div>
       </header>
@@ -1313,27 +1321,29 @@ function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevio
       {children}
 
       <div className="focusedPhotoActions">
-        <button className="button shareButton" onClick={e => { e.stopPropagation(); sharePhoto(); }}>
-          <span className="icon">ios_share</span>
-        </button>
-        <div className="focusedPhotoActions-center">
-          <button 
-            className="button" 
-            onClick={e => { e.stopPropagation(); downloadPhoto(photo.id); }}
-            style={{ display: isDesktop ? 'block' : 'none' }}
-          >
-            <span className="icon">download</span>
-          </button>
+        <div className="focusedPhotoActions-top">
           <button className={c('button', {active: isFavorite})} onClick={e => {e.stopPropagation(); toggleFavorite(photo.id)}}>
             <span className="icon">favorite</span>
           </button>
           <button className="button" onClick={e => { e.stopPropagation(); onMakeGif(); }}>
             <span className="icon">gif</span>
           </button>
+          <button className="button deleteButton" onClick={e => { e.stopPropagation(); deletePhoto(photo.id); onClose(); }}>
+            <span className="icon">delete</span>
+          </button>
         </div>
-        <button className="button deleteButton" onClick={e => { e.stopPropagation(); deletePhoto(photo.id); onClose(); }}>
-          <span className="icon">delete</span>
-        </button>
+        <div className="focusedPhotoActions-bottom">
+          <button className="button shareButton" onClick={e => { e.stopPropagation(); sharePhoto(); }}>
+            <span className="icon">ios_share</span>
+          </button>
+          <button
+            className="button"
+            onClick={e => { e.stopPropagation(); downloadPhoto(photo.id); }}
+            style={{ display: isDesktop ? 'block' : 'none' }}
+          >
+            <span className="icon">download</span>
+          </button>
+        </div>
       </div>
     </div>
   )

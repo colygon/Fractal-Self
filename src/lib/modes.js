@@ -97,6 +97,14 @@ export default {
     postcardText: 'HANG TEN'
   },
 
+  cycling: {
+    name: 'Marin Headlands',
+    emoji: '🚴',
+    prompt: 'Place the person or people on road bikes cycling through the iconic Marin Headlands, with the Golden Gate Bridge visible in the background, rolling coastal hills, and the Pacific Ocean stretching to the horizon. They are dressed in cycling gear, riding along Conzelman Road or Hawk Hill. It is crucial to preserve their exact facial features, expressions, and character. The scene captures the misty morning atmosphere typical of Marin, with dramatic coastal cliffs, wildflowers along the road, and sweeping views of the Bay. The lighting is golden hour with fog rolling through the valleys. Ensure character consistency for all cyclists.',
+    category: 'sports',
+    postcardText: 'MARIN HEADLANDS'
+  },
+
   // Other locations
   nyc: {
     name: 'New York',
@@ -779,14 +787,6 @@ export default {
     postcardText: 'FINISH LINE'
   },
 
-  cycling: {
-    name: 'Bike Race',
-    emoji: '🚴',
-    prompt: 'Place the person or people on racing bicycles on a scenic mountain road, dressed in matching cycling gear. It is crucial to preserve their exact facial features, expressions, and character. The lighting should be bright morning sun, creating dynamic shadows on the road and cyclists. The scene should feel exhilarating, with a sense of speed and motion. Ensure character consistency for all cyclists.',
-    category: 'sports',
-    postcardText: 'KING OF THE MOUNTAIN'
-  },
-
   skiing: {
     name: 'Ski Slopes',
     emoji: '⛷️',
@@ -1049,9 +1049,9 @@ export default {
   labubu: {
     name: 'Labubu',
     emoji: '🧸',
-    prompt: 'Create a highly realistic, professional photograph of the person or people holding an authentic Labubu plush toy that matches the real product exactly. It is absolutely crucial to preserve their exact facial features, expressions of joy and affection, body proportions, and character - they must look exactly like themselves. The Labubu must be an accurate representation of the actual Pop Mart Labubu plush with precise details: distinctive pointy elf-like ears with pink inner ears, small white fanged teeth protruding from the mouth, large round black eyes with white highlights, cream/beige colored fuzzy fur texture, stubby arms and legs, and the characteristic mischievous smirk expression. The plush should have the authentic soft, fuzzy fabric texture with visible fur detail, exactly as the real product appears. Size should be accurate to the actual toy (approximately 3-4 inches tall) and positioned naturally in their hands as if displaying a genuine collectible. The person should show authentic collector joy and pride. The lighting should be natural and warm, clearly showing both the person and the realistic fur texture and details of the Labubu. The background should remain unchanged. Ensure all figures are portrayed naturally and realistically. If multiple people, each gets their own accurate Labubu plush. The final image must look like a genuine photograph of real Labubu collectors with authentic products.',
+    prompt: 'Transform the person or people into collectible designer toys in the style of Pop Mart\'s "Toffee Labubu." It is crucial to preserve their exact facial features while giving them the Labubu aesthetic. Each person becomes a cute yet mischievous monster with their original face merged with Labubu features: large round glossy eyes, pointed elf-like ears, and a jagged wide grin full of tiny sharp white teeth. Their body is covered in soft plush-like fur in warm caramel, golden brown, and creamy butterscotch tones with glossy toffee highlights. They have the characteristic Labubu proportions - about 7 inches tall appearance, standing on short stubby legs with small arms. Add candy details like a drip of toffee glaze along their ears, maybe holding a tiny macaron or candy wrapper. The background transforms into a whimsical dessert world with caramel swirls, candy forests, oversized macarons, lollipops, and soft golden lighting that makes the toffee colors shine. Emphasize the collectible vinyl toy aesthetic with smooth surfaces mixed with subtle fuzzy textures, highly detailed rendering that looks like studio photography of actual designer toys. The style should capture the perfect blend of cute and slightly creepy that makes Labubu collectibles so distinctive. Apply a cinematic lighting setup that highlights the glossy and matte textures. Ensure all figures maintain their identity while fully embracing the Labubu designer toy transformation.',
     category: 'character',
-    postcardText: 'My precious Labubu! 💕'
+    postcardText: 'Limited Edition Toffee Collection! 🍬'
   },
 
   agueda: {

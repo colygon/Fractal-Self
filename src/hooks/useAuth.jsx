@@ -15,56 +15,70 @@ import {
 import { useRevenueCat } from './useRevenueCat.jsx'
 import { CONFIG } from '../lib/constants.js'
 
-const { DEFAULT_FREE_CREDITS = 50, DEFAULT_LOGGED_IN_CREDITS = 5000, PHOTO_COST = 5 } = CONFIG
-const GUEST_STORAGE_KEY = 'guestCredits'
+const { DEFAULT_FREE_BANANAS = 50, DEFAULT_LOGGED_IN_BANANAS = 5000, PHOTO_COST = 5 } = CONFIG
+const GUEST_STORAGE_KEY = 'guestBananas'
 
 const canUseStorage = () => typeof window !== 'undefined' && !!window.localStorage
 
-const parseCredits = (value, isLoggedIn = false) => {
+const parseBananas = (value, isLoggedIn = false) => {
   const parsed = parseInt(value, 10)
-  const defaultCredits = isLoggedIn ? DEFAULT_LOGGED_IN_CREDITS : DEFAULT_FREE_CREDITS
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : defaultCredits
+  const defaultBananas = isLoggedIn ? DEFAULT_LOGGED_IN_BANANAS : DEFAULT_FREE_BANANAS
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : defaultBananas
 }
 
-const readCredits = (key, isLoggedIn = false) => {
-  const defaultCredits = isLoggedIn ? DEFAULT_LOGGED_IN_CREDITS : DEFAULT_FREE_CREDITS
-  if (!canUseStorage()) return defaultCredits
+const readBananas = (key, isLoggedIn = false) => {
+  const defaultBananas = isLoggedIn ? DEFAULT_LOGGED_IN_BANANAS : DEFAULT_FREE_BANANAS
+  if (!canUseStorage()) return defaultBananas
   const stored = window.localStorage.getItem(key)
   // If no stored value and user is logged in, give them the logged-in default
   if (!stored && isLoggedIn) {
-    return DEFAULT_LOGGED_IN_CREDITS
+    return DEFAULT_LOGGED_IN_BANANAS
   }
-  return parseCredits(stored, isLoggedIn)
+  return parseBananas(stored, isLoggedIn)
 }
 
-const writeCredits = (key, value) => {
+const writeBananas = (key, value) => {
   if (!canUseStorage()) return
   window.localStorage.setItem(key, value.toString())
 }
 
-const clearCredits = (key) => {
+const clearBananas = (key) => {
   if (!canUseStorage()) return
   window.localStorage.removeItem(key)
 }
 
 export const useAuth = () => {
-  const { hasActiveSubscription, identifyUser, logOut } = useRevenueCat()
+  const {
+    hasActiveSubscription,
+    identifyUser,
+    logOut,
+    spendVirtualCurrency,
+    getVirtualCurrencyBalance,
+    virtualCurrencyBalance,
+    isLoaded: revenueCatLoaded
+  } = useRevenueCat()
   const { isSignedIn, isLoaded: isUserLoaded, user } = useClerkUser()
   const { isLoaded: isAuthLoaded, getToken, signOut } = useClerkAuth()
 
   const storageKey = useMemo(() => {
     if (isSignedIn && user?.id) {
-      return `credits_${user.id}`
+      return `bananas_${user.id}`
     }
     return GUEST_STORAGE_KEY
   }, [isSignedIn, user?.id])
 
-  const [credits, setCredits] = useState(() => readCredits(storageKey, isSignedIn))
+  // Use RevenueCat virtual currency balance instead of local storage
+  const [localBananas, setLocalBananas] = useState(() => readBananas(storageKey, isSignedIn))
 
-  // Keep local state in sync when the active user changes
+  // Prefer RevenueCat virtual currency when available, fallback to local storage
+  const bananas = revenueCatLoaded ? virtualCurrencyBalance : localBananas
+
+  // Keep local state in sync when the active user changes (fallback only)
   useEffect(() => {
-    setCredits(readCredits(storageKey, isSignedIn))
-  }, [storageKey, isSignedIn])
+    if (!revenueCatLoaded) {
+      setLocalBananas(readBananas(storageKey, isSignedIn))
+    }
+  }, [storageKey, isSignedIn, revenueCatLoaded])
 
   // Coordinate RevenueCat identity with Clerk user state
   useEffect(() => {
@@ -75,46 +89,72 @@ export const useAuth = () => {
     }
   }, [identifyUser, logOut, isSignedIn, user?.id])
 
-  const updateCredits = useCallback((updater) => {
-    setCredits(prev => {
+  const updateLocalBananas = useCallback((updater) => {
+    setLocalBananas(prev => {
       const next = updater(prev)
-      writeCredits(storageKey, next)
+      writeBananas(storageKey, next)
       return next
     })
   }, [storageKey])
 
-  const addCredits = useCallback((amount) => {
-    // Add credits when user purchases them
-    updateCredits(prev => prev + amount)
-  }, [updateCredits])
+  const addBananas = useCallback((amount) => {
+    // Add bananas when user purchases them
+    // Note: RevenueCat virtual currency is managed server-side via purchases
+    // This is only for local fallback mode
+    if (!revenueCatLoaded) {
+      updateLocalBananas(prev => prev + amount)
+    }
+    console.log(`🍌 Added ${amount} bananas (RevenueCat managed: ${revenueCatLoaded})`)
+  }, [updateLocalBananas, revenueCatLoaded])
 
-  // Listen for credit purchases
+  // Listen for banana purchases
   useEffect(() => {
-    const handleCreditsPurchased = (event) => {
+    const handleBananasPurchased = (event) => {
       const { credits } = event.detail
-      console.log(`Credits purchased: ${credits}`)
-      addCredits(credits)
+      console.log(`🍌 Bananas purchased: ${credits}`)
+      addBananas(credits)
     }
 
-    window.addEventListener('creditsPurchased', handleCreditsPurchased)
-    return () => window.removeEventListener('creditsPurchased', handleCreditsPurchased)
-  }, [addCredits])
+    window.addEventListener('creditsPurchased', handleBananasPurchased)
+    return () => window.removeEventListener('creditsPurchased', handleBananasPurchased)
+  }, [addBananas])
 
   const subscriptionActive = hasActiveSubscription()
 
-  const deductCredits = useCallback((amount = PHOTO_COST) => {
-    // Always deduct credits for all users - no unlimited usage
-    updateCredits(prev => Math.max(0, prev - amount))
-  }, [updateCredits])
+  const deductBananas = useCallback(async (amount = PHOTO_COST) => {
+    // Always deduct bananas for all users - no unlimited usage
+    if (revenueCatLoaded && spendVirtualCurrency) {
+      // Use RevenueCat virtual currency
+      const result = await spendVirtualCurrency(amount, 'bananas')
+      if (!result.success) {
+        console.error('Failed to spend bananas:', result.error)
+        return false
+      }
+      console.log(`🍌 Spent ${amount} bananas via RevenueCat. New balance: ${result.newBalance}`)
+      return true
+    } else {
+      // Fallback to local storage
+      updateLocalBananas(prev => Math.max(0, prev - amount))
+      console.log(`🍌 Spent ${amount} bananas via local storage`)
+      return true
+    }
+  }, [revenueCatLoaded, spendVirtualCurrency, updateLocalBananas])
 
-  const refundCredits = useCallback((amount = PHOTO_COST) => {
-    // Always refund credits when needed (e.g., on error)
-    updateCredits(prev => prev + amount)
-  }, [updateCredits])
+  const refundBananas = useCallback((amount = PHOTO_COST) => {
+    // Always refund bananas when needed (e.g., on error)
+    // Note: RevenueCat doesn't have a built-in refund for virtual currency
+    // This is handled via local state for now
+    if (!revenueCatLoaded) {
+      updateLocalBananas(prev => prev + amount)
+    }
+    console.log(`🍌 Refunded ${amount} bananas (local only - RevenueCat refunds handled server-side)`)
+  }, [revenueCatLoaded, updateLocalBananas])
 
-  const resetCredits = useCallback(() => {
-    clearCredits(storageKey)
-    setCredits(DEFAULT_FREE_CREDITS)
+  const resetBananas = useCallback(() => {
+    // Only reset local bananas - RevenueCat virtual currency is managed server-side
+    clearBananas(storageKey)
+    setLocalBananas(DEFAULT_FREE_BANANAS)
+    console.log('🍌 Reset local bananas only - RevenueCat balance unchanged')
   }, [storageKey])
 
   return {
@@ -126,12 +166,12 @@ export const useAuth = () => {
     } : null,
     isLoading: !isUserLoaded || !isAuthLoaded,
     isSignedIn: Boolean(isSignedIn),
-    credits,
+    bananas,
     hasActiveSubscription: subscriptionActive,
-    deductCredits,
-    refundCredits,
-    addCredits,
-    resetCredits,
+    deductBananas,
+    refundBananas,
+    addBananas,
+    resetBananas,
     getToken,
     signOut
   }

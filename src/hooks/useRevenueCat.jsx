@@ -18,6 +18,7 @@ export const useRevenueCat = () => {
   const [customerInfo, setCustomerInfo] = useState(null)
   const [offerings, setOfferings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(0)
 
   useEffect(() => {
     const initializeRevenueCat = async () => {
@@ -48,6 +49,19 @@ export const useRevenueCat = () => {
           const customerInfo = await Purchases.getCustomerInfo()
           console.log('Customer info:', customerInfo)
           setCustomerInfo(customerInfo)
+
+          // Get virtual currency balances using the official API
+          try {
+            const virtualCurrencies = await Purchases.virtualCurrencies()
+            const bananaBalance = virtualCurrencies.all?.bananas?.balance || 0
+            setVirtualCurrencyBalance(bananaBalance)
+            console.log('🍌 Banana balance from virtual currencies:', bananaBalance)
+          } catch (error) {
+            console.warn('Failed to fetch virtual currencies:', error)
+            // Fallback to customer info if available
+            const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas || 0
+            setVirtualCurrencyBalance(bananaBalance)
+          }
 
           // Get current offerings
           const offerings = await Purchases.getOfferings()
@@ -138,8 +152,14 @@ export const useRevenueCat = () => {
       setCustomerInfo({
         entitlements: {
           active: activeEntitlements
+        },
+        virtualCurrencyBalance: {
+          bananas: 100 // Default test balance
         }
       })
+
+      // Set mock virtual currency balance
+      setVirtualCurrencyBalance(100)
       setIsLoaded(true)
       setIsLoading(false)
     }
@@ -222,9 +242,9 @@ export const useRevenueCat = () => {
         // Simulate credit purchase in test mode only if no direct links available
         console.log('TEST MODE: Simulating successful credit purchase')
 
-        // Get the number of credits from the package
+        // Get the number of bananas from the package
         const creditsToAdd = packageToPurchase.product.credits || 0
-        console.log(`Adding ${creditsToAdd} credits to user account`)
+        console.log(`Adding ${creditsToAdd} 🍌 bananas to user account`)
 
         // Trigger a custom event to notify the credit system
         // We'll dispatch this event and let the useAuth hook handle it
@@ -254,21 +274,33 @@ export const useRevenueCat = () => {
         // Open RevenueCat purchase page in new window
         window.open(webPurchaseUrl, '_blank', 'width=600,height=800,scrollbars=yes,resizable=yes')
 
-        // TEMPORARY: Add credits immediately when purchase is initiated
+        // TEMPORARY: Add bananas immediately when purchase is initiated
         // TODO: In production, this should be handled by:
         // 1. RevenueCat webhook to your backend when payment completes
         // 2. Backend updates user's credit balance
         // 3. App polls for updated balance or receives real-time update
-        // For now, we add credits optimistically for demo purposes
-        const creditsToAdd = packageToPurchase.product.credits || 0
-        if (creditsToAdd > 0) {
-          console.log(`Adding ${creditsToAdd} credits after purchase initiation`)
+        // For now, we add bananas optimistically for demo purposes
+        const bananasToAdd = packageToPurchase.product.credits || 0
+        if (bananasToAdd > 0) {
+          console.log(`Adding ${bananasToAdd} 🍌 bananas after purchase initiation`)
+
+          // Update virtual currency balance if in test mode
+          if (USE_TEST_MODE) {
+            setVirtualCurrencyBalance(prev => prev + bananasToAdd)
+          }
+
+          // Invalidate virtual currencies cache after purchase
+          if (Purchases.invalidateVirtualCurrenciesCache) {
+            Purchases.invalidateVirtualCurrenciesCache()
+          }
+
+          // Also trigger the old event for backwards compatibility
           window.dispatchEvent(new CustomEvent('creditsPurchased', {
-            detail: { credits: creditsToAdd, packageId: packageToPurchase.product.identifier }
+            detail: { credits: bananasToAdd, packageId: packageToPurchase.product.identifier }
           }))
         }
 
-        return { success: true, method: 'direct_link', creditsAdded: creditsToAdd }
+        return { success: true, method: 'direct_link', creditsAdded: bananasToAdd }
       }
 
       // Fallback: No direct purchase links available
@@ -328,12 +360,117 @@ export const useRevenueCat = () => {
 
   const hasActiveSubscription = (entitlementId = null) => {
     if (!customerInfo) return false
-    
+
     if (entitlementId) {
       return customerInfo.entitlements.active[entitlementId]?.isActive || false
     }
-    
+
     return Object.keys(customerInfo.entitlements.active).length > 0
+  }
+
+  const spendVirtualCurrency = async (amount, currencyType = 'bananas') => {
+    try {
+      // Always use test mode if RevenueCat functions are not available or if explicitly in test mode
+      if (USE_TEST_MODE || !isLoaded || typeof Purchases.virtualCurrencies !== 'function') {
+        // In test mode, just simulate spending
+        console.log(`🍌 TEST MODE: Spending ${amount} ${currencyType}`)
+        const newBalance = Math.max(0, virtualCurrencyBalance - amount)
+        setVirtualCurrencyBalance(newBalance)
+        return { success: true, newBalance }
+      }
+
+      // Check current balance first
+      const virtualCurrencies = await Purchases.virtualCurrencies()
+      const currentBalance = virtualCurrencies.all?.[currencyType]?.balance || 0
+
+      if (currentBalance < amount) {
+        console.warn(`Insufficient ${currencyType}. Current: ${currentBalance}, Required: ${amount}`)
+        return { success: false, error: 'Insufficient balance' }
+      }
+
+      // TODO: In production, this should call your backend API to spend virtual currency
+      // For now, we'll simulate the spending locally
+      console.log(`🍌 Would spend ${amount} ${currencyType} via backend API`)
+      console.log(`🍌 Current balance: ${currentBalance}`)
+
+      // Simulate spending for demo purposes
+      const newBalance = currentBalance - amount
+      setVirtualCurrencyBalance(newBalance)
+
+      // Invalidate cache so next fetch gets fresh data
+      if (Purchases.invalidateVirtualCurrenciesCache) {
+        Purchases.invalidateVirtualCurrenciesCache()
+      }
+
+      return { success: true, newBalance }
+    } catch (error) {
+      console.error('Failed to spend virtual currency:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const getVirtualCurrencyBalance = () => {
+    return virtualCurrencyBalance
+  }
+
+  const getCachedVirtualCurrencies = () => {
+    try {
+      if (USE_TEST_MODE) {
+        return { all: { bananas: { balance: virtualCurrencyBalance, code: 'bananas', name: 'Bananas' } } }
+      }
+
+      if (!isLoaded || !Purchases.cachedVirtualCurrencies) {
+        return null
+      }
+
+      return Purchases.cachedVirtualCurrencies
+    } catch (error) {
+      console.warn('Failed to get cached virtual currencies:', error)
+      return null
+    }
+  }
+
+  const refreshCustomerInfo = async () => {
+    try {
+      if (USE_TEST_MODE) {
+        console.log('🍌 TEST MODE: Refreshing customer info')
+        return customerInfo
+      }
+
+      if (!isLoaded || !Purchases.getCustomerInfo) {
+        console.warn('RevenueCat not loaded, cannot refresh customer info')
+        return customerInfo
+      }
+
+      console.log('🔄 Refreshing RevenueCat customer info and virtual currencies...')
+
+      // Refresh customer info
+      const refreshedCustomerInfo = await Purchases.getCustomerInfo()
+      setCustomerInfo(refreshedCustomerInfo)
+
+      // Invalidate and refresh virtual currencies cache
+      if (Purchases.invalidateVirtualCurrenciesCache) {
+        Purchases.invalidateVirtualCurrenciesCache()
+      }
+
+      try {
+        const virtualCurrencies = await Purchases.virtualCurrencies()
+        const bananaBalance = virtualCurrencies.all?.bananas?.balance || 0
+        setVirtualCurrencyBalance(bananaBalance)
+        console.log('🍌 Updated banana balance from virtual currencies:', bananaBalance)
+      } catch (vcError) {
+        console.warn('Failed to refresh virtual currencies:', vcError)
+        // Fallback to customer info
+        const bananaBalance = refreshedCustomerInfo.virtualCurrencyBalance?.bananas || 0
+        setVirtualCurrencyBalance(bananaBalance)
+        console.log('🍌 Updated banana balance from customer info:', bananaBalance)
+      }
+
+      return refreshedCustomerInfo
+    } catch (error) {
+      console.error('Failed to refresh customer info:', error)
+      return customerInfo
+    }
   }
 
   return {
@@ -346,6 +483,11 @@ export const useRevenueCat = () => {
     restorePurchases,
     getActiveSubscriptions,
     hasActiveSubscription,
-    logOut
+    logOut,
+    spendVirtualCurrency,
+    getVirtualCurrencyBalance,
+    getCachedVirtualCurrencies,
+    virtualCurrencyBalance,
+    refreshCustomerInfo
   }
 }

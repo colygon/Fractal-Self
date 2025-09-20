@@ -7,16 +7,18 @@ import { useRevenueCat } from '../hooks/useRevenueCat.jsx'
 import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function RevenueCatBilling({ onClose }) {
-  const { 
-    isLoaded, 
-    isLoading, 
-    customerInfo, 
-    offerings, 
-    identifyUser, 
+  const {
+    isLoaded,
+    isLoading,
+    customerInfo,
+    offerings,
+    identifyUser,
     purchasePackage,
-    hasActiveSubscription 
+    hasActiveSubscription,
+    refreshCustomerInfo,
+    virtualCurrencyBalance
   } = useRevenueCat()
-  const { isSignedIn, user } = useAuth()
+  const { isSignedIn, user, bananas } = useAuth()
   
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [purchasing, setPurchasing] = useState(false)
@@ -282,7 +284,7 @@ export default function RevenueCatBilling({ onClose }) {
                       <span className="text-3xl font-bold" style={{ fontSize: '34px', fontWeight: 700 }}>{pkg.product.priceString}</span>
                       <span className="text-gray-600 text-base" style={{ fontSize: '16px', color: '#4b5563' }}>/month</span>
                       <div className="text-gray-600 text-sm" style={{ color: '#4b5563', fontSize: '14px', marginTop: '4px' }}>
-                        {pkg.product.credits?.toLocaleString()} credits per month
+                        {pkg.product.credits?.toLocaleString()} 🍌 bananas per month
                       </div>
                     </div>
                     
@@ -314,7 +316,7 @@ export default function RevenueCatBilling({ onClose }) {
                     >
                       {purchasing
                         ? 'Processing...'
-                        : `Buy ${pkg.product.credits?.toLocaleString()} Credits`
+                        : `Buy ${pkg.product.credits?.toLocaleString()} 🍌 Bananas`
                       }
                     </button>
                   </div>
@@ -323,13 +325,14 @@ export default function RevenueCatBilling({ onClose }) {
             })}
           </div>
 
-          {/* Credit Purchase Info */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg text-center">
-            <h3 className="font-bold mb-2">💳 Monthly Subscription</h3>
-            <p className="text-sm text-gray-600">
-              Credits are added to your account immediately after purchase.
-              Credits refresh monthly • Cancel anytime • No long-term commitment
-            </p>
+          {/* Current Balance & Purchase Info */}
+          <div className="mt-8 space-y-4">
+            {/* Current Balance Display */}
+            <div className="p-4 bg-green-50 rounded-lg text-center border border-green-200">
+              <h3 className="font-bold mb-2">Current Balance</h3>
+              <p className="text-2xl font-bold text-green-700">{bananas || 0} bananas</p>
+            </div>
+
           </div>
         </div>
 

@@ -1188,7 +1188,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 /* New iOS Focused Photo Actions */
 .focusedPhotoActions {
   position: fixed;
-  bottom: clamp(150px, 15dvh, 180px); /* Position above gallery + 30px higher */
+  bottom: clamp(180px, 15dvh, 210px); /* Position above gallery + 60px higher */
   left: 0;
   right: 0;
   display: flex;
@@ -1841,7 +1841,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   
   /* Move action buttons above gallery in landscape */
   .focusedPhotoActions {
-    bottom: clamp(63px, 17.5dvh, 77px) !important; /* Above gallery */
+    bottom: clamp(93px, 17.5dvh, 107px) !important; /* Above gallery + 30px higher */
   }
 }
 
@@ -2100,7 +2100,7 @@ main:not(:has(.focusedPhoto)) .photoSelector {
 
   /* Mobile-optimized focused photo actions */
   .focusedPhotoActions {
-    bottom: clamp(120px, 15dvh, 150px) !important; /* Above gallery on mobile */
+    bottom: clamp(150px, 15dvh, 180px) !important; /* Above gallery on mobile + 30px higher */
     gap: 0 !important;
     padding: 20px 25px !important;
     z-index: 125 !important;
