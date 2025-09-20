@@ -212,8 +212,8 @@ export const useRevenueCat = () => {
       // Map package identifiers to their specific RevenueCat Web Purchase Links
       const purchaseLinks = {
         'credits_400': 'https://pay.rev.cat/agvuhpvjihtinpwc/',
-        'credits_1700': 'https://pay.rev.cat/ygwurdgtsjjcsinc/',
-        'credits_5000': 'https://pay.rev.cat/ttowpyvmudproaof/'
+        'credits_1700': 'https://pay.rev.cat/ttowpyvmudproaof/',
+        'credits_5000': 'https://pay.rev.cat/ygwurdgtsjjcsinc/'
       }
 
       const directPurchaseUrl = purchaseLinks[packageToPurchase.product.identifier]
