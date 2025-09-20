@@ -85,7 +85,7 @@ export const useRevenueCat = () => {
               product: {
                 identifier: 'credits_300',
                 title: '300 Credits',
-                description: '300 photo transformations - perfect for casual use',
+                description: '60 photo transformations - perfect for casual use',
                 priceString: '$2.99',
                 credits: 300
               }
@@ -95,7 +95,7 @@ export const useRevenueCat = () => {
               product: {
                 identifier: 'credits_3000',
                 title: '3,000 Credits',
-                description: '3,000 photo transformations - great value for regular users',
+                description: '600 photo transformations - great value for regular users',
                 priceString: '$29.99',
                 credits: 3000
               }
@@ -105,7 +105,7 @@ export const useRevenueCat = () => {
               product: {
                 identifier: 'credits_30000',
                 title: '30,000 Credits',
-                description: '30,000 photo transformations - perfect for power users',
+                description: '6,000 photo transformations - perfect for power users',
                 priceString: '$299.99',
                 credits: 30000
               }
