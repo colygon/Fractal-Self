@@ -32,9 +32,17 @@ export const useRevenueCat = () => {
 
       if (!USE_TEST_MODE) {
         try {
-          // Initialize RevenueCat
-          await Purchases.configure({ apiKey: REVENUECAT_API_KEY })
-          console.log('RevenueCat configured successfully')
+          // Generate or retrieve anonymous user ID for initial configuration
+          const anonymousUserId = localStorage.getItem('anonymous_user_id') ||
+            `guest_${Math.random().toString(36).substring(2, 11)}`
+          localStorage.setItem('anonymous_user_id', anonymousUserId)
+
+          // Initialize RevenueCat with anonymous user ID
+          await Purchases.configure({
+            apiKey: REVENUECAT_API_KEY,
+            appUserId: anonymousUserId
+          })
+          console.log('RevenueCat configured successfully with user ID:', anonymousUserId)
 
           // Get current customer info
           const customerInfo = await Purchases.getCustomerInfo()
