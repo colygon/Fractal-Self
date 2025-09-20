@@ -60,6 +60,14 @@ export const useRevenueCat = () => {
           return // Exit early if successful
         } catch (error) {
           console.error('Failed to initialize RevenueCat:', error)
+          if (error.message?.includes('Invalid API key')) {
+            console.warn('❌ RevenueCat API key is invalid or not configured for Web Billing.')
+            console.warn('📋 To fix this:')
+            console.warn('   1. Go to https://app.revenuecat.com/projects')
+            console.warn('   2. Select your project → Settings → API keys')
+            console.warn('   3. Get your Web Billing public API key (starts with rcb_)')
+            console.warn('   4. Set VITE_REVENUECAT_API_KEY in your environment')
+          }
           console.log('Falling back to test mode with mock data')
         }
       } else {
