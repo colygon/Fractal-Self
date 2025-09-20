@@ -314,7 +314,7 @@ export default function RevenueCatBilling({ onClose }) {
                     >
                       {purchasing
                         ? 'Processing...'
-                        : `Subscribe - ${pkg.product.credits?.toLocaleString()} Credits/Month`
+                        : `Buy ${pkg.product.credits?.toLocaleString()} Credits`
                       }
                     </button>
                   </div>
