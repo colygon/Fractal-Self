@@ -208,7 +208,7 @@ export default function RevenueCatBilling({ onClose }) {
           padding: '24px',
           borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
         }}>
-          <h2 className="text-2xl font-bold" style={{ fontSize: '24px', fontWeight: 700 }}>Buy Credits</h2>
+          <h2 className="text-2xl font-bold" style={{ fontSize: '24px', fontWeight: 700 }}>Choose Your Plan</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -280,8 +280,9 @@ export default function RevenueCatBilling({ onClose }) {
                     
                     <div className="mb-4" style={{ marginBottom: '16px' }}>
                       <span className="text-3xl font-bold" style={{ fontSize: '34px', fontWeight: 700 }}>{pkg.product.priceString}</span>
+                      <span className="text-gray-600 text-base" style={{ fontSize: '16px', color: '#4b5563' }}>/month</span>
                       <div className="text-gray-600 text-sm" style={{ color: '#4b5563', fontSize: '14px', marginTop: '4px' }}>
-                        {pkg.product.credits?.toLocaleString()} credits
+                        {pkg.product.credits?.toLocaleString()} credits per month
                       </div>
                     </div>
                     
@@ -313,7 +314,7 @@ export default function RevenueCatBilling({ onClose }) {
                     >
                       {purchasing
                         ? 'Processing...'
-                        : `Buy ${pkg.product.credits?.toLocaleString()} Credits`
+                        : `Subscribe - ${pkg.product.credits?.toLocaleString()} Credits/Month`
                       }
                     </button>
                   </div>
@@ -324,10 +325,10 @@ export default function RevenueCatBilling({ onClose }) {
 
           {/* Credit Purchase Info */}
           <div className="mt-8 p-4 bg-blue-50 rounded-lg text-center">
-            <h3 className="font-bold mb-2">💳 One-Time Credit Purchase</h3>
+            <h3 className="font-bold mb-2">💳 Monthly Subscription</h3>
             <p className="text-sm text-gray-600">
               Credits are added to your account immediately after purchase.
-              No recurring charges • Credits never expire • Use them at your own pace
+              Credits refresh monthly • Cancel anytime • No long-term commitment
             </p>
           </div>
         </div>
@@ -340,7 +341,7 @@ export default function RevenueCatBilling({ onClose }) {
           fontSize: '14px',
           color: '#4b5563'
         }}>
-          <p>✓ One-time purchase • ✓ Secure payment processing • ✓ Powered by RevenueCat</p>
+          <p>✓ Monthly subscription • ✓ Cancel anytime • ✓ Secure payment processing • ✓ Powered by RevenueCat</p>
         </div>
       </div>
     </div>
