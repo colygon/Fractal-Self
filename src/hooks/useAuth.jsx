@@ -75,6 +75,11 @@ export const useAuth = () => {
     }
   }, [identifyUser, logOut, isSignedIn, user?.id])
 
+  const addCredits = useCallback((amount) => {
+    // Add credits when user purchases them
+    updateCredits(prev => prev + amount)
+  }, [updateCredits])
+
   // Listen for credit purchases
   useEffect(() => {
     const handleCreditsPurchased = (event) => {
@@ -104,11 +109,6 @@ export const useAuth = () => {
 
   const refundCredits = useCallback((amount = PHOTO_COST) => {
     // Always refund credits when needed (e.g., on error)
-    updateCredits(prev => prev + amount)
-  }, [updateCredits])
-
-  const addCredits = useCallback((amount) => {
-    // Add credits when user purchases them
     updateCredits(prev => prev + amount)
   }, [updateCredits])
 
