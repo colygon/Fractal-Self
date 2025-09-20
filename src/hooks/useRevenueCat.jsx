@@ -254,7 +254,21 @@ export const useRevenueCat = () => {
         // Open RevenueCat purchase page in new window
         window.open(webPurchaseUrl, '_blank', 'width=600,height=800,scrollbars=yes,resizable=yes')
 
-        return { success: true, method: 'direct_link' }
+        // TEMPORARY: Add credits immediately when purchase is initiated
+        // TODO: In production, this should be handled by:
+        // 1. RevenueCat webhook to your backend when payment completes
+        // 2. Backend updates user's credit balance
+        // 3. App polls for updated balance or receives real-time update
+        // For now, we add credits optimistically for demo purposes
+        const creditsToAdd = packageToPurchase.product.credits || 0
+        if (creditsToAdd > 0) {
+          console.log(`Adding ${creditsToAdd} credits after purchase initiation`)
+          window.dispatchEvent(new CustomEvent('creditsPurchased', {
+            detail: { credits: creditsToAdd, packageId: packageToPurchase.product.identifier }
+          }))
+        }
+
+        return { success: true, method: 'direct_link', creditsAdded: creditsToAdd }
       }
 
       // Fallback: No direct purchase links available
