@@ -75,6 +75,18 @@ export const useAuth = () => {
     }
   }, [identifyUser, logOut, isSignedIn, user?.id])
 
+  // Listen for credit purchases
+  useEffect(() => {
+    const handleCreditsPurchased = (event) => {
+      const { credits } = event.detail
+      console.log(`Credits purchased: ${credits}`)
+      addCredits(credits)
+    }
+
+    window.addEventListener('creditsPurchased', handleCreditsPurchased)
+    return () => window.removeEventListener('creditsPurchased', handleCreditsPurchased)
+  }, [addCredits])
+
   const subscriptionActive = hasActiveSubscription()
 
   const updateCredits = useCallback((updater) => {
@@ -86,14 +98,19 @@ export const useAuth = () => {
   }, [storageKey])
 
   const deductCredits = useCallback((amount = PHOTO_COST) => {
-    if (subscriptionActive) return
+    // Always deduct credits for all users - no unlimited usage
     updateCredits(prev => Math.max(0, prev - amount))
-  }, [subscriptionActive, updateCredits])
+  }, [updateCredits])
 
   const refundCredits = useCallback((amount = PHOTO_COST) => {
-    if (subscriptionActive) return
+    // Always refund credits when needed (e.g., on error)
     updateCredits(prev => prev + amount)
-  }, [subscriptionActive, updateCredits])
+  }, [updateCredits])
+
+  const addCredits = useCallback((amount) => {
+    // Add credits when user purchases them
+    updateCredits(prev => prev + amount)
+  }, [updateCredits])
 
   const resetCredits = useCallback(() => {
     clearCredits(storageKey)
@@ -113,6 +130,7 @@ export const useAuth = () => {
     hasActiveSubscription: subscriptionActive,
     deductCredits,
     refundCredits,
+    addCredits,
     resetCredits,
     getToken,
     signOut

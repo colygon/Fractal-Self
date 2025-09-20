@@ -208,7 +208,7 @@ export default function RevenueCatBilling({ onClose }) {
           padding: '24px',
           borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
         }}>
-          <h2 className="text-2xl font-bold" style={{ fontSize: '24px', fontWeight: 700 }}>Choose Your Plan</h2>
+          <h2 className="text-2xl font-bold" style={{ fontSize: '24px', fontWeight: 700 }}>Buy Credits</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -226,9 +226,8 @@ export default function RevenueCatBilling({ onClose }) {
         <div className="p-6" style={{ padding: '24px' }}>
           <div className="grid md:grid-cols-3 gap-6" style={gridStyle}>
             {packages.map((pkg) => {
-              const isActive = hasActiveSubscription() && 
-                customerInfo?.entitlements.active[pkg.product.identifier]?.isActive
-              const isHighlighted = pkg.identifier.includes('premium') || pkg.identifier.includes('pro')
+              const isActive = false // No subscription model for credit packages
+              const isHighlighted = pkg.identifier.includes('credits_3000') // Highlight the middle tier
               const isSelected = selectedPackage?.identifier === pkg.identifier
               const cardStyle = {
                 position: 'relative',
@@ -267,7 +266,7 @@ export default function RevenueCatBilling({ onClose }) {
                         fontSize: '12px',
                         fontWeight: 600
                       }}>
-                        Most Popular
+                        Best Value
                       </span>
                     </div>
                   )}
@@ -281,7 +280,9 @@ export default function RevenueCatBilling({ onClose }) {
                     
                     <div className="mb-4" style={{ marginBottom: '16px' }}>
                       <span className="text-3xl font-bold" style={{ fontSize: '34px', fontWeight: 700 }}>{pkg.product.priceString}</span>
-                      <span className="text-gray-600" style={{ marginLeft: '4px', color: '#4b5563' }}>/{pkg.product.subscriptionPeriod}</span>
+                      <div className="text-gray-600 text-sm" style={{ color: '#4b5563', fontSize: '14px', marginTop: '4px' }}>
+                        {pkg.product.credits?.toLocaleString()} credits
+                      </div>
                     </div>
                     
                     <p className="text-gray-600 mb-6 min-h-[3rem]" style={{
@@ -310,11 +311,9 @@ export default function RevenueCatBilling({ onClose }) {
                         color: '#ffffff'
                       }}
                     >
-                      {isActive 
-                        ? 'Current Plan' 
-                        : purchasing 
-                        ? 'Processing...' 
-                        : `Start ${pkg.product.title}`
+                      {purchasing
+                        ? 'Processing...'
+                        : `Buy ${pkg.product.credits?.toLocaleString()} Credits`
                       }
                     </button>
                   </div>
@@ -323,26 +322,14 @@ export default function RevenueCatBilling({ onClose }) {
             })}
           </div>
 
-          {/* Current Subscription Status */}
-          {hasActiveSubscription() && (
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-2">Current Subscription</h3>
-              <div>
-                {Object.keys(customerInfo.entitlements.active).map(entitlementId => {
-                  const entitlement = customerInfo.entitlements.active[entitlementId]
-                  return (
-                    <div key={entitlementId} className="mb-2">
-                      <p>Status: <span className="capitalize text-green-600">Active</span></p>
-                      <p>Product: {entitlement.productIdentifier}</p>
-                      {entitlement.expirationDate && (
-                        <p>Next billing: {new Date(entitlement.expirationDate).toLocaleDateString()}</p>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+          {/* Credit Purchase Info */}
+          <div className="mt-8 p-4 bg-blue-50 rounded-lg text-center">
+            <h3 className="font-bold mb-2">💳 One-Time Credit Purchase</h3>
+            <p className="text-sm text-gray-600">
+              Credits are added to your account immediately after purchase.
+              No recurring charges • Credits never expire • Use them at your own pace
+            </p>
+          </div>
         </div>
 
         {/* Footer */}
@@ -353,7 +340,7 @@ export default function RevenueCatBilling({ onClose }) {
           fontSize: '14px',
           color: '#4b5563'
         }}>
-          <p>✓ Cancel anytime • ✓ Secure payment processing • ✓ Powered by RevenueCat</p>
+          <p>✓ One-time purchase • ✓ Secure payment processing • ✓ Powered by RevenueCat</p>
         </div>
       </div>
     </div>

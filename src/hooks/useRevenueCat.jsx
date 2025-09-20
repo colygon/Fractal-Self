@@ -65,23 +65,33 @@ export const useRevenueCat = () => {
           identifier: 'default',
           availablePackages: [
             {
-              identifier: 'monthly_premium',
+              identifier: 'credits_300',
               product: {
-                identifier: 'premium_monthly',
-                title: 'Premium Monthly',
-                description: 'Unlimited photos and premium features',
-                priceString: '$9.99',
-                subscriptionPeriod: 'month'
+                identifier: 'credits_300',
+                title: '300 Credits',
+                description: '300 photo transformations - perfect for casual use',
+                priceString: '$2.99',
+                credits: 300
               }
             },
             {
-              identifier: 'annual_premium',
+              identifier: 'credits_3000',
               product: {
-                identifier: 'premium_annual',
-                title: 'Premium Annual',
-                description: 'Unlimited photos and premium features - save 50%!',
-                priceString: '$59.99',
-                subscriptionPeriod: 'year'
+                identifier: 'credits_3000',
+                title: '3,000 Credits',
+                description: '3,000 photo transformations - great value for regular users',
+                priceString: '$29.99',
+                credits: 3000
+              }
+            },
+            {
+              identifier: 'credits_30000',
+              product: {
+                identifier: 'credits_30000',
+                title: '30,000 Credits',
+                description: '30,000 photo transformations - perfect for power users',
+                priceString: '$299.99',
+                credits: 30000
               }
             }
           ]
@@ -184,29 +194,27 @@ export const useRevenueCat = () => {
       }
 
       if (USE_TEST_MODE) {
-        // Simulate purchase in test mode
-        console.log('TEST MODE: Simulating successful purchase')
+        // Simulate credit purchase in test mode
+        console.log('TEST MODE: Simulating successful credit purchase')
 
-        // Update mock customer info to show active subscription
-        const mockEntitlement = {
-          productIdentifier: packageToPurchase.product.identifier,
-          isActive: true,
-          willRenew: true,
-          expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-        }
+        // Get the number of credits from the package
+        const creditsToAdd = packageToPurchase.product.credits || 0
+        console.log(`Adding ${creditsToAdd} credits to user account`)
 
+        // Trigger a custom event to notify the credit system
+        // We'll dispatch this event and let the useAuth hook handle it
+        window.dispatchEvent(new CustomEvent('creditsPurchased', {
+          detail: { credits: creditsToAdd, packageId: packageToPurchase.product.identifier }
+        }))
+
+        // For mock purposes, keep the customer info simple
         setCustomerInfo({
           entitlements: {
-            active: {
-              premium: mockEntitlement
-            }
+            active: {}
           }
         })
 
-        // Store in localStorage for persistence
-        localStorage.setItem('mock_subscription', JSON.stringify(mockEntitlement))
-
-        return { entitlements: { active: { premium: mockEntitlement } } }
+        return { success: true, creditsAdded: creditsToAdd }
       }
 
       // For production, use RevenueCat Web Purchase Links
