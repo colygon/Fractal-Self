@@ -15,20 +15,26 @@ import {
 import { useRevenueCat } from './useRevenueCat.jsx'
 import { CONFIG } from '../lib/constants.js'
 
-const { DEFAULT_FREE_CREDITS = 50, PHOTO_COST = 5 } = CONFIG
+const { DEFAULT_FREE_CREDITS = 50, DEFAULT_LOGGED_IN_CREDITS = 5000, PHOTO_COST = 5 } = CONFIG
 const GUEST_STORAGE_KEY = 'guestCredits'
 
 const canUseStorage = () => typeof window !== 'undefined' && !!window.localStorage
 
-const parseCredits = (value) => {
+const parseCredits = (value, isLoggedIn = false) => {
   const parsed = parseInt(value, 10)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_FREE_CREDITS
+  const defaultCredits = isLoggedIn ? DEFAULT_LOGGED_IN_CREDITS : DEFAULT_FREE_CREDITS
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : defaultCredits
 }
 
-const readCredits = (key) => {
-  if (!canUseStorage()) return DEFAULT_FREE_CREDITS
+const readCredits = (key, isLoggedIn = false) => {
+  const defaultCredits = isLoggedIn ? DEFAULT_LOGGED_IN_CREDITS : DEFAULT_FREE_CREDITS
+  if (!canUseStorage()) return defaultCredits
   const stored = window.localStorage.getItem(key)
-  return parseCredits(stored)
+  // If no stored value and user is logged in, give them the logged-in default
+  if (!stored && isLoggedIn) {
+    return DEFAULT_LOGGED_IN_CREDITS
+  }
+  return parseCredits(stored, isLoggedIn)
 }
 
 const writeCredits = (key, value) => {
@@ -53,12 +59,12 @@ export const useAuth = () => {
     return GUEST_STORAGE_KEY
   }, [isSignedIn, user?.id])
 
-  const [credits, setCredits] = useState(() => readCredits(storageKey))
+  const [credits, setCredits] = useState(() => readCredits(storageKey, isSignedIn))
 
   // Keep local state in sync when the active user changes
   useEffect(() => {
-    setCredits(readCredits(storageKey))
-  }, [storageKey])
+    setCredits(readCredits(storageKey, isSignedIn))
+  }, [storageKey, isSignedIn])
 
   // Coordinate RevenueCat identity with Clerk user state
   useEffect(() => {
