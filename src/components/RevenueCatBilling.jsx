@@ -227,7 +227,7 @@ export default function RevenueCatBilling({ onClose }) {
           <div className="grid md:grid-cols-3 gap-6" style={gridStyle}>
             {packages.map((pkg) => {
               const isActive = false // No subscription model for credit packages
-              const isHighlighted = pkg.identifier.includes('credits_3000') // Highlight the middle tier
+              const isHighlighted = pkg.identifier.includes('credits_1700') // Highlight the Gold tier
               const isSelected = selectedPackage?.identifier === pkg.identifier
               const cardStyle = {
                 position: 'relative',

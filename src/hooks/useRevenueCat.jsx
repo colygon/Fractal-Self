@@ -81,33 +81,33 @@ export const useRevenueCat = () => {
           identifier: 'default',
           availablePackages: [
             {
-              identifier: 'credits_300',
+              identifier: 'credits_400',
               product: {
-                identifier: 'credits_300',
-                title: '300 Credits',
-                description: '60 photo transformations - perfect for casual use',
+                identifier: 'credits_400',
+                title: 'Premium',
+                description: '80 photo transformations - perfect for casual use',
                 priceString: '$2.99',
-                credits: 300
+                credits: 400
               }
             },
             {
-              identifier: 'credits_3000',
+              identifier: 'credits_1700',
               product: {
-                identifier: 'credits_3000',
-                title: '3,000 Credits',
-                description: '600 photo transformations - great value for regular users',
+                identifier: 'credits_1700',
+                title: 'Gold',
+                description: '340 photo transformations - great value for regular users',
                 priceString: '$29.99',
-                credits: 3000
+                credits: 1700
               }
             },
             {
-              identifier: 'credits_30000',
+              identifier: 'credits_5000',
               product: {
-                identifier: 'credits_30000',
-                title: '30,000 Credits',
-                description: '6,000 photo transformations - perfect for power users',
+                identifier: 'credits_5000',
+                title: 'Professional',
+                description: '1,000 photo transformations - perfect for power users',
                 priceString: '$299.99',
-                credits: 30000
+                credits: 5000
               }
             }
           ]
@@ -211,9 +211,9 @@ export const useRevenueCat = () => {
 
       // Map package identifiers to their specific RevenueCat Web Purchase Links
       const purchaseLinks = {
-        'credits_300': 'https://pay.rev.cat/agvuhpvjihtinpwc/',
-        'credits_3000': 'https://pay.rev.cat/ygwurdgtsjjcsinc/',
-        'credits_30000': 'https://pay.rev.cat/ttowpyvmudproaof/'
+        'credits_400': 'https://pay.rev.cat/agvuhpvjihtinpwc/',
+        'credits_1700': 'https://pay.rev.cat/ygwurdgtsjjcsinc/',
+        'credits_5000': 'https://pay.rev.cat/ttowpyvmudproaof/'
       }
 
       const directPurchaseUrl = purchaseLinks[packageToPurchase.product.identifier]
