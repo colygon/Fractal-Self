@@ -108,7 +108,7 @@ export default function App() {
     : photos.filter(p => {
         const output = imageData.outputs[p.id]
         return !p.isBusy && output && typeof output === 'string' && output.length > 100 && output.startsWith('data:image/')
-      }).slice(0, 10).reverse()
+      }).slice(0, 10)
   const busyPhotos = photos.filter(p => p.isBusy)
 
 
