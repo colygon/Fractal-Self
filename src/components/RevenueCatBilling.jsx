@@ -330,7 +330,7 @@ export default function RevenueCatBilling({ onClose }) {
             {/* Current Balance Display */}
             <div className="p-4 bg-green-50 rounded-lg text-center border border-green-200">
               <h3 className="font-bold mb-2">Current Balance</h3>
-              <p className="text-2xl font-bold text-green-700">{bananas || 0} bananas</p>
+              <p className="text-2xl font-bold text-green-700">{bananas || 0} 🍌 bananas</p>
             </div>
 
           </div>

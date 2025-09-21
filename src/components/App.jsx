@@ -434,6 +434,7 @@ export default function App() {
             
           {/* Credits display */}
             <div
+              className="bananaCreditsButton"
               onClick={() => {
                 if (!authLoading && !isSignedIn) {
                   openSignIn?.({})
@@ -467,7 +468,7 @@ export default function App() {
                 e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
               }}
             >
-              {hasActiveSubscription ? '∞' : bananas} 🍌 bananas
+              {hasActiveSubscription ? '∞' : bananas} 🍌 <span className="bananaText">bananas</span>
             </div>
             
             {/* Upgrade to Premium button */}
@@ -1321,21 +1322,10 @@ function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevio
       {children}
 
       <div className="focusedPhotoActions">
-        <div className="focusedPhotoActions-top">
-          <button className={c('button', {active: isFavorite})} onClick={e => {e.stopPropagation(); toggleFavorite(photo.id)}}>
-            <span className="icon">favorite</span>
-          </button>
-          <button className="button" onClick={e => { e.stopPropagation(); onMakeGif(); }}>
-            <span className="icon">gif</span>
-          </button>
-          <button className="button deleteButton" onClick={e => { e.stopPropagation(); deletePhoto(photo.id); onClose(); }}>
-            <span className="icon">delete</span>
-          </button>
-        </div>
-        <div className="focusedPhotoActions-bottom">
-          <button className="button shareButton" onClick={e => { e.stopPropagation(); sharePhoto(); }}>
-            <span className="icon">ios_share</span>
-          </button>
+        <button className="button shareButton" onClick={e => { e.stopPropagation(); sharePhoto(); }}>
+          <span className="icon">ios_share</span>
+        </button>
+        <div className="focusedPhotoActions-center">
           <button
             className="button"
             onClick={e => { e.stopPropagation(); downloadPhoto(photo.id); }}
@@ -1343,7 +1333,16 @@ function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevio
           >
             <span className="icon">download</span>
           </button>
+          <button className={c('button', {active: isFavorite})} onClick={e => {e.stopPropagation(); toggleFavorite(photo.id)}}>
+            <span className="icon">favorite</span>
+          </button>
+          <button className="button" onClick={e => { e.stopPropagation(); onMakeGif(); }}>
+            <span className="icon">gif</span>
+          </button>
         </div>
+        <button className="button deleteButton" onClick={e => { e.stopPropagation(); deletePhoto(photo.id); onClose(); }}>
+          <span className="icon">delete</span>
+        </button>
       </div>
     </div>
   )

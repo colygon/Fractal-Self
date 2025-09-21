@@ -2253,12 +2253,15 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   transform: scale(0.95);
 }
 
-/* Mobile-specific positioning for close button to avoid being hidden by notch/status bar */
+/* Mobile-specific positioning for close button to match play button distance */
 @media (max-width: 768px) {
   .focusedCloseBtn {
-    top: max(env(safe-area-inset-top), 20px);
-    top: max(constant(safe-area-inset-top), 20px); /* iOS 11.0 fallback */
-    margin-top: 10px; /* Additional margin for better visibility */
+    top: 15px; /* Match play button positioning */
+  }
+
+  /* Hide "bananas" text on mobile, keep only emoji */
+  .bananaCreditsButton .bananaText {
+    display: none;
   }
 }
 

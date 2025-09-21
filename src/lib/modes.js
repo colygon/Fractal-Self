@@ -3,6 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 export default {
+  // Auto and Random modes first
+  auto: {
+    name: 'Auto',
+    emoji: '🔄',
+    prompt: '', // Not used - handled by cycling logic
+    category: 'special',
+    postcardText: 'AUTO MODE'
+  },
+  random: {
+    name: 'Random',
+    emoji: '🎲',
+    prompt: '', // Not used - handled by random logic
+    category: 'special',
+    postcardText: 'RANDOM MODE'
+  },
+
   // San Francisco Bay Area styles - moved to top
   sf: {
     name: 'SF',
