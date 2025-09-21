@@ -7,7 +7,13 @@ import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
 import App from './src/components/App.jsx'
 
-const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+// Use development key for localhost, production key for production
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const clerkPublishableKey = isLocalhost
+  ? (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_DEV || import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
+  : import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+console.log('Clerk environment:', { isLocalhost, keyType: clerkPublishableKey?.substring(0, 7) })
 
 if (!clerkPublishableKey) {
   console.error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable for Clerk.')

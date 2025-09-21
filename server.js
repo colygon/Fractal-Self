@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { ClerkExpressRequireAuth, ClerkExpressWithAuth } from '@clerk/express';
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
@@ -24,10 +24,10 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(ClerkExpressWithAuth());
+app.use(clerkMiddleware());
 
 // Simple authenticated endpoint example
-app.get('/api/me', ClerkExpressRequireAuth(), (req, res) => {
+app.get('/api/me', requireAuth(), (req, res) => {
   res.json({
     userId: req.auth.userId,
     sessionId: req.auth.sessionId
