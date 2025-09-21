@@ -56,7 +56,7 @@ export const useRevenueCat = () => {
           console.log('RevenueCat configured successfully with user ID:', anonymousUserId)
 
           // Get current customer info
-          const customerInfo = await Purchases.getCustomerInfo()
+          const customerInfo = await Purchases.getSharedInstance().getCustomerInfo()
           console.log('Customer info:', customerInfo)
           setCustomerInfo(customerInfo)
 
@@ -67,12 +67,13 @@ export const useRevenueCat = () => {
 
             // Try different possible method names
             let virtualCurrencies = null;
-            if (typeof Purchases.getVirtualCurrencies === 'function') {
+            const instance = Purchases.getSharedInstance()
+            if (typeof instance.getVirtualCurrencies === 'function') {
               console.log('Using getVirtualCurrencies method')
-              virtualCurrencies = await Purchases.getVirtualCurrencies()
-            } else if (typeof Purchases.virtualCurrencies === 'function') {
+              virtualCurrencies = await instance.getVirtualCurrencies()
+            } else if (typeof instance.virtualCurrencies === 'function') {
               console.log('Using virtualCurrencies method')
-              virtualCurrencies = await Purchases.virtualCurrencies()
+              virtualCurrencies = await instance.virtualCurrencies()
             } else {
               console.warn('No virtual currency method found in Purchases SDK')
             }
@@ -102,7 +103,7 @@ export const useRevenueCat = () => {
           }
 
           // Get current offerings
-          const offerings = await Purchases.getOfferings()
+          const offerings = await Purchases.getSharedInstance().getOfferings()
           console.log('Offerings:', offerings)
           setOfferings(offerings)
 
@@ -114,12 +115,13 @@ export const useRevenueCat = () => {
           window.testVirtualCurrency = async () => {
             console.log('🧪 Testing virtual currency manually...')
             try {
-              if (typeof Purchases.getVirtualCurrencies === 'function') {
-                const vc = await Purchases.getVirtualCurrencies()
+              const instance = Purchases.getSharedInstance()
+              if (typeof instance.getVirtualCurrencies === 'function') {
+                const vc = await instance.getVirtualCurrencies()
                 console.log('🧪 getVirtualCurrencies result:', vc)
                 return vc
-              } else if (typeof Purchases.virtualCurrencies === 'function') {
-                const vc = await Purchases.virtualCurrencies()
+              } else if (typeof instance.virtualCurrencies === 'function') {
+                const vc = await instance.virtualCurrencies()
                 console.log('🧪 virtualCurrencies result:', vc)
                 return vc
               } else {
@@ -215,12 +217,12 @@ export const useRevenueCat = () => {
           active: activeEntitlements
         },
         virtualCurrencyBalance: {
-          bananas: 100 // Default test balance
+          bananas: 50 // Default test balance
         }
       })
 
       // Set mock virtual currency balance
-      setVirtualCurrencyBalance(100)
+      setVirtualCurrencyBalance(50)
       setIsLoaded(true)
       setIsLoading(false)
     }
@@ -237,13 +239,13 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      if (!isLoaded || !Purchases.logIn) {
+      if (!isLoaded || !Purchases.getSharedInstance().logIn) {
         console.warn('RevenueCat not properly initialized, cannot identify user')
         return customerInfo
       }
 
       // For web SDK, we use logIn instead of identifyUser
-      const { customerInfo: updatedCustomerInfo } = await Purchases.logIn(userId)
+      const { customerInfo: updatedCustomerInfo } = await Purchases.getSharedInstance().logIn(userId)
       setCustomerInfo(updatedCustomerInfo)
       return updatedCustomerInfo
     } catch (error) {
@@ -267,13 +269,13 @@ export const useRevenueCat = () => {
         return
       }
 
-      if (!isLoaded || !Purchases.logOut) {
+      if (!isLoaded || !Purchases.getSharedInstance().logOut) {
         console.warn('RevenueCat not properly initialized, cannot log out')
         return customerInfo
       }
 
-      await Purchases.logOut()
-      const updatedCustomerInfo = await Purchases.getCustomerInfo()
+      await Purchases.getSharedInstance().logOut()
+      const updatedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
       setCustomerInfo(updatedCustomerInfo)
       return updatedCustomerInfo
     } catch (error) {
@@ -374,13 +376,13 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      if (!isLoaded || !Purchases.restorePurchases) {
+      if (!isLoaded || !Purchases.getSharedInstance().restorePurchases) {
         console.warn('RevenueCat not properly initialized, cannot restore purchases')
         return customerInfo
       }
 
       // For web SDK, restorePurchases returns an object with customerInfo
-      const { customerInfo: restoredCustomerInfo } = await Purchases.restorePurchases()
+      const { customerInfo: restoredCustomerInfo } = await Purchases.getSharedInstance().restorePurchases()
       setCustomerInfo(restoredCustomerInfo)
       return restoredCustomerInfo
     } catch (error) {
@@ -413,8 +415,9 @@ export const useRevenueCat = () => {
   const spendVirtualCurrency = async (amount, currencyType = 'bananas') => {
     try {
       // Check if we have virtual currency functions available
-      const hasVirtualCurrencyMethod = typeof Purchases.getVirtualCurrencies === 'function' ||
-                                        typeof Purchases.virtualCurrencies === 'function';
+      const instance = Purchases.getSharedInstance()
+      const hasVirtualCurrencyMethod = typeof instance.getVirtualCurrencies === 'function' ||
+                                        typeof instance.virtualCurrencies === 'function';
 
       // Always use test mode if RevenueCat functions are not available or if explicitly in test mode
       if (USE_TEST_MODE || !isLoaded || !hasVirtualCurrencyMethod) {
@@ -465,8 +468,8 @@ export const useRevenueCat = () => {
         console.log(`🍌 Successfully spent ${amount} ${currencyType}. New balance: ${result.newBalance}`)
 
         // Invalidate cache so next fetch gets fresh data
-        if (Purchases.invalidateVirtualCurrenciesCache) {
-          Purchases.invalidateVirtualCurrenciesCache()
+        if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
+          Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
         }
 
         return { success: true, newBalance: result.newBalance }
@@ -490,11 +493,11 @@ export const useRevenueCat = () => {
         return { all: { bananas: { balance: virtualCurrencyBalance, code: 'bananas', name: 'Bananas' } } }
       }
 
-      if (!isLoaded || !Purchases.cachedVirtualCurrencies) {
+      if (!isLoaded || !Purchases.getSharedInstance().cachedVirtualCurrencies) {
         return null
       }
 
-      return Purchases.cachedVirtualCurrencies
+      return Purchases.getSharedInstance().cachedVirtualCurrencies
     } catch (error) {
       console.warn('Failed to get cached virtual currencies:', error)
       return null
@@ -508,7 +511,7 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      if (!isLoaded || !Purchases.getCustomerInfo) {
+      if (!isLoaded || !Purchases.getSharedInstance().getCustomerInfo) {
         console.warn('RevenueCat not loaded, cannot refresh customer info')
         return customerInfo
       }
@@ -516,20 +519,21 @@ export const useRevenueCat = () => {
       console.log('🔄 Refreshing RevenueCat customer info and virtual currencies...')
 
       // Refresh customer info
-      const refreshedCustomerInfo = await Purchases.getCustomerInfo()
+      const refreshedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
       setCustomerInfo(refreshedCustomerInfo)
 
       // Invalidate and refresh virtual currencies cache
-      if (Purchases.invalidateVirtualCurrenciesCache) {
-        Purchases.invalidateVirtualCurrenciesCache()
+      if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
+        Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
       }
 
       try {
         let virtualCurrencies = null;
-        if (typeof Purchases.getVirtualCurrencies === 'function') {
-          virtualCurrencies = await Purchases.getVirtualCurrencies()
-        } else if (typeof Purchases.virtualCurrencies === 'function') {
-          virtualCurrencies = await Purchases.virtualCurrencies()
+        const instance = Purchases.getSharedInstance()
+        if (typeof instance.getVirtualCurrencies === 'function') {
+          virtualCurrencies = await instance.getVirtualCurrencies()
+        } else if (typeof instance.virtualCurrencies === 'function') {
+          virtualCurrencies = await instance.virtualCurrencies()
         }
 
         if (virtualCurrencies) {

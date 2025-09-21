@@ -424,7 +424,7 @@ export default function App() {
         liveMode: liveMode
       })}
     >
-      <header style={{ position: 'absolute', top: '30px', right: '10px', zIndex: 9999 }}>
+      <header style={{ position: 'absolute', top: '40px', right: '10px', zIndex: 9999 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           
 

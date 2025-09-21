@@ -55,6 +55,7 @@ export const useAuth = () => {
     spendVirtualCurrency,
     getVirtualCurrencyBalance,
     virtualCurrencyBalance,
+    refreshCustomerInfo,
     isLoaded: revenueCatLoaded
   } = useRevenueCat()
   const { isSignedIn, isLoaded: isUserLoaded, user } = useClerkUser()
@@ -72,6 +73,16 @@ export const useAuth = () => {
 
   // Prefer RevenueCat virtual currency when available, fallback to local storage
   const bananas = revenueCatLoaded ? virtualCurrencyBalance : localBananas
+
+  // Sync local storage with RevenueCat balance when available
+  useEffect(() => {
+    if (revenueCatLoaded && virtualCurrencyBalance !== undefined) {
+      // Keep local storage in sync with RevenueCat for offline scenarios
+      writeBananas(storageKey, virtualCurrencyBalance)
+      setLocalBananas(virtualCurrencyBalance)
+      console.log(`🔄 Synced local storage with RevenueCat balance: ${virtualCurrencyBalance}`)
+    }
+  }, [revenueCatLoaded, virtualCurrencyBalance, storageKey])
 
   // Keep local state in sync when the active user changes (fallback only)
   useEffect(() => {
@@ -97,15 +108,18 @@ export const useAuth = () => {
     })
   }, [storageKey])
 
-  const addBananas = useCallback((amount) => {
+  const addBananas = useCallback(async (amount) => {
     // Add bananas when user purchases them
-    // Note: RevenueCat virtual currency is managed server-side via purchases
-    // This is only for local fallback mode
-    if (!revenueCatLoaded) {
+    if (revenueCatLoaded && refreshCustomerInfo) {
+      // For RevenueCat: refresh balance to get updated virtual currency
+      console.log(`🍌 Refreshing RevenueCat balance after adding ${amount} bananas`)
+      await refreshCustomerInfo()
+    } else {
+      // Fallback: add to local storage
       updateLocalBananas(prev => prev + amount)
+      console.log(`🍌 Added ${amount} bananas to local storage`)
     }
-    console.log(`🍌 Added ${amount} bananas (RevenueCat managed: ${revenueCatLoaded})`)
-  }, [updateLocalBananas, revenueCatLoaded])
+  }, [updateLocalBananas, revenueCatLoaded, refreshCustomerInfo])
 
   // Listen for banana purchases
   useEffect(() => {
@@ -118,6 +132,23 @@ export const useAuth = () => {
     window.addEventListener('creditsPurchased', handleBananasPurchased)
     return () => window.removeEventListener('creditsPurchased', handleBananasPurchased)
   }, [addBananas])
+
+  // Periodically refresh RevenueCat balance to stay in sync
+  useEffect(() => {
+    if (!revenueCatLoaded || !refreshCustomerInfo) return
+
+    // Refresh balance every 30 seconds to catch webhook updates
+    const interval = setInterval(async () => {
+      try {
+        await refreshCustomerInfo()
+        console.log('🔄 Periodic RevenueCat balance refresh completed')
+      } catch (error) {
+        console.warn('Failed to refresh RevenueCat balance:', error)
+      }
+    }, 30000) // 30 seconds
+
+    return () => clearInterval(interval)
+  }, [revenueCatLoaded, refreshCustomerInfo])
 
   const subscriptionActive = hasActiveSubscription()
 
@@ -140,15 +171,40 @@ export const useAuth = () => {
     }
   }, [revenueCatLoaded, spendVirtualCurrency, updateLocalBananas])
 
-  const refundBananas = useCallback((amount = PHOTO_COST) => {
-    // Always refund bananas when needed (e.g., on error)
-    // Note: RevenueCat doesn't have a built-in refund for virtual currency
-    // This is handled via local state for now
-    if (!revenueCatLoaded) {
+  const refundBananas = useCallback(async (amount = PHOTO_COST) => {
+    // Refund bananas when needed (e.g., on photo generation error)
+    if (revenueCatLoaded) {
+      // For RevenueCat: call server-side refund API
+      try {
+        const response = await fetch('/api/refund-bananas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            app_user_id: user?.id || localStorage.getItem('anonymous_user_id'),
+            amount,
+            reason: 'Photo generation failed'
+          })
+        })
+
+        if (response.ok) {
+          await refreshCustomerInfo() // Refresh to get updated balance
+          console.log(`🍌 Refunded ${amount} bananas via RevenueCat`)
+        } else {
+          console.error('Failed to refund bananas via RevenueCat')
+          // Fallback to local refund
+          updateLocalBananas(prev => prev + amount)
+        }
+      } catch (error) {
+        console.error('Refund API error:', error)
+        // Fallback to local refund
+        updateLocalBananas(prev => prev + amount)
+      }
+    } else {
+      // Fallback: refund to local storage
       updateLocalBananas(prev => prev + amount)
+      console.log(`🍌 Refunded ${amount} bananas to local storage`)
     }
-    console.log(`🍌 Refunded ${amount} bananas (local only - RevenueCat refunds handled server-side)`)
-  }, [revenueCatLoaded, updateLocalBananas])
+  }, [revenueCatLoaded, updateLocalBananas, refreshCustomerInfo, user?.id])
 
   const resetBananas = useCallback(() => {
     // Only reset local bananas - RevenueCat virtual currency is managed server-side
@@ -156,6 +212,21 @@ export const useAuth = () => {
     setLocalBananas(DEFAULT_FREE_BANANAS)
     console.log('🍌 Reset local bananas only - RevenueCat balance unchanged')
   }, [storageKey])
+
+  const refreshBalance = useCallback(async () => {
+    // Manual balance refresh function
+    if (revenueCatLoaded && refreshCustomerInfo) {
+      try {
+        await refreshCustomerInfo()
+        console.log('🔄 Manual balance refresh completed')
+        return true
+      } catch (error) {
+        console.error('Failed to refresh balance:', error)
+        return false
+      }
+    }
+    return false
+  }, [revenueCatLoaded, refreshCustomerInfo])
 
   return {
     user: user ? {
@@ -172,6 +243,8 @@ export const useAuth = () => {
     refundBananas,
     addBananas,
     resetBananas,
+    refreshBalance,
+    revenueCatLoaded, // Expose RevenueCat status
     getToken,
     signOut
   }
