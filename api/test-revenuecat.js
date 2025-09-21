@@ -18,7 +18,7 @@ const testWebhook = async () => {
   };
 
   try {
-    const response = await fetch('http://localhost:3000/api/webhooks/revenuecat', {
+    const response = await fetch('http://localhost:3001/api/webhooks/revenuecat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const testSpendAPI = async () => {
   console.log('🧪 Testing spend bananas API...');
 
   try {
-    const response = await fetch('http://localhost:3000/api/spend-bananas', {
+    const response = await fetch('http://localhost:3001/api/spend-bananas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
