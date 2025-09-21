@@ -516,9 +516,13 @@ export default function App() {
                   appearance={{
                     elements: {
                       userButtonAvatarBox: {
+                        width: '44px',
+                        height: '44px',
                         border: '2px solid rgba(255, 255, 255, 0.2)'
                       },
                       userButtonTrigger: {
+                        width: '44px',
+                        height: '44px',
                         borderRadius: '999px'
                       }
                     }
