@@ -329,8 +329,20 @@ export default function App() {
           case 'Backspace':
           case 'Delete':
             event.preventDefault()
+            // Find next photo to display before deleting current one
+            const finishedPhotosDelete = photos.filter(p => !p.isBusy)
+            const currentIndexDelete = finishedPhotosDelete.findIndex(p => p.id === focusedId)
+            let nextPhotoId = null
+
+            // Try to show next photo, or previous if at end, or null if it's the last photo
+            if (currentIndexDelete < finishedPhotosDelete.length - 1) {
+              nextPhotoId = finishedPhotosDelete[currentIndexDelete + 1].id
+            } else if (currentIndexDelete > 0) {
+              nextPhotoId = finishedPhotosDelete[currentIndexDelete - 1].id
+            }
+
             deletePhoto(focusedId)
-            setFocusedId(null)
+            setFocusedId(nextPhotoId)
             break
           case 'ArrowLeft':
             event.preventDefault()
@@ -432,47 +444,49 @@ export default function App() {
           {/* Always show credits and upgrade button for all users */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             
-          {/* Credits display */}
-            <div
-              className="bananaCreditsButton"
-              onClick={() => {
-                if (!authLoading && !isSignedIn) {
-                  openSignIn?.({})
-                  return
-                }
-                setShowBilling(true)
-              }}
-              style={{
-                background: 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '12px',
-                padding: '8px 12px',
-                fontSize: '12px',
-                fontWeight: '600',
-                fontFamily: 'inherit',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.85)'
-                e.target.style.transform = 'translateY(-1px)'
-                e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)'
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(0, 0, 0, 0.75)'
-                e.target.style.transform = 'translateY(0)'
-                e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
-              }}
-            >
-              {hasActiveSubscription ? '∞' : bananas} 🍌 <span className="bananaText">bananas</span>
-            </div>
-            
-            {/* Upgrade to Premium button */}
-            {bananas < 50 && (
+          {/* Credits display - hide when user has 0 credits */}
+            {bananas > 0 && (
+              <div
+                className="bananaCreditsButton"
+                onClick={() => {
+                  if (!authLoading && !isSignedIn) {
+                    openSignIn?.({})
+                    return
+                  }
+                  setShowBilling(true)
+                }}
+                style={{
+                  background: 'rgba(0, 0, 0, 0.75)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '12px',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  fontFamily: 'inherit',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'rgba(0, 0, 0, 0.85)'
+                  e.target.style.transform = 'translateY(-1px)'
+                  e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(0, 0, 0, 0.75)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+                }}
+              >
+                {hasActiveSubscription ? '∞' : bananas} 🍌 <span className="bananaText">bananas</span>
+              </div>
+            )}
+
+            {/* Upgrade to Premium button - only show when user has 0 credits */}
+            {bananas === 0 && (
               <button
                 onClick={() => {
                   if (!authLoading && !isSignedIn) {
@@ -503,7 +517,7 @@ export default function App() {
                   e.target.style.boxShadow = '0 4px 16px rgba(139, 92, 246, 0.3)'
                 }}
               >
-                Upgrade
+                Buy 🍌
               </button>
             )}
 
@@ -1344,7 +1358,18 @@ function FocusedPhoto({photo, onClose, isFavorite, children, onMakeGif, onPrevio
             <span className="icon">gif</span>
           </button>
         </div>
-        <button className="button deleteButton" onClick={e => { e.stopPropagation(); deletePhoto(photo.id); onClose(); }}>
+        <button className="button deleteButton" onClick={e => {
+          e.stopPropagation();
+          deletePhoto(photo.id);
+          // Try to navigate to next photo, or previous, or close if it's the last one
+          if (onNext) {
+            onNext();
+          } else if (onPrevious) {
+            onPrevious();
+          } else {
+            onClose();
+          }
+        }}>
           <span className="icon">delete</span>
         </button>
       </div>

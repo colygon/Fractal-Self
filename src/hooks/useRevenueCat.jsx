@@ -13,9 +13,6 @@ const USE_TEST_MODE = !REVENUECAT_API_KEY ||
   REVENUECAT_API_KEY.includes('test') ||
   REVENUECAT_API_KEY.startsWith('sk_')
 
-// Force test mode off to try real virtual currency
-// const USE_TEST_MODE_OVERRIDE = false
-
 export const useRevenueCat = () => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [customerInfo, setCustomerInfo] = useState(null)
@@ -26,250 +23,120 @@ export const useRevenueCat = () => {
   useEffect(() => {
     const initializeRevenueCat = async () => {
       console.log('Initializing RevenueCat with API key:', REVENUECAT_API_KEY ? `${REVENUECAT_API_KEY.substring(0, 8)}...` : 'Missing')
-      console.log('Test mode:', USE_TEST_MODE)
-      console.log('API key starts with rcb_:', REVENUECAT_API_KEY?.startsWith('rcb_'))
-      console.log('Full API key check:', {
-        hasKey: !!REVENUECAT_API_KEY,
-        isDefault: REVENUECAT_API_KEY === 'your-public-api-key',
-        includesTest: REVENUECAT_API_KEY?.includes('test'),
-        startsWithSk: REVENUECAT_API_KEY?.startsWith('sk_')
-      })
 
-      if (REVENUECAT_API_KEY && REVENUECAT_API_KEY.startsWith('sk_')) {
-        console.warn('⚠️ RevenueCat: You provided a secret key (sk_) but the web SDK requires a public key (rcb_).')
-        console.warn('Please get your public API key from: https://app.revenuecat.com/projects/[YOUR_PROJECT_ID]/api-keys')
-        console.warn('Running in TEST MODE with mock data.')
-      }
+      // Always try to initialize RevenueCat, but don't fail the whole app if it doesn't work
+      let revenueCatInitialized = false
 
-      if (!USE_TEST_MODE) {
+      if (!USE_TEST_MODE && REVENUECAT_API_KEY) {
         try {
-          // Generate or retrieve anonymous user ID for initial configuration
+          // Generate anonymous user ID
           const anonymousUserId = localStorage.getItem('anonymous_user_id') ||
             `guest_${Math.random().toString(36).substring(2, 11)}`
           localStorage.setItem('anonymous_user_id', anonymousUserId)
 
-          // Initialize RevenueCat with anonymous user ID
+          console.log('Configuring RevenueCat with user ID:', anonymousUserId)
+
+          // Configure RevenueCat
           await Purchases.configure({
             apiKey: REVENUECAT_API_KEY,
             appUserId: anonymousUserId
           })
-          console.log('RevenueCat configured successfully with user ID:', anonymousUserId)
 
-          // Get current customer info
+          console.log('RevenueCat configured successfully')
+          revenueCatInitialized = true
+
+          // Get customer info
           const customerInfo = await Purchases.getSharedInstance().getCustomerInfo()
           console.log('Customer info:', customerInfo)
-          console.log('Customer info virtual currencies:', customerInfo?.virtualCurrencies)
-          console.log('Customer info virtual currency balance:', customerInfo?.virtualCurrencyBalance)
           setCustomerInfo(customerInfo)
 
-          // Check if virtual currency is already in customerInfo
-          let foundBalanceInCustomerInfo = false
-          if (customerInfo?.virtualCurrencies?.bananas?.balance !== undefined) {
-            const balance = customerInfo.virtualCurrencies.bananas.balance
-            console.log('🎉 Found virtual currency in customerInfo.virtualCurrencies:', balance)
-            setVirtualCurrencyBalance(balance)
-            foundBalanceInCustomerInfo = true
-          } else if (customerInfo?.virtualCurrencyBalance?.bananas !== undefined) {
-            const balance = customerInfo.virtualCurrencyBalance.bananas
-            console.log('🎉 Found virtual currency in customerInfo.virtualCurrencyBalance:', balance)
-            setVirtualCurrencyBalance(balance)
-            foundBalanceInCustomerInfo = true
-          }
-
-          // If not found in customerInfo, fetch from server-side API
-          if (!foundBalanceInCustomerInfo) {
-            try {
-              console.log('📞 Fetching virtual currency from server API for user:', anonymousUserId)
-              const response = await fetch('/api/get-balance', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ app_user_id: anonymousUserId })
-              })
-
-              if (response.ok) {
-                const data = await response.json()
-                console.log('🎉 Server API returned balance:', data.balance)
-                setVirtualCurrencyBalance(data.balance || 0)
-              } else {
-                console.warn('Failed to fetch balance from server API')
-              }
-            } catch (error) {
-              console.warn('Error fetching balance from server:', error)
-            }
-          }
-
-          // Also try to get virtual currency balances using the official API
-          try {
-            // Check what methods are available
-            console.log('Available Purchases methods:', Object.getOwnPropertyNames(Purchases).filter(prop => typeof Purchases[prop] === 'function'))
-
-            // Try different possible method names
-            let virtualCurrencies = null;
-            const instance = Purchases.getSharedInstance()
-            if (typeof instance.getVirtualCurrencies === 'function') {
-              console.log('Using getVirtualCurrencies method')
-              virtualCurrencies = await instance.getVirtualCurrencies()
-            } else if (typeof instance.virtualCurrencies === 'function') {
-              console.log('Using virtualCurrencies method')
-              virtualCurrencies = await instance.virtualCurrencies()
-            } else {
-              console.warn('No virtual currency method found in Purchases SDK')
-            }
-
-            if (virtualCurrencies) {
-              console.log('🎉 SUCCESS: Virtual currencies response:', virtualCurrencies)
-              console.log('🎉 Virtual currencies structure:', {
-                hasAll: !!virtualCurrencies.all,
-                hasBananas: !!virtualCurrencies.all?.bananas,
-                bananaBalance: virtualCurrencies.all?.bananas?.balance,
-                allCurrencies: Object.keys(virtualCurrencies.all || {})
-              })
-              const bananaBalance = virtualCurrencies.all?.bananas?.balance || 0
-              setVirtualCurrencyBalance(bananaBalance)
-              console.log('🍌 Banana balance from virtual currencies:', bananaBalance)
-            } else {
-              // Only update if we don't already have a balance from customerInfo
-              if (virtualCurrencyBalance === undefined || virtualCurrencyBalance === 0) {
-                const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas ||
-                                      customerInfo.virtualCurrencies?.bananas?.balance || 0
-                setVirtualCurrencyBalance(bananaBalance)
-                console.log('🍌 No getVirtualCurrencies method, using customerInfo balance:', bananaBalance)
-              }
-            }
-          } catch (error) {
-            console.warn('Failed to fetch virtual currencies:', error)
-            // Only update if we don't already have a balance
-            if (virtualCurrencyBalance === undefined || virtualCurrencyBalance === 0) {
-              const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas ||
-                                    customerInfo.virtualCurrencies?.bananas?.balance || 0
-              setVirtualCurrencyBalance(bananaBalance)
-              console.log('🍌 Error fetching, using customerInfo balance:', bananaBalance)
-            }
-          }
-
-          // Get current offerings
+          // Get offerings
           const offerings = await Purchases.getSharedInstance().getOfferings()
           console.log('Offerings:', offerings)
           setOfferings(offerings)
 
           setIsLoaded(true)
           setIsLoading(false)
-          console.log('RevenueCat initialization complete')
 
-          // Add a test function to global scope for manual testing
-          window.testVirtualCurrency = async () => {
-            console.log('🧪 Testing virtual currency manually...')
-            try {
-              const instance = Purchases.getSharedInstance()
-              if (typeof instance.getVirtualCurrencies === 'function') {
-                const vc = await instance.getVirtualCurrencies()
-                console.log('🧪 getVirtualCurrencies result:', vc)
-                return vc
-              } else if (typeof instance.virtualCurrencies === 'function') {
-                const vc = await instance.virtualCurrencies()
-                console.log('🧪 virtualCurrencies result:', vc)
-                return vc
-              } else {
-                console.log('🧪 No virtual currency methods available')
-                return null
-              }
-            } catch (error) {
-              console.error('🧪 Virtual currency test error:', error)
-              return null
-            }
-          }
-
-          return // Exit early if successful
         } catch (error) {
           console.error('Failed to initialize RevenueCat:', error)
-          if (error.message?.includes('Invalid API key')) {
-            console.warn('❌ RevenueCat API key is invalid or not configured for Web Billing.')
-            console.warn('📋 To fix this:')
-            console.warn('   1. Go to https://app.revenuecat.com/projects')
-            console.warn('   2. Select your project → Settings → API keys')
-            console.warn('   3. Get your Web Billing public API key (starts with rcb_)')
-            console.warn('   4. Set VITE_REVENUECAT_API_KEY in your environment')
-          }
-          console.log('Falling back to test mode with mock data')
+          console.log('Continuing with server-side balance fetching only')
+          revenueCatInitialized = false
         }
-      } else {
-        console.warn('RevenueCat running in TEST MODE - using mock data')
       }
 
-      // Fallback to mock data if RevenueCat fails or in test mode
-      console.log('Using mock data for RevenueCat')
-      setOfferings({
-        current: {
-          identifier: 'default',
-          availablePackages: [
-            {
-              identifier: 'credits_400',
-              product: {
+      // Always try to fetch balance from server API as fallback/primary method
+      try {
+        const anonymousUserId = localStorage.getItem('anonymous_user_id') ||
+          `guest_${Math.random().toString(36).substring(2, 11)}`
+        localStorage.setItem('anonymous_user_id', anonymousUserId)
+
+        console.log('Fetching virtual currency from server API for user:', anonymousUserId)
+        const response = await fetch('/api/get-balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ app_user_id: anonymousUserId })
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Server API returned balance:', data.balance)
+          setVirtualCurrencyBalance(data.balance || 0)
+        } else {
+          console.warn('Failed to fetch balance from server API, using default')
+          setVirtualCurrencyBalance(50)
+        }
+      } catch (error) {
+        console.warn('Error fetching balance from server:', error)
+        setVirtualCurrencyBalance(50)
+      }
+
+      // Set up mock data if RevenueCat failed
+      if (!revenueCatInitialized) {
+        setOfferings({
+          current: {
+            identifier: 'default',
+            availablePackages: [
+              {
                 identifier: 'credits_400',
-                title: 'Premium',
-                description: '80 photo transformations per month - perfect for casual use',
-                priceString: '$3.99',
-                credits: 400
-              }
-            },
-            {
-              identifier: 'credits_1700',
-              product: {
+                product: {
+                  identifier: 'credits_400',
+                  title: 'Premium',
+                  description: '80 photo transformations per month - perfect for casual use',
+                  priceString: '$3.99',
+                  credits: 400
+                }
+              },
+              {
                 identifier: 'credits_1700',
-                title: 'Gold',
-                description: '340 photo transformations per month - great value for regular users',
-                priceString: '$16.99',
-                credits: 1700
-              }
-            },
-            {
-              identifier: 'credits_5000',
-              product: {
+                product: {
+                  identifier: 'credits_1700',
+                  title: 'Gold',
+                  description: '340 photo transformations per month - great value for regular users',
+                  priceString: '$16.99',
+                  credits: 1700
+                }
+              },
+              {
                 identifier: 'credits_5000',
-                title: 'Professional',
-                description: '1,000 photo transformations per month - perfect for power users',
-                priceString: '$49.99',
-                credits: 5000
+                product: {
+                  identifier: 'credits_5000',
+                  title: 'Professional',
+                  description: '1,000 photo transformations per month - perfect for power users',
+                  priceString: '$49.99',
+                  credits: 5000
+                }
               }
-            }
-          ]
-        }
-      })
-
-      // Check for stored mock subscription
-      const storedMockSubscription = localStorage.getItem('mock_subscription')
-      let activeEntitlements = {}
-
-      if (storedMockSubscription) {
-        try {
-          const mockEntitlement = JSON.parse(storedMockSubscription)
-          // Check if subscription is still valid
-          if (new Date(mockEntitlement.expirationDate) > new Date()) {
-            activeEntitlements = { premium: mockEntitlement }
-            console.log('Restored mock subscription from localStorage')
-          } else {
-            // Expired - remove from storage
-            localStorage.removeItem('mock_subscription')
-            console.log('Mock subscription expired, removed from localStorage')
+            ]
           }
-        } catch (e) {
-          console.error('Failed to parse mock subscription:', e)
-        }
+        })
+        setCustomerInfo({
+          entitlements: { active: {} },
+          virtualCurrencyBalance: { bananas: 50 }
+        })
+        setIsLoaded(true)
+        setIsLoading(false)
       }
-
-      setCustomerInfo({
-        entitlements: {
-          active: activeEntitlements
-        },
-        virtualCurrencyBalance: {
-          bananas: 50 // Default test balance
-        }
-      })
-
-      // Set mock virtual currency balance
-      setVirtualCurrencyBalance(50)
-      setIsLoaded(true)
-      setIsLoading(false)
     }
 
     initializeRevenueCat()
@@ -284,9 +151,20 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
+      // Wait for RevenueCat to be loaded
       if (!isLoaded) {
-        console.warn('RevenueCat not yet initialized, cannot identify user')
-        return customerInfo
+        console.log('RevenueCat not yet loaded, waiting...')
+        // Wait up to 5 seconds for initialization
+        let attempts = 0
+        while (!isLoaded && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          attempts++
+        }
+
+        if (!isLoaded) {
+          console.warn('RevenueCat failed to initialize, cannot identify user')
+          return customerInfo
+        }
       }
 
       // Check if Purchases is properly configured before trying to use it
@@ -483,28 +361,7 @@ export const useRevenueCat = () => {
 
   const spendVirtualCurrency = async (amount, currencyType = 'bananas') => {
     try {
-      // Always use test mode if RevenueCat functions are not available or if explicitly in test mode
-      // For now, always use local simulation since virtual currency API is not available in Web SDK
-      if (USE_TEST_MODE || !isLoaded || true) { // Force local mode until RevenueCat Web SDK supports virtual currency
-        // In test mode, just simulate spending
-        console.log(`🍌 LOCAL MODE: Spending ${amount} ${currencyType}`)
-        const newBalance = Math.max(0, virtualCurrencyBalance - amount)
-        setVirtualCurrencyBalance(newBalance)
-        // Also update local storage for persistence
-        const storageKey = customerInfo?.originalAppUserId || localStorage.getItem('anonymous_user_id') || 'guest'
-        localStorage.setItem(`bananas_${storageKey}`, String(newBalance))
-        return { success: true, newBalance }
-      }
-
-      // Check current balance first using cached data
-      const currentBalance = virtualCurrencyBalance
-
-      if (currentBalance < amount) {
-        console.warn(`Insufficient ${currencyType}. Current: ${currentBalance}, Required: ${amount}`)
-        return { success: false, error: 'Insufficient balance' }
-      }
-
-      // Call server-side API to spend virtual currency securely
+      // Always try server-side API first for secure spending
       console.log(`🍌 Calling server API to spend ${amount} ${currencyType}`)
       const userId = customerInfo?.originalAppUserId ||
         (typeof window !== 'undefined' && localStorage.getItem('anonymous_user_id')) ||
@@ -535,9 +392,13 @@ export const useRevenueCat = () => {
         setVirtualCurrencyBalance(result.newBalance)
         console.log(`🍌 Successfully spent ${amount} ${currencyType}. New balance: ${result.newBalance}`)
 
-        // Invalidate cache so next fetch gets fresh data
-        if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
-          Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
+        // Try to invalidate RevenueCat cache if available
+        try {
+          if (isLoaded && Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
+            Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
+          }
+        } catch (vcError) {
+          // Ignore RevenueCat errors
         }
 
         return { success: true, newBalance: result.newBalance }
@@ -574,92 +435,81 @@ export const useRevenueCat = () => {
 
   const refreshCustomerInfo = async () => {
     try {
-      if (USE_TEST_MODE) {
-        console.log('🍌 TEST MODE: Refreshing customer info')
-        return customerInfo
-      }
+      console.log('🔄 Refreshing customer info and virtual currencies...')
 
-      if (!isLoaded || !Purchases.getSharedInstance().getCustomerInfo) {
-        console.warn('RevenueCat not loaded, cannot refresh customer info')
-        return customerInfo
-      }
+      // Always try to refresh from server API first
+      const userId = localStorage.getItem('anonymous_user_id')
+      if (userId) {
+        try {
+          console.log('📞 Refreshing balance from server API for user:', userId)
+          const response = await fetch('/api/get-balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ app_user_id: userId })
+          })
 
-      console.log('🔄 Refreshing RevenueCat customer info and virtual currencies...')
-
-      // Refresh customer info
-      const refreshedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
-      setCustomerInfo(refreshedCustomerInfo)
-
-      // Try to get virtual currency from customer info first
-      let foundBalance = false
-      if (refreshedCustomerInfo?.virtualCurrencies?.bananas?.balance !== undefined) {
-        const balance = refreshedCustomerInfo.virtualCurrencies.bananas.balance
-        console.log('🔄 Found refreshed balance in virtualCurrencies:', balance)
-        setVirtualCurrencyBalance(balance)
-        foundBalance = true
-      } else if (refreshedCustomerInfo?.virtualCurrencyBalance?.bananas !== undefined) {
-        const balance = refreshedCustomerInfo.virtualCurrencyBalance.bananas
-        console.log('🔄 Found refreshed balance in virtualCurrencyBalance:', balance)
-        setVirtualCurrencyBalance(balance)
-        foundBalance = true
-      }
-
-      // If not in customer info, fetch from server API
-      if (!foundBalance) {
-        const userId = localStorage.getItem('anonymous_user_id')
-        if (userId) {
-          try {
-            console.log('📞 Refreshing balance from server API for user:', userId)
-            const response = await fetch('/api/get-balance', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ app_user_id: userId })
-            })
-
-            if (response.ok) {
-              const data = await response.json()
-              console.log('🔄 Server API refreshed balance:', data.balance)
-              setVirtualCurrencyBalance(data.balance || 0)
-            }
-          } catch (error) {
-            console.warn('Error refreshing balance from server:', error)
+          if (response.ok) {
+            const data = await response.json()
+            console.log('🔄 Server API refreshed balance:', data.balance)
+            setVirtualCurrencyBalance(data.balance || 0)
           }
+        } catch (error) {
+          console.warn('Error refreshing balance from server:', error)
         }
       }
 
-      // Invalidate and refresh virtual currencies cache
-      if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
-        Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
+      // Try RevenueCat refresh if available
+      if (isLoaded) {
+        try {
+          // Refresh customer info
+          const refreshedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
+          setCustomerInfo(refreshedCustomerInfo)
+
+          // Try to get virtual currency from customer info
+          let foundBalance = false
+          if (refreshedCustomerInfo?.virtualCurrencies?.bananas?.balance !== undefined) {
+            const balance = refreshedCustomerInfo.virtualCurrencies.bananas.balance
+            console.log('🔄 Found refreshed balance in virtualCurrencies:', balance)
+            setVirtualCurrencyBalance(balance)
+            foundBalance = true
+          } else if (refreshedCustomerInfo?.virtualCurrencyBalance?.bananas !== undefined) {
+            const balance = refreshedCustomerInfo.virtualCurrencyBalance.bananas
+            console.log('🔄 Found refreshed balance in virtualCurrencyBalance:', balance)
+            setVirtualCurrencyBalance(balance)
+            foundBalance = true
+          }
+
+          // Invalidate and refresh virtual currencies cache
+          if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
+            Purchases.getSharedInstance().invalidateVirtualCurrenciesCache()
+          }
+
+          try {
+            let virtualCurrencies = null;
+            const instance = Purchases.getSharedInstance()
+            if (typeof instance.getVirtualCurrencies === 'function') {
+              virtualCurrencies = await instance.getVirtualCurrencies()
+            } else if (typeof instance.virtualCurrencies === 'function') {
+              virtualCurrencies = await instance.virtualCurrencies()
+            }
+
+            if (virtualCurrencies) {
+              const bananaBalance = virtualCurrencies.all?.bananas?.balance || 0
+              setVirtualCurrencyBalance(bananaBalance)
+              console.log('🍌 Updated banana balance from virtual currencies:', bananaBalance)
+            }
+          } catch (vcError) {
+            console.warn('Failed to refresh virtual currencies:', vcError)
+          }
+
+          return refreshedCustomerInfo
+        } catch (error) {
+          console.warn('Failed to refresh RevenueCat customer info:', error)
+          return customerInfo
+        }
       }
 
-      try {
-        let virtualCurrencies = null;
-        const instance = Purchases.getSharedInstance()
-        if (typeof instance.getVirtualCurrencies === 'function') {
-          virtualCurrencies = await instance.getVirtualCurrencies()
-        } else if (typeof instance.virtualCurrencies === 'function') {
-          virtualCurrencies = await instance.virtualCurrencies()
-        }
-
-        if (virtualCurrencies) {
-          const bananaBalance = virtualCurrencies.all?.bananas?.balance || 0
-          setVirtualCurrencyBalance(bananaBalance)
-          console.log('🍌 Updated banana balance from virtual currencies:', bananaBalance)
-        } else {
-          // Fallback to customer info
-          const bananaBalance = refreshedCustomerInfo.virtualCurrencyBalance?.bananas || 0
-          setVirtualCurrencyBalance(bananaBalance)
-          console.log('🍌 Updated banana balance from customer info:', bananaBalance)
-        }
-      } catch (vcError) {
-        console.warn('Failed to refresh virtual currencies:', vcError)
-        // Fallback to customer info
-        const bananaBalance = refreshedCustomerInfo.virtualCurrencyBalance?.bananas || 0
-        setVirtualCurrencyBalance(bananaBalance)
-        console.log('🍌 Updated banana balance from customer info:', bananaBalance)
-      }
-
-      return refreshedCustomerInfo
+      return customerInfo
     } catch (error) {
       console.error('Failed to refresh customer info:', error)
       return customerInfo
