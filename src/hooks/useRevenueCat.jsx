@@ -19,6 +19,7 @@ export const useRevenueCat = () => {
   const [offerings, setOfferings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(50) // Default to 50 credits for new users
+  const [revenueCatConfigured, setRevenueCatConfigured] = useState(false)
 
   useEffect(() => {
     const initializeRevenueCat = async () => {
@@ -44,6 +45,7 @@ export const useRevenueCat = () => {
 
           console.log('RevenueCat configured successfully')
           revenueCatInitialized = true
+          setRevenueCatConfigured(true)
 
           // Get customer info
           const customerInfo = await Purchases.getSharedInstance().getCustomerInfo()
@@ -169,6 +171,11 @@ export const useRevenueCat = () => {
 
       // Check if Purchases is properly configured before trying to use it
       try {
+        if (!revenueCatConfigured) {
+          console.warn('RevenueCat not properly configured, cannot identify user')
+          return customerInfo
+        }
+
         const instance = Purchases.getSharedInstance()
         if (!instance || !instance.logIn) {
           console.warn('RevenueCat instance not available or missing logIn method')
@@ -211,6 +218,11 @@ export const useRevenueCat = () => {
 
       // Check if Purchases is properly configured before trying to use it
       try {
+        if (!revenueCatConfigured) {
+          console.warn('RevenueCat not properly configured, cannot log out')
+          return customerInfo
+        }
+
         const instance = Purchases.getSharedInstance()
         if (!instance || !instance.logOut) {
           console.warn('RevenueCat instance not available or missing logOut method')
@@ -323,7 +335,7 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      if (!isLoaded || !Purchases.getSharedInstance().restorePurchases) {
+      if (!revenueCatConfigured || !Purchases.getSharedInstance().restorePurchases) {
         console.warn('RevenueCat not properly initialized, cannot restore purchases')
         return customerInfo
       }
@@ -422,7 +434,7 @@ export const useRevenueCat = () => {
         return { all: { bananas: { balance: virtualCurrencyBalance, code: 'bananas', name: 'Bananas' } } }
       }
 
-      if (!isLoaded || !Purchases.getSharedInstance().cachedVirtualCurrencies) {
+      if (!revenueCatConfigured || !Purchases.getSharedInstance().cachedVirtualCurrencies) {
         return null
       }
 
@@ -459,7 +471,7 @@ export const useRevenueCat = () => {
       }
 
       // Try RevenueCat refresh if available
-      if (isLoaded) {
+      if (revenueCatConfigured) {
         try {
           // Refresh customer info
           const refreshedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
@@ -531,6 +543,7 @@ export const useRevenueCat = () => {
     getVirtualCurrencyBalance,
     getCachedVirtualCurrencies,
     virtualCurrencyBalance,
-    refreshCustomerInfo
+    refreshCustomerInfo,
+    revenueCatConfigured
   }
 }
