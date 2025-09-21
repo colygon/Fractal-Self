@@ -20,6 +20,7 @@ export const useRevenueCat = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(50) // Default to 50 credits for new users
   const [revenueCatConfigured, setRevenueCatConfigured] = useState(false)
+  const [revenueCatError, setRevenueCatError] = useState(null)
 
   useEffect(() => {
     const initializeRevenueCat = async () => {
@@ -64,6 +65,7 @@ export const useRevenueCat = () => {
           console.error('Failed to initialize RevenueCat:', error)
           console.log('Continuing with server-side balance fetching only')
           revenueCatInitialized = false
+          setRevenueCatError(error.message || 'Failed to initialize RevenueCat')
         }
       }
 
@@ -85,12 +87,17 @@ export const useRevenueCat = () => {
           console.log('Server API returned balance:', data.balance)
           setVirtualCurrencyBalance(data.balance || 0)
         } else {
-          console.warn('Failed to fetch balance from server API, using default')
-          setVirtualCurrencyBalance(50)
+          const errorData = await response.json().catch(() => ({}))
+          console.warn('Failed to fetch balance from server API:', response.status, errorData)
+          // Set balance to 0 and show error state
+          setVirtualCurrencyBalance(0)
+          setRevenueCatError(errorData.error || `Server error: ${response.status}`)
         }
       } catch (error) {
         console.warn('Error fetching balance from server:', error)
-        setVirtualCurrencyBalance(50)
+        // Don't fall back to mock data - let the error propagate
+        setVirtualCurrencyBalance(0)
+        setRevenueCatError(error.message || 'Failed to connect to server')
       }
 
       // Set up mock data if RevenueCat failed
@@ -416,7 +423,8 @@ export const useRevenueCat = () => {
         return { success: true, newBalance: result.newBalance }
       } else {
         console.error('Failed to spend virtual currency:', result.error)
-        return { success: false, error: result.error }
+        setRevenueCatError(result.error || 'Failed to spend virtual currency')
+        return { success: false, error: result.error, code: result.code }
       }
     } catch (error) {
       console.error('Failed to spend virtual currency:', error)
@@ -464,6 +472,9 @@ export const useRevenueCat = () => {
             const data = await response.json()
             console.log('🔄 Server API refreshed balance:', data.balance)
             setVirtualCurrencyBalance(data.balance || 0)
+          } else {
+            console.warn('Failed to refresh balance from server API:', response.status)
+            // Don't update balance on error
           }
         } catch (error) {
           console.warn('Error refreshing balance from server:', error)
@@ -544,6 +555,7 @@ export const useRevenueCat = () => {
     getCachedVirtualCurrencies,
     virtualCurrencyBalance,
     refreshCustomerInfo,
-    revenueCatConfigured
+    revenueCatConfigured,
+    revenueCatError
   }
 }

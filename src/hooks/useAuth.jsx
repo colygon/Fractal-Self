@@ -164,12 +164,11 @@ export const useAuth = () => {
       console.log(`🍌 Spent ${amount} bananas via RevenueCat. New balance: ${result.newBalance}`)
       return true
     } else {
-      // Fallback to local storage
-      updateLocalBananas(prev => Math.max(0, prev - amount))
-      console.log(`🍌 Spent ${amount} bananas via local storage`)
-      return true
+      // No fallback - RevenueCat must be working
+      console.error('Cannot spend bananas: RevenueCat not available')
+      return false
     }
-  }, [revenueCatLoaded, spendVirtualCurrency, updateLocalBananas])
+  }, [revenueCatLoaded, spendVirtualCurrency])
 
   const refundBananas = useCallback(async (amount = PHOTO_COST) => {
     // Refund bananas when needed (e.g., on photo generation error)

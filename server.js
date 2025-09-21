@@ -181,12 +181,16 @@ app.post('/api/spend-bananas', async (req, res) => {
         return res.status(400).json({
           error: 'Insufficient virtual currency balance',
           currentBalance,
-          requestedAmount: amount
+          requestedAmount: amount,
+          code: 'INSUFFICIENT_BALANCE'
         });
       }
     } catch (balanceError) {
       console.error('Failed to check balance:', balanceError);
-      // Continue with spend attempt - RevenueCat will validate server-side
+      return res.status(500).json({
+        error: 'Failed to check virtual currency balance',
+        code: 'BALANCE_CHECK_FAILED'
+      });
     }
 
     // Spend virtual currency via RevenueCat Developer API
@@ -231,7 +235,8 @@ app.post('/api/spend-bananas', async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to spend virtual currency',
-      details: error.message
+      details: error.message,
+      code: 'SPEND_FAILED'
     });
   }
 });
@@ -261,8 +266,9 @@ app.use('/api/get-balance', async (req, res) => {
     }
 
     // Fetch virtual currency balance from RevenueCat API
+    // Use the v1 subscriber endpoint which works across all RevenueCat setups
     const response = await fetch(
-      `https://api.revenuecat.com/v2/projects/${projectId}/subscribers/${encodeURIComponent(app_user_id)}/virtual_currencies`,
+      `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(app_user_id)}`,
       {
         method: 'GET',
         headers: {
@@ -277,19 +283,21 @@ app.use('/api/get-balance', async (req, res) => {
     if (!response.ok) {
       console.error('RevenueCat API error:', result);
       return res.status(response.status).json({
-        error: result.message || 'Failed to fetch balance'
+        error: result.message || 'Failed to fetch balance',
+        code: 'REVENUECAT_ERROR'
       });
     }
 
-    console.log(`✅ Fetched virtual currency balance for user ${app_user_id}:`, result);
+    console.log(`✅ Fetched subscriber info for user ${app_user_id}:`, result);
 
-    // Return the balance
-    const bananaBalance = result.virtual_currencies?.bananas?.balance || 0;
+    // Return the balance from subscriber info
+    const bananaBalance = result.subscriber?.virtual_currencies?.bananas?.balance || 0;
 
     res.status(200).json({
       success: true,
       balance: bananaBalance,
-      currencies: result.virtual_currencies
+      currencies: result.subscriber?.virtual_currencies,
+      subscriber: result.subscriber
     });
 
   } catch (error) {
