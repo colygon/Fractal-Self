@@ -58,9 +58,47 @@ export const useRevenueCat = () => {
           // Get current customer info
           const customerInfo = await Purchases.getSharedInstance().getCustomerInfo()
           console.log('Customer info:', customerInfo)
+          console.log('Customer info virtual currencies:', customerInfo?.virtualCurrencies)
+          console.log('Customer info virtual currency balance:', customerInfo?.virtualCurrencyBalance)
           setCustomerInfo(customerInfo)
 
-          // Get virtual currency balances using the official API
+          // Check if virtual currency is already in customerInfo
+          let foundBalanceInCustomerInfo = false
+          if (customerInfo?.virtualCurrencies?.bananas?.balance !== undefined) {
+            const balance = customerInfo.virtualCurrencies.bananas.balance
+            console.log('🎉 Found virtual currency in customerInfo.virtualCurrencies:', balance)
+            setVirtualCurrencyBalance(balance)
+            foundBalanceInCustomerInfo = true
+          } else if (customerInfo?.virtualCurrencyBalance?.bananas !== undefined) {
+            const balance = customerInfo.virtualCurrencyBalance.bananas
+            console.log('🎉 Found virtual currency in customerInfo.virtualCurrencyBalance:', balance)
+            setVirtualCurrencyBalance(balance)
+            foundBalanceInCustomerInfo = true
+          }
+
+          // If not found in customerInfo, fetch from server-side API
+          if (!foundBalanceInCustomerInfo) {
+            try {
+              console.log('📞 Fetching virtual currency from server API for user:', anonymousUserId)
+              const response = await fetch('/api/get-balance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ app_user_id: anonymousUserId })
+              })
+
+              if (response.ok) {
+                const data = await response.json()
+                console.log('🎉 Server API returned balance:', data.balance)
+                setVirtualCurrencyBalance(data.balance || 0)
+              } else {
+                console.warn('Failed to fetch balance from server API')
+              }
+            } catch (error) {
+              console.warn('Error fetching balance from server:', error)
+            }
+          }
+
+          // Also try to get virtual currency balances using the official API
           try {
             // Check what methods are available
             console.log('Available Purchases methods:', Object.getOwnPropertyNames(Purchases).filter(prop => typeof Purchases[prop] === 'function'))
@@ -90,16 +128,23 @@ export const useRevenueCat = () => {
               setVirtualCurrencyBalance(bananaBalance)
               console.log('🍌 Banana balance from virtual currencies:', bananaBalance)
             } else {
-              // Fallback to customer info if available
-              const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas || 0
-              setVirtualCurrencyBalance(bananaBalance)
-              console.log('🍌 Banana balance from customer info (fallback):', bananaBalance)
+              // Only update if we don't already have a balance from customerInfo
+              if (virtualCurrencyBalance === undefined || virtualCurrencyBalance === 0) {
+                const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas ||
+                                      customerInfo.virtualCurrencies?.bananas?.balance || 0
+                setVirtualCurrencyBalance(bananaBalance)
+                console.log('🍌 No getVirtualCurrencies method, using customerInfo balance:', bananaBalance)
+              }
             }
           } catch (error) {
             console.warn('Failed to fetch virtual currencies:', error)
-            // Fallback to customer info if available
-            const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas || 0
-            setVirtualCurrencyBalance(bananaBalance)
+            // Only update if we don't already have a balance
+            if (virtualCurrencyBalance === undefined || virtualCurrencyBalance === 0) {
+              const bananaBalance = customerInfo.virtualCurrencyBalance?.bananas ||
+                                    customerInfo.virtualCurrencies?.bananas?.balance || 0
+              setVirtualCurrencyBalance(bananaBalance)
+              console.log('🍌 Error fetching, using customerInfo balance:', bananaBalance)
+            }
           }
 
           // Get current offerings
@@ -521,6 +566,43 @@ export const useRevenueCat = () => {
       // Refresh customer info
       const refreshedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
       setCustomerInfo(refreshedCustomerInfo)
+
+      // Try to get virtual currency from customer info first
+      let foundBalance = false
+      if (refreshedCustomerInfo?.virtualCurrencies?.bananas?.balance !== undefined) {
+        const balance = refreshedCustomerInfo.virtualCurrencies.bananas.balance
+        console.log('🔄 Found refreshed balance in virtualCurrencies:', balance)
+        setVirtualCurrencyBalance(balance)
+        foundBalance = true
+      } else if (refreshedCustomerInfo?.virtualCurrencyBalance?.bananas !== undefined) {
+        const balance = refreshedCustomerInfo.virtualCurrencyBalance.bananas
+        console.log('🔄 Found refreshed balance in virtualCurrencyBalance:', balance)
+        setVirtualCurrencyBalance(balance)
+        foundBalance = true
+      }
+
+      // If not in customer info, fetch from server API
+      if (!foundBalance) {
+        const userId = localStorage.getItem('anonymous_user_id')
+        if (userId) {
+          try {
+            console.log('📞 Refreshing balance from server API for user:', userId)
+            const response = await fetch('/api/get-balance', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ app_user_id: userId })
+            })
+
+            if (response.ok) {
+              const data = await response.json()
+              console.log('🔄 Server API refreshed balance:', data.balance)
+              setVirtualCurrencyBalance(data.balance || 0)
+            }
+          } catch (error) {
+            console.warn('Error refreshing balance from server:', error)
+          }
+        }
+      }
 
       // Invalidate and refresh virtual currencies cache
       if (Purchases.getSharedInstance().invalidateVirtualCurrenciesCache) {
