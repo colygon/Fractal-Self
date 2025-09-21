@@ -21,7 +21,7 @@ export const useRevenueCat = () => {
   const [customerInfo, setCustomerInfo] = useState(null)
   const [offerings, setOfferings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(0)
+  const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(50) // Default to 50 credits for new users
 
   useEffect(() => {
     const initializeRevenueCat = async () => {
@@ -284,15 +284,27 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      if (!isLoaded || !Purchases.getSharedInstance().logIn) {
-        console.warn('RevenueCat not properly initialized, cannot identify user')
+      if (!isLoaded) {
+        console.warn('RevenueCat not yet initialized, cannot identify user')
         return customerInfo
       }
 
-      // For web SDK, we use logIn instead of identifyUser
-      const { customerInfo: updatedCustomerInfo } = await Purchases.getSharedInstance().logIn(userId)
-      setCustomerInfo(updatedCustomerInfo)
-      return updatedCustomerInfo
+      // Check if Purchases is properly configured before trying to use it
+      try {
+        const instance = Purchases.getSharedInstance()
+        if (!instance || !instance.logIn) {
+          console.warn('RevenueCat instance not available or missing logIn method')
+          return customerInfo
+        }
+
+        // For web SDK, we use logIn instead of identifyUser
+        const { customerInfo: updatedCustomerInfo } = await instance.logIn(userId)
+        setCustomerInfo(updatedCustomerInfo)
+        return updatedCustomerInfo
+      } catch (instanceError) {
+        console.warn('RevenueCat not properly configured, cannot identify user:', instanceError.message)
+        return customerInfo
+      }
     } catch (error) {
       console.error('Failed to set user ID:', error)
       // If login fails, try to continue anonymously
@@ -314,15 +326,27 @@ export const useRevenueCat = () => {
         return
       }
 
-      if (!isLoaded || !Purchases.getSharedInstance().logOut) {
-        console.warn('RevenueCat not properly initialized, cannot log out')
+      if (!isLoaded) {
+        console.warn('RevenueCat not yet initialized, cannot log out')
         return customerInfo
       }
 
-      await Purchases.getSharedInstance().logOut()
-      const updatedCustomerInfo = await Purchases.getSharedInstance().getCustomerInfo()
-      setCustomerInfo(updatedCustomerInfo)
-      return updatedCustomerInfo
+      // Check if Purchases is properly configured before trying to use it
+      try {
+        const instance = Purchases.getSharedInstance()
+        if (!instance || !instance.logOut) {
+          console.warn('RevenueCat instance not available or missing logOut method')
+          return customerInfo
+        }
+
+        await instance.logOut()
+        const updatedCustomerInfo = await instance.getCustomerInfo()
+        setCustomerInfo(updatedCustomerInfo)
+        return updatedCustomerInfo
+      } catch (instanceError) {
+        console.warn('RevenueCat not properly configured, cannot log out:', instanceError.message)
+        return customerInfo
+      }
     } catch (error) {
       console.error('Failed to log out from RevenueCat:', error)
       return customerInfo
@@ -459,17 +483,16 @@ export const useRevenueCat = () => {
 
   const spendVirtualCurrency = async (amount, currencyType = 'bananas') => {
     try {
-      // Check if we have virtual currency functions available
-      const instance = Purchases.getSharedInstance()
-      const hasVirtualCurrencyMethod = typeof instance.getVirtualCurrencies === 'function' ||
-                                        typeof instance.virtualCurrencies === 'function';
-
       // Always use test mode if RevenueCat functions are not available or if explicitly in test mode
-      if (USE_TEST_MODE || !isLoaded || !hasVirtualCurrencyMethod) {
+      // For now, always use local simulation since virtual currency API is not available in Web SDK
+      if (USE_TEST_MODE || !isLoaded || true) { // Force local mode until RevenueCat Web SDK supports virtual currency
         // In test mode, just simulate spending
-        console.log(`🍌 TEST MODE: Spending ${amount} ${currencyType}`)
+        console.log(`🍌 LOCAL MODE: Spending ${amount} ${currencyType}`)
         const newBalance = Math.max(0, virtualCurrencyBalance - amount)
         setVirtualCurrencyBalance(newBalance)
+        // Also update local storage for persistence
+        const storageKey = customerInfo?.originalAppUserId || localStorage.getItem('anonymous_user_id') || 'guest'
+        localStorage.setItem(`bananas_${storageKey}`, String(newBalance))
         return { success: true, newBalance }
       }
 
