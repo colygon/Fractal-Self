@@ -854,6 +854,7 @@ main.galleryHidden .results {
 }
 .results ul {
   display: flex;
+  flex-direction: row-reverse;
   gap: 10px;
   width: 100%;
 }
