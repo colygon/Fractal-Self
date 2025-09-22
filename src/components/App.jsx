@@ -378,18 +378,6 @@ export default function App() {
     }
   }, [isDesktop]);
 
-  // Auto-scroll gallery to rightmost position in focus mode
-  useEffect(() => {
-    if (focusedId) {
-      // Small delay to ensure the focused photo component has rendered
-      setTimeout(() => {
-        const galleryElement = document.querySelector('.focusedPhoto .results');
-        if (galleryElement) {
-          galleryElement.scrollLeft = galleryElement.scrollWidth;
-        }
-      }, 100);
-    }
-  }, [focusedId]);
 
   const handlePhotoButtonClick = () => {
     // If we're already auto-capturing, this button acts as a stop button
