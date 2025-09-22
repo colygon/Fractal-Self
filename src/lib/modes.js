@@ -19,6 +19,14 @@ export default {
     postcardText: 'RANDOM MODE'
   },
 
+  blackrock: {
+    name: 'Black Rock City',
+    emoji: '🔥',
+    prompt: 'Transport the person or people to the transformative world of Burning Man at Black Rock City, Nevada. It is absolutely crucial to preserve their exact facial features, expressions, and character while embracing radical self-expression. Dress them in an authentic Burning Man outfit that represents one of the festival\'s diverse style expressions: LED-lit cyborg suits with glowing circuits and futuristic elements, tribal-inspired looks with feathers and earth tones, psychedelic patterns with vibrant swirls and cosmic designs, fantastical costumes with wings or mythical creature elements, bohemian flowing fabrics and vintage accessories, artistic avant-garde creations, minimal desert-ready wear with strategic coverage, or eco-friendly sustainable materials. Add authentic playa dust covering their outfit and skin, giving that lived-in, desert-weathered appearance that shows they\'ve been fully immersed in the experience. The background should be the vast Nevada desert with the iconic playa stretching to distant mountains, scattered art installations, and perhaps the distant glow of the Man or Temple. Include other Burners in the background showcasing the community\'s diverse self-expression. The lighting should be dramatic desert lighting - either the harsh beauty of desert sun or the magical glow of playa night with fire and LED art. The overall atmosphere should capture the spirit of radical self-expression, creativity, authenticity, and community that defines Burning Man. Whether their outfit is brand new, DIY, or thrift-store patchwork, it should feel genuinely "them" and embody the freedom and joy of the playa. Ensure all figures are portrayed in a flattering, natural, and realistic way while celebrating their unique radical self-expression. Apply all changes consistently to everyone, maintaining character consistency.',
+    category: 'location',
+    postcardText: 'Welcome Home! 🔥✨'
+  },
+
   // San Francisco Bay Area styles - moved to top
   sf: {
     name: 'SF',
@@ -128,14 +136,6 @@ export default {
     prompt: 'Place the person or people on the bustling streets of Times Square at night. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in stylish urban streetwear. Surround them with bright neon billboards and glowing advertisements, creating vibrant reflections on their clothing and skin. Ensure the dramatic, colorful lighting and shadows are realistic for the environment. Ensure all figures are portrayed in a flattering, natural, and realistic way. If there are multiple people, ensure they all fit naturally into the scene with character consistency.',
     category: 'location',
     postcardText: 'Hello from New York City!'
-  },
-  
-  blackrock: {
-    name: 'Black Rock',
-    emoji: '🔥',
-    prompt: 'Place the person or people at Burning Man in the Black Rock City desert. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves. Dress them in creative festival attire, including goggles and bandanas. Create realistic, harsh shadows from the desert sun and reflections from colorful art installations. The lighting should be atmospheric, as if filtered through dust. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply styling consistently to all individuals, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Welcome Home!'
   },
   
   paris: {
@@ -1078,11 +1078,4 @@ export default {
     postcardText: 'Under the rainbow umbrellas! 🌈☂️'
   },
 
-  burningMan: {
-    name: 'Burning Man',
-    emoji: '🔥',
-    prompt: 'Transport the person or people to the transformative world of Burning Man at Black Rock City, Nevada. It is absolutely crucial to preserve their exact facial features, expressions, and character while embracing radical self-expression. Dress them in an authentic Burning Man outfit that represents one of the festival\'s diverse style expressions: LED-lit cyborg suits with glowing circuits and futuristic elements, tribal-inspired looks with feathers and earth tones, psychedelic patterns with vibrant swirls and cosmic designs, fantastical costumes with wings or mythical creature elements, bohemian flowing fabrics and vintage accessories, artistic avant-garde creations, minimal desert-ready wear with strategic coverage, or eco-friendly sustainable materials. Add authentic playa dust covering their outfit and skin, giving that lived-in, desert-weathered appearance that shows they\'ve been fully immersed in the experience. The background should be the vast Nevada desert with the iconic playa stretching to distant mountains, scattered art installations, and perhaps the distant glow of the Man or Temple. Include other Burners in the background showcasing the community\'s diverse self-expression. The lighting should be dramatic desert lighting - either the harsh beauty of desert sun or the magical glow of playa night with fire and LED art. The overall atmosphere should capture the spirit of radical self-expression, creativity, authenticity, and community that defines Burning Man. Whether their outfit is brand new, DIY, or thrift-store patchwork, it should feel genuinely "them" and embody the freedom and joy of the playa. Ensure all figures are portrayed in a flattering, natural, and realistic way while celebrating their unique radical self-expression. Apply all changes consistently to everyone, maintaining character consistency.',
-    category: 'location',
-    postcardText: 'Radical self-expression on the playa! 🔥✨'
-  }
 }
