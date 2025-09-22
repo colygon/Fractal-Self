@@ -199,32 +199,17 @@ export const useRevenueCat = () => {
         return customerInfo
       }
 
-      // Wait for RevenueCat to be loaded
-      if (!isLoaded) {
-        console.log('RevenueCat not yet loaded, waiting...')
-        // Wait up to 5 seconds for initialization
-        let attempts = 0
-        while (!isLoaded && attempts < 50) {
-          await new Promise(resolve => setTimeout(resolve, 100))
-          attempts++
-        }
-
-        if (!isLoaded) {
-          console.warn('RevenueCat failed to initialize, cannot identify user')
-          return customerInfo
-        }
+      // Early return if RevenueCat isn't configured or available
+      if (!revenueCatConfigured || !isLoaded) {
+        console.log('RevenueCat not configured or loaded, skipping user identification')
+        return customerInfo
       }
 
       // Check if Purchases is properly configured before trying to use it
       try {
-        if (!revenueCatConfigured) {
-          console.warn('RevenueCat not properly configured, cannot identify user')
-          return customerInfo
-        }
-
         const instance = Purchases.getSharedInstance()
         if (!instance || !instance.logIn) {
-          console.warn('RevenueCat instance not available or missing logIn method')
+          console.log('RevenueCat instance not available or missing logIn method, skipping identification')
           return customerInfo
         }
 
