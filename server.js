@@ -100,8 +100,12 @@ app.post('/api/webhooks/revenuecat', async (req, res) => {
 
         const { app_user_id, product_id, currency, price } = event;
 
-        // Map product IDs to banana amounts
+        // Map RevenueCat product IDs to banana amounts
         const bananaRewards = {
+          'prodb5b12c5f5d': 400,   // 400 credits product
+          'prod988ca5b8a7': 1700,  // 1700 credits product
+          'prod990994ee56': 5000,  // 5000 credits product
+          // Also support the old package identifiers for compatibility
           'credits_400': 400,
           'credits_1700': 1700,
           'credits_5000': 5000

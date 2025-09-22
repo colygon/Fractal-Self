@@ -23,6 +23,40 @@ export const useRevenueCat = () => {
   const [revenueCatError, setRevenueCatError] = useState(null)
 
   useEffect(() => {
+    // Check for addcredit URL parameter and handle it
+    const urlParams = new URLSearchParams(window.location.search)
+    const addCreditParam = urlParams.get('addcredit')
+
+    if (addCreditParam) {
+      const creditsToAdd = parseInt(addCreditParam, 10)
+      if (!isNaN(creditsToAdd) && creditsToAdd > 0) {
+        console.log(`🍌 Processing addcredit URL parameter: Adding ${creditsToAdd} credits`)
+
+        // Add credits to local balance
+        setVirtualCurrencyBalance(prev => {
+          const newBalance = prev + creditsToAdd
+          console.log(`🍌 Credits added! Old balance: ${prev}, New balance: ${newBalance}`)
+
+          // Update local storage for persistence
+          const authData = JSON.parse(localStorage.getItem('banana-cam-auth') || '{}')
+          authData.bananas = newBalance
+          localStorage.setItem('banana-cam-auth', JSON.stringify(authData))
+
+          // Dispatch event to notify other parts of the app
+          window.dispatchEvent(new CustomEvent('creditsPurchased', {
+            detail: { credits: creditsToAdd, source: 'url_redirect' }
+          }))
+
+          return newBalance
+        })
+
+        // Clean up URL to remove the parameter
+        urlParams.delete('addcredit')
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '')
+        window.history.replaceState({}, document.title, newUrl)
+      }
+    }
+
     const initializeRevenueCat = async () => {
       console.log('Initializing RevenueCat with API key:', REVENUECAT_API_KEY ? `${REVENUECAT_API_KEY.substring(0, 8)}...` : 'Missing')
 
@@ -264,10 +298,11 @@ export const useRevenueCat = () => {
       }
 
       // Map package identifiers to their specific RevenueCat Web Purchase Links
+      // Using actual product IDs from RevenueCat
       const purchaseLinks = {
-        'credits_400': 'https://pay.rev.cat/agvuhpvjihtinpwc/',
-        'credits_1700': 'https://pay.rev.cat/ttowpyvmudproaof/',
-        'credits_5000': 'https://pay.rev.cat/ygwurdgtsjjcsinc/'
+        'credits_400': 'https://pay.rev.cat/agvuhpvjihtinpwc/',  // prodb5b12c5f5d
+        'credits_1700': 'https://pay.rev.cat/ttowpyvmudproaof/', // prod988ca5b8a7
+        'credits_5000': 'https://pay.rev.cat/ygwurdgtsjjcsinc/'  // prod990994ee56
       }
 
       const directPurchaseUrl = purchaseLinks[packageToPurchase.product.identifier]
