@@ -33,7 +33,7 @@ export default {
     emoji: '🏠',
     prompt: 'Place the person or people in Alamo Square with the iconic "Painted Ladies" Victorian houses in the background. It is absolutely crucial to preserve their exact facial features, expressions, body proportions, and character - they must look exactly like themselves, just in a new setting. Dress them in stylish gold sequin bomber jackets that catch the light beautifully, paired with modern San Francisco casual attire underneath. The sequins should shimmer and reflect the afternoon light. The lighting should be that of a clear afternoon, casting soft shadows and creating beautiful reflections on the gold sequins. Ensure all figures are portrayed in a flattering, natural, and realistic way. Apply all changes consistently to everyone.',
     category: 'location',
-    postcardText: 'THE PAINTED LADIES'
+    postcardText: 'ALAMO SQUARE'
   },
   orlando: {
     name: 'Orlando',
