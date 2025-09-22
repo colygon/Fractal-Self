@@ -1187,6 +1187,16 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   padding-bottom: 0px;
 }
 
+/* Auto-scroll to rightmost photo in focus mode */
+.focusedPhoto .results {
+  overflow-x: auto;
+}
+
+.focusedPhoto .results ul {
+  justify-content: flex-start;
+  overflow-x: visible;
+}
+
 /* New iOS Focused Photo Actions */
 .focusedPhotoActions {
   position: fixed;
