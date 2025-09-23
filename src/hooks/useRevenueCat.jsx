@@ -5,13 +5,9 @@
 import { useEffect, useState } from 'react'
 import { Purchases } from '@revenuecat/purchases-js'
 
-const REVENUECAT_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY || 'your-public-api-key'
-// Note: sk_ keys are secret keys for server-side use. For web SDK, we need rcb_ public keys
-// Running in test mode if no key, default key, test key, or secret key (sk_) is provided
-const USE_TEST_MODE = !REVENUECAT_API_KEY ||
-  REVENUECAT_API_KEY === 'your-public-api-key' ||
-  REVENUECAT_API_KEY.includes('test') ||
-  REVENUECAT_API_KEY.startsWith('sk_')
+const REVENUECAT_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY
+// Running in test mode if no API key is provided
+const USE_TEST_MODE = !REVENUECAT_API_KEY
 
 export const useRevenueCat = () => {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -22,7 +18,7 @@ export const useRevenueCat = () => {
   const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(() => {
     const stored = localStorage.getItem('guestBananas')
     const parsed = parseInt(stored, 10)
-    return (!isNaN(parsed) && parsed >= 0) ? parsed : 50
+    return (!isNaN(parsed) && parsed >= 0) ? parsed : 200
   })
   const [revenueCatConfigured, setRevenueCatConfigured] = useState(false)
   const [revenueCatError, setRevenueCatError] = useState(null)
@@ -81,7 +77,7 @@ export const useRevenueCat = () => {
       // Always try to initialize RevenueCat, but don't fail the whole app if it doesn't work
       let revenueCatInitialized = false
 
-      if (!USE_TEST_MODE && REVENUECAT_API_KEY) {
+      if (REVENUECAT_API_KEY) {
         try {
           // Generate anonymous user ID
           const anonymousUserId = localStorage.getItem('anonymous_user_id') ||
@@ -115,10 +111,16 @@ export const useRevenueCat = () => {
 
         } catch (error) {
           console.error('Failed to initialize RevenueCat:', error)
-          console.log('Continuing with server-side balance fetching only')
+          console.log('Continuing with mock data and server-side balance fetching')
           revenueCatInitialized = false
           setRevenueCatError(error.message || 'Failed to initialize RevenueCat')
+          // Don't leave it in loading state when RevenueCat fails
+          setIsLoading(false)
+          setIsLoaded(true)
         }
+      } else {
+        console.log('No RevenueCat API key found, using mock data')
+        revenueCatInitialized = false
       }
 
       // Try to fetch balance from server API on production only
@@ -161,33 +163,33 @@ export const useRevenueCat = () => {
             identifier: 'default',
             availablePackages: [
               {
-                identifier: 'credits_400',
+                identifier: 'Premium',
                 product: {
-                  identifier: 'credits_400',
+                  identifier: 'Premium',
                   title: 'Premium',
-                  description: '80 photo transformations per month - perfect for casual use',
+                  description: '400 photo transformations - great starter pack',
                   priceString: '$3.99',
                   credits: 400
                 }
               },
               {
-                identifier: 'credits_1700',
+                identifier: 'Gold',
                 product: {
-                  identifier: 'credits_1700',
+                  identifier: 'Gold',
                   title: 'Gold',
-                  description: '340 photo transformations per month - great value for regular users',
+                  description: '1,700 photo transformations - best value',
                   priceString: '$16.99',
                   credits: 1700
                 }
               },
               {
-                identifier: 'credits_5000',
+                identifier: 'Pay-as-you-go',
                 product: {
-                  identifier: 'credits_5000',
-                  title: 'Professional',
-                  description: '1,000 photo transformations per month - perfect for power users',
-                  priceString: '$49.99',
-                  credits: 5000
+                  identifier: 'Pay-as-you-go',
+                  title: 'Pay-as-you-go',
+                  description: '1,700 credits - use anytime, no expiration',
+                  priceString: '$12.99',
+                  credits: 1700
                 }
               }
             ]

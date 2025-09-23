@@ -100,7 +100,15 @@ export default function RevenueCatBilling({ onClose }) {
 
   const handlePurchase = async (pkg) => {
     if (!pkg || purchasing) return
-    
+
+    // Check if this is the Pay-as-you-go package
+    if (pkg.identifier === 'Pay-as-you-go' || pkg.product.identifier === 'Pay-as-you-go') {
+      // Open the RevenueCat payment link for Pay-as-you-go
+      window.open('https://pay.rev.cat/lazvreyxceocnssj/', '_blank')
+      onClose()
+      return
+    }
+
     setPurchasing(true)
     try {
       await purchasePackage(pkg)
@@ -229,7 +237,7 @@ export default function RevenueCatBilling({ onClose }) {
           <div className="grid md:grid-cols-3 gap-6" style={gridStyle}>
             {packages.filter(pkg => pkg && pkg.product).map((pkg) => {
               const isActive = false // No subscription model for credit packages
-              const isHighlighted = pkg.identifier.includes('credits_1700') // Highlight the Gold tier
+              const isHighlighted = pkg.identifier === 'Pay-as-you-go' // Highlight the Pay-as-you-go tier
               const isSelected = selectedPackage?.identifier === pkg.identifier
               const cardStyle = {
                 position: 'relative',

@@ -1189,18 +1189,9 @@ main:not(:has(.focusedPhoto)) .photoSelector {
   padding-bottom: 0px;
 }
 
-/* Right-align gallery in focus mode so newest photos appear first */
+/* Gallery in focus mode */
 .focusedPhoto .results {
   overflow-x: auto;
-}
-
-.focusedPhoto .results ul {
-  justify-content: flex-end;
-  direction: rtl;
-}
-
-.focusedPhoto .results li {
-  direction: ltr;
 }
 
 /* New iOS Focused Photo Actions */

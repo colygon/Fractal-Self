@@ -1007,7 +1007,7 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Gold Plan */}
+              {/* Pay-as-you-go Plan */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -1016,31 +1016,15 @@ export default function App() {
                 textAlign: 'center',
                 color: 'white'
               }}>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#F59E0B', marginBottom: '8px' }}>Gold</h3>
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981', marginBottom: '8px' }}>Pay-as-you-go</h3>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  $49.99
+                  $12.99
                 </div>
-                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>5,000 photo credits</p>
-                <button 
+                <p style={{ marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>1,700 photo credits - no expiration</p>
+                <button
                   onClick={async () => {
-                    try {
-                      // Open billing modal for subscription
-                      setShowBilling(true)
-                      return
-                      
-                      if (openCheckout) {
-                        await openCheckout({
-                          product_id: 'credits-500',
-                          success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
-                          cancel_url: window.location.origin + '?checkout=canceled'
-                        })
-                      } else {
-                        alert('The checkout system is undergoing maintenance. Please try again later.')
-                      }
-                    } catch (error) {
-                      console.error('Checkout error:', error)
-                      alert('Error starting checkout. Please try again.')
-                    }
+                    // Open RevenueCat payment link for Pay-as-you-go
+                    window.open('https://pay.rev.cat/lazvreyxceocnssj/', '_blank')
                   }}
                   style={{
                     width: '100%',
@@ -1057,7 +1041,7 @@ export default function App() {
                   onMouseEnter={e => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
                   onMouseLeave={e => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
                 >
-                  Get Gold
+                  Get Credits
                 </button>
               </div>
 

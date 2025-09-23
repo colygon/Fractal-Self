@@ -15,7 +15,7 @@ export const CONFIG = {
   // Banana system
   PHOTO_COST: 5,
   FREE_PHOTO_LIMIT: 10,
-  DEFAULT_FREE_BANANAS: 50,
+  DEFAULT_FREE_BANANAS: 200,
   DEFAULT_LOGGED_IN_BANANAS: 5000,
   
   // Timer settings
