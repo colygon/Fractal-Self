@@ -693,20 +693,22 @@ main:not(.stylesHidden) .bottomBarControls {
 
 .focusedImageWrapper img {
   max-width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 100px);
   width: auto;
   object-fit: contain;
   border-radius: 5px;
   display: block;
+  margin-bottom: 100px;
 }
 
 .focusedPhoto img {
   max-width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 100px);
   width: auto;
   object-fit: contain;
   border-radius: 5px;
   display: block;
+  margin-bottom: 100px;
 }
 .circleBtn {
   position: absolute;
