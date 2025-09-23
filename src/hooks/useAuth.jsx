@@ -121,17 +121,35 @@ export const useAuth = () => {
     }
   }, [updateLocalBananas, revenueCatLoaded, refreshCustomerInfo])
 
-  // Listen for banana purchases
+  // Listen for banana purchases and storage changes
   useEffect(() => {
     const handleBananasPurchased = (event) => {
       const { credits } = event.detail
       console.log(`🍌 Bananas purchased: ${credits}`)
-      addBananas(credits)
+      // Refresh the local state from storage to get the updated balance
+      if (!revenueCatLoaded) {
+        setLocalBananas(readBananas(storageKey, isSignedIn))
+      }
+    }
+
+    const handleStorageChange = (event) => {
+      // Listen for storage changes that might affect our balance
+      if (event.key === storageKey || event.key === 'guestBananas') {
+        console.log(`💾 Storage changed for ${event.key}, refreshing balance`)
+        if (!revenueCatLoaded) {
+          setLocalBananas(readBananas(storageKey, isSignedIn))
+        }
+      }
     }
 
     window.addEventListener('creditsPurchased', handleBananasPurchased)
-    return () => window.removeEventListener('creditsPurchased', handleBananasPurchased)
-  }, [addBananas])
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('creditsPurchased', handleBananasPurchased)
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [storageKey, isSignedIn, revenueCatLoaded])
 
   // Periodically refresh RevenueCat balance to stay in sync
   useEffect(() => {

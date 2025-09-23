@@ -37,10 +37,21 @@ export const useRevenueCat = () => {
           const newBalance = prev + creditsToAdd
           console.log(`🍌 Credits added! Old balance: ${prev}, New balance: ${newBalance}`)
 
-          // Update local storage for persistence
-          const authData = JSON.parse(localStorage.getItem('banana-cam-auth') || '{}')
-          authData.bananas = newBalance
-          localStorage.setItem('banana-cam-auth', JSON.stringify(authData))
+          // Update localStorage using the same keys that useAuth expects
+          // This ensures proper synchronization between the two hooks
+          try {
+            // Update the guest storage key that useAuth uses
+            localStorage.setItem('guestBananas', newBalance.toString())
+
+            // Also update the banana-cam-auth for backwards compatibility
+            const authData = JSON.parse(localStorage.getItem('banana-cam-auth') || '{}')
+            authData.bananas = newBalance
+            localStorage.setItem('banana-cam-auth', JSON.stringify(authData))
+
+            console.log(`💾 Updated localStorage: guestBananas=${newBalance}`)
+          } catch (e) {
+            console.warn('Failed to update localStorage:', e)
+          }
 
           // Dispatch event to notify other parts of the app
           window.dispatchEvent(new CustomEvent('creditsPurchased', {
