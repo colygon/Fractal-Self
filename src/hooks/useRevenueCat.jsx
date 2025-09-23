@@ -18,12 +18,20 @@ export const useRevenueCat = () => {
   const [customerInfo, setCustomerInfo] = useState(null)
   const [offerings, setOfferings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(50) // Default to 50 credits for new users
+  // Initialize from localStorage if available, otherwise default to 50
+  const [virtualCurrencyBalance, setVirtualCurrencyBalance] = useState(() => {
+    const stored = localStorage.getItem('guestBananas')
+    const parsed = parseInt(stored, 10)
+    return (!isNaN(parsed) && parsed >= 0) ? parsed : 50
+  })
   const [revenueCatConfigured, setRevenueCatConfigured] = useState(false)
   const [revenueCatError, setRevenueCatError] = useState(null)
 
+  // Handle URL parameter credits in a separate effect that runs after initial load
   useEffect(() => {
-    // Check for addcredit URL parameter and handle it
+    // Only process URL parameters after initial loading is complete
+    if (isLoading) return
+
     const urlParams = new URLSearchParams(window.location.search)
     const addCreditParam = urlParams.get('addcredit')
 
@@ -38,12 +46,9 @@ export const useRevenueCat = () => {
           console.log(`🍌 Credits added! Old balance: ${prev}, New balance: ${newBalance}`)
 
           // Update localStorage using the same keys that useAuth expects
-          // This ensures proper synchronization between the two hooks
           try {
-            // Update the guest storage key that useAuth uses
             localStorage.setItem('guestBananas', newBalance.toString())
 
-            // Also update the banana-cam-auth for backwards compatibility
             const authData = JSON.parse(localStorage.getItem('banana-cam-auth') || '{}')
             authData.bananas = newBalance
             localStorage.setItem('banana-cam-auth', JSON.stringify(authData))
@@ -67,7 +72,9 @@ export const useRevenueCat = () => {
         window.history.replaceState({}, document.title, newUrl)
       }
     }
+  }, [isLoading]) // Run after loading completes
 
+  useEffect(() => {
     const initializeRevenueCat = async () => {
       console.log('Initializing RevenueCat with API key:', REVENUECAT_API_KEY ? `${REVENUECAT_API_KEY.substring(0, 8)}...` : 'Missing')
 
@@ -137,17 +144,14 @@ export const useRevenueCat = () => {
           } else {
             const errorData = await response.json().catch(() => ({}))
             console.warn('Failed to fetch balance from server API:', response.status, errorData)
-            // Use default balance on error
-            setVirtualCurrencyBalance(50)
+            // Don't overwrite existing balance on error - keep what we have in localStorage
           }
         } catch (error) {
           console.warn('Error fetching balance from server:', error)
-          // Use default balance on error
-          setVirtualCurrencyBalance(50)
+          // Don't overwrite existing balance on error - keep what we have in localStorage
         }
       } else {
-        console.log('Running on localhost, using default balance of 50')
-        setVirtualCurrencyBalance(50)
+        console.log('Running on localhost, keeping existing balance from localStorage')
       }
 
       // Set up mock data if RevenueCat failed
