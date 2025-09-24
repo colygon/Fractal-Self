@@ -123,10 +123,8 @@ export const useRevenueCat = () => {
         revenueCatInitialized = false
       }
 
-      // Try to fetch balance from server API on production only
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-
-      if (!isLocalhost) {
+      // Try to fetch balance from server API (works on both localhost and production)
+      if (REVENUECAT_API_KEY) {
         try {
           const anonymousUserId = localStorage.getItem('anonymous_user_id') ||
             `guest_${Math.random().toString(36).substring(2, 11)}`
@@ -153,7 +151,7 @@ export const useRevenueCat = () => {
           // Don't overwrite existing balance on error - keep what we have in localStorage
         }
       } else {
-        console.log('Running on localhost, keeping existing balance from localStorage')
+        console.log('No RevenueCat API key available, keeping existing balance from localStorage')
       }
 
       // Set up mock data if RevenueCat failed

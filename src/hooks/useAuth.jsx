@@ -69,7 +69,18 @@ export const useAuth = () => {
   }, [isSignedIn, user?.id])
 
   // Use RevenueCat virtual currency balance instead of local storage
-  const [localBananas, setLocalBananas] = useState(() => readBananas(storageKey, isSignedIn))
+  const [localBananas, setLocalBananas] = useState(() => {
+    const currentBalance = readBananas(storageKey, isSignedIn)
+
+    // Migration: If user has the old default of 50, upgrade to 200
+    if (currentBalance === 50 && !isSignedIn) {
+      console.log('🔄 Migrating guest user from 50 to 200 credits')
+      writeBananas(storageKey, 200)
+      return 200
+    }
+
+    return currentBalance
+  })
 
   // Prefer RevenueCat virtual currency when available, fallback to local storage
   const bananas = revenueCatLoaded ? virtualCurrencyBalance : localBananas

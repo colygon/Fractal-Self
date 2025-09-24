@@ -481,7 +481,7 @@ export default function App() {
                   e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
                 }}
               >
-                {hasActiveSubscription ? '∞' : bananas} 🍌 <span className="bananaText">bananas</span>
+                {hasActiveSubscription ? '∞' : bananas} 🍌 <span className="bananaText">credits</span>
               </div>
             )}
 
