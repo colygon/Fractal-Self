@@ -10,10 +10,11 @@ import pLimit from 'p-limit'
 const timeoutMs = 123_333;
 
 // Get AI Gateway API key from environment
-const AI_GATEWAY_API_KEY = import.meta.env?.VITE_AI_GATEWAY_API_KEY;
+const AI_GATEWAY_API_KEY = import.meta.env.VITE_AI_GATEWAY_API_KEY;
 
 if (!AI_GATEWAY_API_KEY) {
     console.error("No AI Gateway API key found. Please provide VITE_AI_GATEWAY_API_KEY environment variable.");
+    console.error("Available env keys:", Object.keys(import.meta.env));
 }
 
 // Create OpenAI-compatible client pointing to AI Gateway
@@ -34,6 +35,11 @@ const imageResponseSchema = z.object({
 async function generate({model, prompt, inputFile, signal}) {
   try {
     console.log(`Starting generation with Vercel AI Gateway using model: ${model}`);
+
+    // Verify API key is available
+    if (!AI_GATEWAY_API_KEY) {
+      throw new Error('AI Gateway API key not configured. Please set VITE_AI_GATEWAY_API_KEY environment variable.');
+    }
 
     // Check if aborted before starting
     if (signal?.aborted) {
