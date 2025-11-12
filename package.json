@@ -11,11 +11,13 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.65",
     "@clerk/clerk-react": "^5.47.0",
     "@clerk/express": "^1.7.31",
     "@google/genai": "latest",
     "@revenuecat/purchases-js": "^1.14.0",
     "@tailwindcss/postcss": "^4.1.13",
+    "ai": "^5.0.92",
     "auto-zustand-selectors-hook": "latest",
     "clsx": "latest",
     "cors": "^2.8.5",
@@ -23,10 +25,12 @@
     "gifenc": "1.0.3",
     "immer": "latest",
     "lodash.shuffle": "latest",
+    "openai": "^6.8.1",
     "p-limit": "latest",
     "react": "latest",
     "react-dom": "latest",
     "stripe": "^18.5.0",
+    "zod": "^4.1.12",
     "zustand": "latest"
   },
   "devDependencies": {

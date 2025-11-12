@@ -2,125 +2,127 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import {GoogleGenAI, Modality} from '@google/genai'
+import { generateObject } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { z } from 'zod';
 import {limitFunction} from 'p-limit'
 
 const timeoutMs = 123_333;
 
-const safetySettings = [
-  'HARM_CATEGORY_HATE_SPEECH',
-  'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-  'HARM_CATEGORY_DANGEROUS_CONTENT',
-  'HARM_CATEGORY_HARASSMENT'
-].map(category => ({category, threshold: 'BLOCK_NONE'}))
+// Get AI Gateway API key from environment
+const AI_GATEWAY_API_KEY = import.meta.env?.VITE_AI_GATEWAY_API_KEY;
 
-// Use Vite's import.meta.env for environment variables in browser
-const apiKeys = [
-  import.meta.env?.VITE_GEMINI_API_KEY,
-  import.meta.env?.VITE_GEMINI_API_KEY_2,
-  import.meta.env?.VITE_GEMINI_API_KEY_3,
-  import.meta.env?.VITE_GEMINI_API_KEY_4,
-].filter(Boolean);
-
-if (apiKeys.length === 0) {
-    console.error("No API keys found. Please provide an API_KEY environment variable or add fallback keys.");
+if (!AI_GATEWAY_API_KEY) {
+    console.error("No AI Gateway API key found. Please provide VITE_AI_GATEWAY_API_KEY environment variable.");
 }
+
+// Create OpenAI-compatible client pointing to AI Gateway
+const aiGateway = createOpenAI({
+  apiKey: AI_GATEWAY_API_KEY,
+  baseURL: 'https://api.vercel.com/v1/ai',
+});
+
+// Define the response schema for image generation
+const imageResponseSchema = z.object({
+  image: z.object({
+    base64: z.string(),
+    mimeType: z.string(),
+  }),
+});
 
 
 async function generate({model, prompt, inputFile, signal}) {
-  let lastError = null;
-  let attemptCount = 0;
+  try {
+    console.log(`Starting generation with Vercel AI Gateway using model: ${model}`);
 
-  console.log(`Starting generation with ${apiKeys.length} available API keys`);
-
-  for (const apiKey of apiKeys) {
-    attemptCount++;
-    const keyPrefix = apiKey.substring(0, 8) + '...';
-
-    try {
-      // Check if aborted before starting
-      if (signal?.aborted) {
-        console.log('Request aborted before API call.');
-        throw new Error('Aborted');
-      }
-
-      console.log(`Attempt ${attemptCount}/${apiKeys.length}: Using API key ${keyPrefix}`);
-      const ai = new GoogleGenAI({apiKey});
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), timeoutMs)
-      );
-
-      const parts = [{text: prompt}];
-      if (inputFile) {
-        parts.push({
-          inlineData: {
-            data: inputFile.split(',')[1],
-            mimeType: 'image/jpeg'
-          }
-        });
-      }
-
-      const modelPromise = ai.models.generateContent(
-        {
-          model,
-          contents: {parts},
-          config: {responseModalities: [Modality.TEXT, Modality.IMAGE]},
-          safetySettings
-        },
-        {signal}
-      );
-
-      const response = await Promise.race([modelPromise, timeoutPromise]);
-
-      // Check again after API call completes
-      if (signal?.aborted) {
-        throw new Error('Aborted');
-      }
-
-      if (!response.candidates || response.candidates.length === 0) {
-        if (response.promptFeedback?.blockReason) {
-            const blockReason = response.promptFeedback.blockReason;
-            const message = `Request blocked due to ${blockReason}.`;
-            console.warn(message, response.promptFeedback);
-            throw new Error(message);
-        }
-        throw new Error('No candidates in response');
-      }
-
-      const inlineDataPart = response.candidates[0].content.parts.find(
-        p => p.inlineData
-      );
-      if (!inlineDataPart) {
-        throw new Error('No inline data found in response');
-      }
-    
-      // Success, return result
-      console.log(`✅ Successfully generated content using API key ${keyPrefix} (attempt ${attemptCount}/${apiKeys.length})`);
-      return 'data:image/png;base64,' + inlineDataPart.inlineData.data;
-
-    } catch (error) {
-      if (signal?.aborted) {
-        console.log('Request aborted by user.');
-        throw error;
-      }
-      
-      const isRateLimit = error.message.includes('quota') || error.message.includes('rate limit') || error.status === 429;
-      const errorType = isRateLimit ? 'RATE_LIMIT' : 'ERROR';
-      
-      console.warn(`❌ ${errorType}: API key ${keyPrefix} failed (attempt ${attemptCount}/${apiKeys.length}):`, error.message);
-      lastError = error;
-      
-      if (attemptCount < apiKeys.length) {
-        console.log(`🔄 Rotating to next API key...`);
-      }
-      // Continue to next key
+    // Check if aborted before starting
+    if (signal?.aborted) {
+      console.log('Request aborted before API call.');
+      throw new Error('Aborted');
     }
-  }
 
-  // If loop finishes without returning, all keys failed.
-  console.error(`💥 All ${apiKeys.length} API keys exhausted. Last error:`, lastError?.message);
-  throw lastError || new Error(`Failed to generate content after trying all ${apiKeys.length} available API keys.`);
+    // Map the model string to AI Gateway format
+    // The model parameter comes in as something like 'gemini-2.0-flash-exp-vision'
+    // We'll use Google's image generation model through AI Gateway
+    const aiGatewayModel = 'google/gemini-2.5-flash-image-preview';
+
+    // Prepare the prompt with image if provided
+    let messages = [];
+    
+    if (inputFile) {
+      // If we have an input image, include it in the message
+      const base64Data = inputFile.split(',')[1];
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          {
+            type: 'image_url',
+            image_url: {
+              url: inputFile,
+            },
+          },
+        ],
+      });
+    } else {
+      messages.push({
+        role: 'user',
+        content: prompt,
+      });
+    }
+
+    // Create a timeout promise
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), timeoutMs)
+    );
+
+    // Use OpenAI SDK with AI Gateway for image generation
+    const OpenAI = (await import('openai')).default;
+    const openai = new OpenAI({
+      apiKey: AI_GATEWAY_API_KEY,
+      baseURL: 'https://ai-gateway.vercel.sh/v1',
+    });
+
+    // Make the API call
+    const completionPromise = openai.chat.completions.create({
+      model: aiGatewayModel,
+      messages,
+      // Request both text and image modalities
+      modalities: ['text', 'image'],
+      stream: false,
+    }, {
+      signal,
+    });
+
+    const completion = await Promise.race([completionPromise, timeoutPromise]);
+
+    // Check again after API call completes
+    if (signal?.aborted) {
+      throw new Error('Aborted');
+    }
+
+    const message = completion.choices[0].message;
+
+    // Extract the generated image from the response
+    if (message.images && Array.isArray(message.images) && message.images.length > 0) {
+      const firstImage = message.images[0];
+      if (firstImage.type === 'image_url' && firstImage.image_url?.url) {
+        console.log(`✅ Successfully generated image using AI Gateway`);
+        return firstImage.image_url.url; // This is already a data URL
+      }
+    }
+
+    throw new Error('No image found in response');
+
+  } catch (error) {
+    if (signal?.aborted) {
+      console.log('Request aborted by user.');
+      throw error;
+    }
+    
+    console.error(`❌ AI Gateway error:`, error.message);
+    throw error;
+  }
 }
 
 export default limitFunction(generate, {concurrency: 2});
