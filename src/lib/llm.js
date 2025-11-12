@@ -5,7 +5,7 @@
 import { generateObject } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { z } from 'zod';
-import {limitFunction} from 'p-limit'
+import pLimit from 'p-limit'
 
 const timeoutMs = 123_333;
 
@@ -125,4 +125,8 @@ async function generate({model, prompt, inputFile, signal}) {
   }
 }
 
-export default limitFunction(generate, {concurrency: 2});
+const limit = pLimit(2);
+
+export default function(args) {
+  return limit(() => generate(args));
+}
