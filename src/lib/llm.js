@@ -87,6 +87,7 @@ async function generate({model, prompt, inputFile, signal}) {
     const openai = new OpenAI({
       apiKey: AI_GATEWAY_API_KEY,
       baseURL: 'https://ai-gateway.vercel.sh/v1',
+      dangerouslyAllowBrowser: true, // Safe because we're using AI Gateway, not direct OpenAI API
     });
 
     // Make the API call
